@@ -9,7 +9,6 @@ import '../application/feed_providers.dart';
 import '../application/feed_state.dart';
 import '../application/subscriptions_providers.dart';
 import 'widgets/feed_list.dart';
-import 'widgets/subscribe_button.dart';
 
 /// A single tab: a label and the feed widget shown for it.
 class _TabSpec {
@@ -116,7 +115,7 @@ class FeedScreen extends ConsumerWidget {
   }
 }
 
-/// A subreddit feed with a header bar exposing the subscribe toggle.
+/// A subreddit feed. Subscribe toggle lives inside the post detail screen.
 class _SubredditFeed extends StatelessWidget {
   const _SubredditFeed({required this.subreddit, required this.sort});
 
@@ -129,18 +128,14 @@ class _SubredditFeed extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 10, 12, 6),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'r/$subreddit',
-                  style: theme.textTheme.titleSmall
-                      ?.copyWith(fontWeight: FontWeight.w700),
-                ),
-              ),
-              SubscribeButton(subreddit: subreddit),
-            ],
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'r/$subreddit',
+              style: theme.textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.w700),
+            ),
           ),
         ),
         Expanded(

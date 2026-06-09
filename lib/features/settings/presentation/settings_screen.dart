@@ -410,7 +410,7 @@ class _TopicsList extends ConsumerWidget {
       physics: const NeverScrollableScrollPhysics(),
       buildDefaultDragHandles: true,
       itemCount: topics.length,
-      onReorderItem: notifier.move,
+      onReorder: notifier.move,
       itemBuilder: (context, index) {
         final topic = topics[index];
         return Card(
