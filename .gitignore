@@ -1,0 +1,86 @@
+# ===== Secrets & credentials — never commit these =====
+# Environment files with real API keys (Gemini, Reddit, ...).
+# .env.example stays tracked as documentation.
+.env
+.env.*
+!.env.example
+
+# Android/iOS signing keys & keystores (defense-in-depth; also in android/.gitignore)
+*.jks
+*.keystore
+key.properties
+keystore.properties
+upload-keystore.jks
+*.p12
+*.pem
+*.p8
+*.key
+*.cer
+*.mobileprovision
+
+# Firebase / Google / cloud service-account configs
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
+firebase.json
+.firebaserc
+*-service-account*.json
+service-account*.json
+serviceAccountKey.json
+
+# Local machine-specific config (absolute SDK paths, etc.)
+local.properties
+**/local.properties
+
+# Misc secret/credential dumps occasionally created by tooling
+secrets.dart
+secrets.json
+credentials.json
+*.secret
+*.secrets
+
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
