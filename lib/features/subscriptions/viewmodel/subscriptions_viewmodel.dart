@@ -14,18 +14,18 @@ class SubscriptionsViewModel extends Notifier<List<Subscription>> {
     return repo.all();
   }
 
-  bool isSubscribed(String subreddit) =>
-      ref.read(subscriptionRepositoryProvider).isSubscribed(subreddit);
+  bool isSubscribed(String topic) =>
+      ref.read(subscriptionRepositoryProvider).isSubscribed(topic);
 
-  Future<void> toggle(String subreddit, {String? label}) async {
+  Future<void> toggle(String topic, {String? label}) async {
     final repo = ref.read(subscriptionRepositoryProvider);
-    await repo.toggle(subreddit, label: label);
+    await repo.toggle(topic, label: label);
     state = repo.all();
   }
 
-  Future<void> subscribe(String subreddit, {String? label}) async {
+  Future<void> subscribe(String topic, {String? label}) async {
     final repo = ref.read(subscriptionRepositoryProvider);
-    await repo.subscribe(subreddit, label: label);
+    await repo.subscribe(topic, label: label);
     state = repo.all();
   }
 

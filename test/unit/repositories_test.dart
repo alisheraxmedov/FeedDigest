@@ -5,11 +5,11 @@ import 'package:feeddigest/data/favorites_repository.dart';
 import 'package:feeddigest/data/subscription_repository.dart';
 import 'package:feeddigest/data/summary_cache_repository.dart';
 import 'package:feeddigest/models/ai_summary.dart';
-import 'package:feeddigest/models/reddit_post.dart';
+import 'package:feeddigest/models/article.dart';
 
 late Directory dir;
 
-RedditPost _post(String id) => RedditPost.fromJson({'id': id, 'title': 't$id'});
+Article _article(String id) => Article.fromJson({'id': id, 'title': 't$id'});
 
 void main() {
   setUp(() async {
@@ -25,10 +25,10 @@ void main() {
   test('favorites add/contains/remove/toggle', () async {
     final box = await Hive.openBox<dynamic>('favorites');
     final repo = FavoritesRepository(box);
-    await repo.add(_post('a'));
+    await repo.add(_article('a'));
     expect(repo.contains('a'), true);
     expect(repo.all().length, 1);
-    await repo.toggle(_post('a'));
+    await repo.toggle(_article('a'));
     expect(repo.contains('a'), false);
   });
 
@@ -44,11 +44,11 @@ void main() {
     final box = await Hive.openBox<dynamic>('subscriptions');
     final meta = await Hive.openBox<dynamic>('meta');
     final repo = SubscriptionRepository(box, meta);
-    await repo.subscribe('FlutterDev');
-    expect(repo.isSubscribed('flutterdev'), true);
+    await repo.subscribe('Flutter');
+    expect(repo.isSubscribed('flutter'), true);
     expect(repo.all().length, 1);
-    await repo.toggle('flutterdev');
-    expect(repo.isSubscribed('flutterdev'), false);
+    await repo.toggle('flutter');
+    expect(repo.isSubscribed('flutter'), false);
   });
 
   test('seedDefaultsIfNeeded is idempotent across unsubscribe', () async {

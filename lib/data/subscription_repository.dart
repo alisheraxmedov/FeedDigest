@@ -20,24 +20,22 @@ class SubscriptionRepository {
 
   bool isSubscribed(String id) => _box.containsKey(id.toLowerCase());
 
-  Future<void> subscribe(String subreddit, {String? label}) {
-    final sub = Subscription.create(subreddit, label: label);
+  Future<void> subscribe(String topic, {String? label}) {
+    final sub = Subscription.create(topic, label: label);
     return _box.put(sub.id, sub.toJson());
   }
 
   Future<void> unsubscribe(String id) => _box.delete(id.toLowerCase());
 
-  Future<void> toggle(String subreddit, {String? label}) {
-    final id = subreddit.toLowerCase();
-    return isSubscribed(id)
-        ? unsubscribe(id)
-        : subscribe(subreddit, label: label);
+  Future<void> toggle(String topic, {String? label}) {
+    final id = topic.toLowerCase();
+    return isSubscribed(id) ? unsubscribe(id) : subscribe(topic, label: label);
   }
 
   void seedDefaultsIfNeeded() {
     if (_meta.get(_seededKey) == true) return;
-    for (final entry in AppConfig.defaultSubreddits) {
-      final sub = Subscription.create(entry.subreddit, label: entry.label);
+    for (final entry in AppConfig.defaultTopics) {
+      final sub = Subscription.create(entry.topic, label: entry.label);
       _box.put(sub.id, sub.toJson());
     }
     _meta.put(_seededKey, true);

@@ -1,14 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/providers.dart';
-import '../../../models/reddit_post.dart';
+import '../../../models/article.dart';
+import '../../feed/viewmodel/feed_source_viewmodel.dart';
 
 final searchViewModelProvider =
-    AsyncNotifierProvider<SearchViewModel, List<RedditPost>>(
-        SearchViewModel.new);
+    AsyncNotifierProvider<SearchViewModel, List<Article>>(SearchViewModel.new);
 
-class SearchViewModel extends AsyncNotifier<List<RedditPost>> {
+class SearchViewModel extends AsyncNotifier<List<Article>> {
   @override
-  Future<List<RedditPost>> build() async => const [];
+  Future<List<Article>> build() async => const [];
 
   Future<void> search(String query) async {
     final trimmed = query.trim();
@@ -18,7 +17,7 @@ class SearchViewModel extends AsyncNotifier<List<RedditPost>> {
     }
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-        () => ref.read(redditRepositoryProvider).searchPosts(trimmed));
+        () => ref.read(activeSourceProvider).search(trimmed));
   }
 
   void clear() => state = const AsyncData([]);

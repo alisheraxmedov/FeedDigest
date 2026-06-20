@@ -1,50 +1,54 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/config/app_config.dart';
-import '../../../core/providers.dart';
-import '../../../models/reddit_post.dart';
+import '../../../core/sources/article_source.dart';
+import '../../../models/article.dart';
 import '../../subscriptions/viewmodel/subscriptions_viewmodel.dart';
+import 'feed_source_viewmodel.dart';
 
-final selectedSubredditProvider =
-    NotifierProvider<SelectedSubreddit, String?>(SelectedSubreddit.new);
+final selectedTopicProvider =
+    NotifierProvider<SelectedTopic, String?>(SelectedTopic.new);
 
-class SelectedSubreddit extends Notifier<String?> {
+class SelectedTopic extends Notifier<String?> {
   @override
   String? build() {
     final subs = ref.watch(subscriptionsViewModelProvider);
     final current = stateOrNull;
-    if (current != null && subs.any((s) => s.subreddit == current)) {
+    if (current != null && subs.any((s) => s.topic == current)) {
       return current;
     }
     return null;
   }
 
-  void select(String? subreddit) => state = subreddit;
+  void select(String? topic) => state = topic;
 }
 
 final feedViewModelProvider =
-    AsyncNotifierProvider<FeedViewModel, List<RedditPost>>(FeedViewModel.new);
+    AsyncNotifierProvider<FeedViewModel, List<Article>>(FeedViewModel.new);
 
-class FeedViewModel extends AsyncNotifier<List<RedditPost>> {
+class FeedViewModel extends AsyncNotifier<List<Article>> {
   @override
-  Future<List<RedditPost>> build() async {
+  Future<List<Article>> build() async {
+    final source = ref.watch(activeSourceProvider);
     final subs = ref.watch(subscriptionsViewModelProvider);
-    final selected = ref.watch(selectedSubredditProvider);
+    final selected = ref.watch(selectedTopicProvider);
+    final sort = ref.watch(feedSortProvider);
     if (subs.isEmpty) return const [];
-    final repo = ref.watch(redditRepositoryProvider);
-    if (selected != null) return repo.topPosts(selected);
+    if (selected != null) {
+      return sortArticles(await source.topPosts(selected, sort: sort), sort);
+    }
 
-    final names = subs.map((s) => s.subreddit).toList();
-    final lists = <List<RedditPost>>[];
-    for (var i = 0; i < names.length; i += AppConfig.fetchConcurrency) {
-      final chunk = names.skip(i).take(AppConfig.fetchConcurrency);
+    final topics = subs.map((s) => s.topic).toList();
+    final lists = <List<Article>>[];
+    for (var i = 0; i < topics.length; i += AppConfig.fetchConcurrency) {
+      final chunk = topics.skip(i).take(AppConfig.fetchConcurrency);
       final results = await Future.wait(
-        chunk.map(
-          (name) => repo.topPosts(name).catchError((_) => <RedditPost>[]),
-        ),
+        chunk.map((topic) => source.topPosts(topic, sort: sort).catchError(
+              (_) => <Article>[],
+            )),
       );
       lists.addAll(results);
     }
-    return aggregate(lists);
+    return aggregate(lists, sort);
   }
 
   Future<void> refresh() {
@@ -52,15 +56,25 @@ class FeedViewModel extends AsyncNotifier<List<RedditPost>> {
     return future;
   }
 
-  static List<RedditPost> aggregate(List<List<RedditPost>> lists) {
+  static List<Article> aggregate(List<List<Article>> lists, FeedSort sort) {
     final seen = <String>{};
-    final merged = <RedditPost>[];
+    final merged = <Article>[];
     for (final list in lists) {
-      for (final post in list) {
-        if (seen.add(post.id)) merged.add(post);
+      for (final article in list) {
+        if (seen.add(article.id)) merged.add(article);
       }
     }
-    merged.sort((a, b) => b.score.compareTo(a.score));
-    return merged;
+    return sortArticles(merged, sort);
+  }
+
+  static List<Article> sortArticles(List<Article> list, FeedSort sort) {
+    final sorted = [...list];
+    switch (sort) {
+      case FeedSort.newest:
+        sorted.sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
+      case FeedSort.popular:
+        sorted.sort((a, b) => b.score.compareTo(a.score));
+    }
+    return sorted;
   }
 }

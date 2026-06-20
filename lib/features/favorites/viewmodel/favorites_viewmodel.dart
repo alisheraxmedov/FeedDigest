@@ -1,20 +1,19 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers.dart';
-import '../../../models/reddit_post.dart';
+import '../../../models/article.dart';
 
 final favoritesViewModelProvider =
-    NotifierProvider<FavoritesViewModel, List<RedditPost>>(
-        FavoritesViewModel.new);
+    NotifierProvider<FavoritesViewModel, List<Article>>(FavoritesViewModel.new);
 
-class FavoritesViewModel extends Notifier<List<RedditPost>> {
+class FavoritesViewModel extends Notifier<List<Article>> {
   @override
-  List<RedditPost> build() => ref.watch(favoritesRepositoryProvider).all();
+  List<Article> build() => ref.watch(favoritesRepositoryProvider).all();
 
   bool isFavorite(String id) =>
       ref.read(favoritesRepositoryProvider).contains(id);
 
-  Future<void> toggle(RedditPost post) async {
-    await ref.read(favoritesRepositoryProvider).toggle(post);
+  Future<void> toggle(Article article) async {
+    await ref.read(favoritesRepositoryProvider).toggle(article);
     state = ref.read(favoritesRepositoryProvider).all();
   }
 
