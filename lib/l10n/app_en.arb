@@ -1,0 +1,63 @@
+{
+  "@@locale": "en",
+  "appTitle": "FeedDigest",
+  "navFeed": "Feed",
+  "navSearch": "Search",
+  "navSaved": "Saved",
+  "navSettings": "Settings",
+  "chipAll": "All",
+  "feedNoSubscriptions": "No topics yet. Add one with + or from Search.",
+  "feedEmpty": "Nothing found",
+  "retry": "Try again",
+  "sourcesTitle": "Sources",
+  "openOriginal": "Open original article",
+  "aiSummary": "AI summary",
+  "close": "Close",
+  "settingsTitle": "Settings",
+  "settingsSubtitle": "Manage app and service parameters",
+  "geminiTitle": "Gemini API key",
+  "geminiSubtitle": "Connected key for core AI services",
+  "geminiKeySet": "Key set",
+  "geminiKeyNotSet": "Key not set",
+  "geminiHint": "Enter API key...",
+  "save": "Save",
+  "keySaved": "Key saved",
+  "appLanguage": "App language",
+  "aiSummaryLanguage": "AI summary language",
+  "theme": "Theme",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "langUzbek": "O'zbekcha",
+  "langRussian": "Русский",
+  "langEnglish": "English",
+  "searchHint": "Search articles...",
+  "searchEmpty": "No search results",
+  "searchPrompt": "Search by topic or keyword",
+  "searchResultsFor": "Results for '{query}'",
+  "@searchResultsFor": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "filter": "Filter",
+  "readingTime": "{minutes} min read",
+  "@readingTime": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "savedTitle": "Saved",
+  "savedEmpty": "No saved posts yet",
+  "topicsTitle": "Topics",
+  "topicLabel": "Topic",
+  "add": "Add",
+  "timeNow": "now",
+  "tooltipSubscribe": "Follow topic",
+  "tooltipUnsubscribe": "Unfollow topic",
+  "summaryNoKey": "Gemini API key not set",
+  "summaryFailed": "Failed to get summary",
+  "sourceLabel": "Source",
+  "sortNewest": "Newest",
+  "sortPopular": "Popular"
+}
