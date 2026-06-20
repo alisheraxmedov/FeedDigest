@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
+import '../theme/app_theme.dart';
 
 class LoadingView extends StatelessWidget {
   const LoadingView({super.key});
@@ -16,20 +18,30 @@ class ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    final scheme = Theme.of(context).colorScheme;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 40),
+            Icon(Icons.error_outline, size: 40, color: scheme.error),
             const SizedBox(height: 12),
-            Text(message, textAlign: TextAlign.center),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: palette.textDim),
+            ),
             if (onRetry != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: palette.accent,
+                  foregroundColor: palette.onAccent,
+                ),
                 onPressed: onRetry,
-                child: const Text('Qayta urinish'),
+                child: Text(AppLocalizations.of(context).retry),
               ),
             ],
           ],
@@ -46,10 +58,15 @@ class EmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
-        child: Text(message, textAlign: TextAlign.center),
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: palette.textDim, fontSize: 15),
+        ),
       ),
     );
   }

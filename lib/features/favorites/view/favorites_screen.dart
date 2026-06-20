@@ -1,22 +1,231 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/neon_widgets.dart';
 import '../../../core/widgets/state_views.dart';
-import '../../feed/view/widgets/post_card.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../models/article.dart';
+import '../../feed/view/article_detail_screen.dart';
+import '../../search/view/search_screen.dart';
 import '../viewmodel/favorites_viewmodel.dart';
 
-class FavoritesScreen extends ConsumerWidget {
+class FavoritesScreen extends ConsumerStatefulWidget {
   const FavoritesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<FavoritesScreen> createState() => _FavoritesScreenState();
+}
+
+class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
+  String? _filter;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
     final favorites = ref.watch(favoritesViewModelProvider);
+    if (favorites.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: Text(l.savedTitle)),
+        body: EmptyView(message: l.savedEmpty),
+      );
+    }
+    final topics = <String>{for (final a in favorites) a.topic}.toList();
+    if (_filter != null && !topics.contains(_filter)) _filter = null;
+    final shown = _filter == null
+        ? favorites
+        : favorites.where((a) => a.topic == _filter).toList();
     return Scaffold(
-      appBar: AppBar(title: const Text('Saqlanganlar')),
-      body: favorites.isEmpty
-          ? const EmptyView(message: "Hali saqlangan post yo'q")
-          : ListView.builder(
-              itemCount: favorites.length,
-              itemBuilder: (_, i) => PostCard(post: favorites[i]),
+      appBar: AppBar(
+        title: Text(l.savedTitle),
+        titleTextStyle: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+          color: scheme.onSurface,
+        ),
+      ),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 44,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: CategoryChip(
+                    label: l.chipAll,
+                    selected: _filter == null,
+                    onTap: () => setState(() => _filter = null),
+                  ),
+                ),
+                for (final topic in topics)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: CategoryChip(
+                      label: topic,
+                      selected: _filter == topic,
+                      onTap: () => setState(() => _filter = topic),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 4),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.only(top: 4, bottom: 96),
+              itemCount: shown.length,
+              itemBuilder: (_, i) => _SavedCard(article: shown[i]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SavedCard extends ConsumerWidget {
+  const _SavedCard({required this.article});
+
+  final Article article;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    final palette = AppPalette.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final snippet = article.body
+        .replaceAll(RegExp(r'<[^>]+>'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: NeonCard(
+        padding: EdgeInsets.zero,
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ArticleDetailScreen(article: article),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _Cover(article: article),
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      TopicBadge(topic: article.topic),
+                      const Spacer(),
+                      Icon(Icons.schedule, size: 13, color: palette.textDim),
+                      const SizedBox(width: 4),
+                      Text(
+                        Formatters.timeAgo(article.publishedAt,
+                            nowLabel: l.timeNow),
+                        style: TextStyle(fontSize: 12, color: palette.textDim),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    article.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 18,
+                      height: 1.25,
+                      fontWeight: FontWeight.w700,
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                  if (snippet.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      snippet,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 13, color: palette.textDim),
+                    ),
+                  ],
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Text(
+                        article.source,
+                        style:
+                            TextStyle(fontSize: 12, color: palette.textDim),
+                      ),
+                      const Spacer(),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(999),
+                        onTap: () => ref
+                            .read(favoritesViewModelProvider.notifier)
+                            .toggle(article),
+                        child: Icon(Icons.bookmark,
+                            size: 22, color: palette.accent),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Cover extends StatelessWidget {
+  const _Cover({required this.article});
+
+  final Article article;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    const radius = BorderRadius.vertical(top: Radius.circular(kCardRadius));
+    if (article.hasImage) {
+      return ClipRRect(
+        borderRadius: radius,
+        child: CachedNetworkImage(
+          imageUrl: article.imageUrl,
+          width: double.infinity,
+          height: 160,
+          fit: BoxFit.cover,
+          errorWidget: (_, _, _) => _faviconCover(palette, radius),
+        ),
+      );
+    }
+    return _faviconCover(palette, radius);
+  }
+
+  Widget _faviconCover(AppPalette palette, BorderRadius radius) {
+    return Container(
+      width: double.infinity,
+      height: 120,
+      decoration: BoxDecoration(
+        color: palette.iconCircle,
+        borderRadius: radius,
+        border: Border(bottom: BorderSide(color: palette.mutedBorder)),
+      ),
+      alignment: Alignment.center,
+      child: article.faviconUrl.isEmpty
+          ? Icon(Icons.bookmark, size: 40, color: palette.accentText)
+          : CachedNetworkImage(
+              imageUrl: article.faviconUrl,
+              width: 48,
+              height: 48,
+              fit: BoxFit.contain,
+              errorWidget: (_, _, _) =>
+                  Icon(Icons.bookmark, size: 40, color: palette.accentText),
             ),
     );
   }

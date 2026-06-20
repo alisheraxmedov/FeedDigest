@@ -5,14 +5,18 @@ class Formatters {
     return '$score';
   }
 
-  static String timeAgo(double createdUtc, {DateTime? now}) {
-    final created =
-        DateTime.fromMillisecondsSinceEpoch((createdUtc * 1000).round());
+  static String timeAgo(DateTime created, {DateTime? now, String nowLabel = 'hozir'}) {
     final diff = (now ?? DateTime.now()).difference(created);
     if (diff.inDays >= 7) return '${diff.inDays ~/ 7}w';
     if (diff.inDays >= 1) return '${diff.inDays}d';
     if (diff.inHours >= 1) return '${diff.inHours}h';
     if (diff.inMinutes >= 1) return '${diff.inMinutes}m';
-    return 'hozir';
+    return nowLabel;
+  }
+
+  static int readingMinutes(String text) {
+    final words = text.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty);
+    final minutes = (words.length / 200).ceil();
+    return minutes < 1 ? 1 : minutes;
   }
 }

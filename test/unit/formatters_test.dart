@@ -10,8 +10,7 @@ void main() {
 
   test('timeAgo uses injected now', () {
     final now = DateTime.utc(2024, 1, 1, 12, 0, 0);
-    final created =
-        now.subtract(const Duration(hours: 3)).millisecondsSinceEpoch / 1000;
+    final created = now.subtract(const Duration(hours: 3));
     expect(Formatters.timeAgo(created, now: now), '3h');
   });
 }

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/neon_widgets.dart';
 import '../../../core/widgets/state_views.dart';
-import '../../feed/view/widgets/post_card.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../models/article.dart';
+import '../../feed/view/article_detail_screen.dart';
+import '../../feed/view/widgets/post_image.dart';
 import '../viewmodel/search_viewmodel.dart';
-import '../viewmodel/subreddit_search_viewmodel.dart';
-import 'subreddit_tile.dart';
-
-enum _SearchMode { posts, communities }
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -17,7 +19,7 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _controller = TextEditingController();
-  _SearchMode _mode = _SearchMode.posts;
+  String _query = '';
 
   @override
   void dispose() {
@@ -26,99 +28,204 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   void _submit(String query) {
-    if (_mode == _SearchMode.posts) {
-      ref.read(searchViewModelProvider.notifier).search(query);
-    } else {
-      ref.read(subredditSearchViewModelProvider.notifier).search(query);
-    }
+    setState(() => _query = query.trim());
+    ref.read(searchViewModelProvider.notifier).search(query);
   }
 
   void _clear() {
     _controller.clear();
+    setState(() => _query = '');
     ref.read(searchViewModelProvider.notifier).clear();
-    ref.read(subredditSearchViewModelProvider.notifier).clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _controller,
-          textInputAction: TextInputAction.search,
-          decoration: const InputDecoration(
-            hintText: 'Reddit qidirish...',
-            border: InputBorder.none,
-          ),
-          onSubmitted: _submit,
-        ),
-        actions: [
-          IconButton(icon: const Icon(Icons.clear), onPressed: _clear),
-        ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: SegmentedButton<_SearchMode>(
-              segments: const [
-                ButtonSegment(
-                    value: _SearchMode.posts, label: Text('Postlar')),
-                ButtonSegment(
-                    value: _SearchMode.communities,
-                    label: Text('Hamjamiyatlar')),
-              ],
-              selected: {_mode},
-              onSelectionChanged: (s) => setState(() => _mode = s.first),
-            ),
-          ),
-          Expanded(
-            child: _mode == _SearchMode.posts
-                ? _PostsResults()
-                : _CommunitiesResults(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PostsResults extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    final palette = AppPalette.of(context);
+    final scheme = Theme.of(context).colorScheme;
     final results = ref.watch(searchViewModelProvider);
-    return results.when(
-      loading: () => const LoadingView(),
-      error: (e, _) => ErrorView(message: '$e'),
-      data: (posts) {
-        if (posts.isEmpty) {
-          return const EmptyView(message: "Qidiruv natijasi yo'q");
-        }
-        return ListView.builder(
-          itemCount: posts.length,
-          itemBuilder: (_, i) => PostCard(post: posts[i]),
-        );
-      },
+    return Scaffold(
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              child: TextField(
+                controller: _controller,
+                textInputAction: TextInputAction.search,
+                onSubmitted: _submit,
+                decoration: InputDecoration(
+                  hintText: l.searchHint,
+                  prefixIcon:
+                      Icon(Icons.search, color: scheme.onSurfaceVariant),
+                  suffixIcon: _controller.text.isEmpty
+                      ? null
+                      : IconButton(
+                          icon: Icon(Icons.close,
+                              color: scheme.onSurfaceVariant),
+                          onPressed: _clear,
+                        ),
+                ),
+              ),
+            ),
+            if (_query.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        l.searchResultsFor(_query),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: scheme.onSurface,
+                        ),
+                      ),
+                    ),
+                    Icon(Icons.tune, size: 18, color: palette.accentText),
+                    const SizedBox(width: 6),
+                    Text(
+                      l.filter,
+                      style: TextStyle(fontSize: 13, color: palette.accentText),
+                    ),
+                  ],
+                ),
+              ),
+            Expanded(
+              child: _query.isEmpty
+                  ? EmptyView(message: l.searchPrompt)
+                  : results.when(
+                      loading: () => const LoadingView(),
+                      error: (e, _) => ErrorView(message: '$e'),
+                      data: (articles) {
+                        if (articles.isEmpty) {
+                          return EmptyView(message: l.searchEmpty);
+                        }
+                        return ListView.builder(
+                          padding: const EdgeInsets.only(bottom: 96),
+                          itemCount: articles.length,
+                          itemBuilder: (_, i) =>
+                              SearchResultCard(article: articles[i]),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class _CommunitiesResults extends ConsumerWidget {
+class SearchResultCard extends StatelessWidget {
+  const SearchResultCard({super.key, required this.article});
+
+  final Article article;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final results = ref.watch(subredditSearchViewModelProvider);
-    return results.when(
-      loading: () => const LoadingView(),
-      error: (e, _) => ErrorView(message: '$e'),
-      data: (subreddits) {
-        if (subreddits.isEmpty) {
-          return const EmptyView(message: "Hamjamiyat topilmadi");
-        }
-        return ListView.builder(
-          itemCount: subreddits.length,
-          itemBuilder: (_, i) => SubredditTile(subreddit: subreddits[i]),
-        );
-      },
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final palette = AppPalette.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final snippet = article.body
+        .replaceAll(RegExp(r'<[^>]+>'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: NeonCard(
+        padding: const EdgeInsets.all(12),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ArticleDetailScreen(article: article),
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            PostImage(article: article, size: 88),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      TopicBadge(topic: article.topic),
+                      const Spacer(),
+                      Icon(Icons.schedule,
+                          size: 13, color: palette.textDim),
+                      const SizedBox(width: 4),
+                      Text(
+                        Formatters.timeAgo(article.publishedAt,
+                            nowLabel: l.timeNow),
+                        style: TextStyle(fontSize: 12, color: palette.textDim),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    article.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 16,
+                      height: 1.25,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                  if (snippet.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      snippet,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 13, color: palette.textDim),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l.readingTime(Formatters.readingMinutes(snippet)),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: palette.accentText,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TopicBadge extends StatelessWidget {
+  const TopicBadge({super.key, required this.topic});
+
+  final String topic;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: palette.accentSoft,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        '#$topic',
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: palette.accentText,
+        ),
+      ),
     );
   }
 }
