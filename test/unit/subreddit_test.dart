@@ -1,47 +1,36 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:feeddigest/features/feed/data/models/subreddit.dart';
+import 'package:feeddigest/models/subreddit.dart';
 
 void main() {
-  group('Subreddit.fromListing', () {
-    test('parses t5 children and strips icon query strings', () {
-      final subs = Subreddit.fromListing({
-        'data': {
-          'children': [
-            {
-              'kind': 't5',
-              'data': {
-                'display_name': 'FlutterDev',
-                'title': 'Flutter Development',
-                'subscribers': 220000,
-                'community_icon':
-                    'https://styles.redditmedia.com/icon.png?width=256&amp;s=abc',
-              }
-            },
-            {
-              'kind': 't3', // not a subreddit — ignored
-              'data': {'display_name': 'nope'}
-            },
-          ]
-        }
-      });
-
-      expect(subs.length, 1);
-      expect(subs.first.name, 'FlutterDev');
-      expect(subs.first.subscribers, 220000);
-      expect(subs.first.iconUrl, 'https://styles.redditmedia.com/icon.png');
+  test('prefers community_icon and strips query', () {
+    final s = Subreddit.fromJson(const {
+      'display_name': 'FlutterDev',
+      'display_name_prefixed': 'r/FlutterDev',
+      'title': 'Flutter Dev',
+      'subscribers': 1234,
+      'community_icon': 'https://styles/icon.png?width=256',
+      'icon_img': 'https://b.thumbs/icon2.png',
+      'public_description': 'Flutter community',
     });
+    expect(s.name, 'FlutterDev');
+    expect(s.namePrefixed, 'r/FlutterDev');
+    expect(s.subscribers, 1234);
+    expect(s.icon, 'https://styles/icon.png');
+    expect(s.hasIcon, true);
+  });
 
-    test('returns empty on malformed input', () {
-      expect(Subreddit.fromListing('nope'), isEmpty);
-      expect(Subreddit.fromListing({'data': 'x'}), isEmpty);
+  test('falls back to icon_img when no community_icon', () {
+    final s = Subreddit.fromJson(const {
+      'display_name': 'rust',
+      'icon_img': 'https://b.thumbs/icon2.png',
     });
+    expect(s.icon, 'https://b.thumbs/icon2.png');
+  });
 
-    test('equality is by name, case-insensitively', () {
-      const a = Subreddit(
-          name: 'FlutterDev', title: '', subscribers: 0, iconUrl: '');
-      const b = Subreddit(
-          name: 'flutterdev', title: 'x', subscribers: 9, iconUrl: 'y');
-      expect(a, equals(b));
-    });
+  test('tolerates missing fields', () {
+    final s = Subreddit.fromJson(const {});
+    expect(s.name, '');
+    expect(s.subscribers, 0);
+    expect(s.hasIcon, false);
   });
 }
