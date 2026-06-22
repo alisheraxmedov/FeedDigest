@@ -26,11 +26,23 @@ class GeminiRepository {
   final SettingsRepository _settings;
 
   static const Map<String, String> _instructions = {
-    'uz': "Quyidagi maqolani o'zbek tilida 3-4 jumlada qisqacha yoz. "
+    'uz': "Quyidagi maqolani o'zbek tilida batafsil xulosa qil. "
+        "Maqoladagi har bir bo'lim, mavzu va muhim fikrni qamrab ol. "
+        "Asosiy g'oyalar, dalillar, misollar va xulosalarni saqlab qol. "
+        "Asl ma'no yo'qolmasligi kerak — maqolada nima haqida gap ketgani to'liq aks etishi lozim. "
+        "Qisqa va yuzaki emas, mazmunli va to'liq xulosa ber. "
         "Faqat o'zbek tilida javob qaytar.",
-    'ru': 'Кратко изложи следующую статью на русском языке в 3-4 предложениях. '
+    'ru': 'Подробно изложи следующую статью на русском языке. '
+        'Охвати каждый раздел, тему и важную мысль статьи. '
+        'Сохрани ключевые идеи, аргументы, примеры и выводы. '
+        'Исходный смысл не должен быть утерян — в резюме должно быть полностью отражено, о чём идёт речь в статье. '
+        'Дай содержательное и полное резюме, а не краткое и поверхностное. '
         'Отвечай только на русском языке.',
-    'en': 'Summarize the following article in English in 3-4 sentences. '
+    'en': 'Summarize the following article in detail in English. '
+        'Cover every section, topic, and important point in the article. '
+        'Preserve key ideas, arguments, examples, and conclusions. '
+        'The original meaning must not be lost — the summary should fully reflect what the article is about. '
+        'Provide a substantive and complete summary, not a brief and superficial one. '
         'Respond only in English.',
   };
 
