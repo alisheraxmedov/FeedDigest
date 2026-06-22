@@ -92,6 +92,8 @@ class CategoryChip extends StatelessWidget {
     required this.selected,
     required this.onTap,
     this.icon,
+    this.width,
+    this.radius = 999,
   });
 
   final String label;
@@ -99,18 +101,37 @@ class CategoryChip extends StatelessWidget {
   final VoidCallback onTap;
   final IconData? icon;
 
+  /// Fixed width for a uniform, centered chip. When null the chip hugs its
+  /// content (pill behaviour used by the Saved screen).
+  final double? width;
+
+  /// Corner radius. Defaults to a full pill; the feed bar passes a small value
+  /// for near-rectangular chips.
+  final double radius;
+
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
+    final labelText = Text(
+      label,
+      textAlign: TextAlign.center,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: _labelSm.copyWith(
+        color: selected ? palette.accentText : scheme.onSurfaceVariant,
+      ),
+    );
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+        width: width,
+        alignment: width == null ? null : Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: selected ? palette.accentSoft : scheme.surface,
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: BorderRadius.circular(radius),
           border: Border.all(
             color: selected ? palette.accent : palette.mutedBorder,
           ),
@@ -119,7 +140,8 @@ class CategoryChip extends StatelessWidget {
               : null,
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: width == null ? MainAxisSize.min : MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
               Icon(icon,
@@ -127,13 +149,7 @@ class CategoryChip extends StatelessWidget {
                   color: selected ? palette.accentText : palette.textDim),
               const SizedBox(width: 6),
             ],
-            Text(
-              label,
-              style: _labelSm.copyWith(
-                color:
-                    selected ? palette.accentText : scheme.onSurfaceVariant,
-              ),
-            ),
+            width == null ? labelText : Flexible(child: labelText),
           ],
         ),
       ),

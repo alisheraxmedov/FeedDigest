@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/widgets/neon_widgets.dart';
+import '../../../../core/widgets/topic_chip_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../subscriptions/view/subscription_editor_sheet.dart';
 import '../../../subscriptions/viewmodel/subscriptions_viewmodel.dart';
@@ -16,34 +16,15 @@ class SubscriptionBar extends ConsumerWidget {
     final subs = ref.watch(subscriptionsViewModelProvider);
     final selected = ref.watch(selectedTopicProvider);
     if (subs.isEmpty) return const SizedBox.shrink();
-    return SizedBox(
-      height: 44,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: CategoryChip(
-              label: l.chipAll,
-              selected: selected == null,
-              onTap: () =>
-                  ref.read(selectedTopicProvider.notifier).select(null),
-            ),
-          ),
-          for (final sub in subs)
-            Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: CategoryChip(
-                label: sub.label,
-                selected: selected == sub.topic,
-                onTap: () =>
-                    ref.read(selectedTopicProvider.notifier).select(sub.topic),
-              ),
-            ),
-          Center(child: _AddTopicButton(onTap: () => showSubscriptionEditor(context))),
-        ],
-      ),
+    return TopicChipBar(
+      allLabel: l.chipAll,
+      selected: selected,
+      items: [
+        for (final sub in subs) TopicChipItem(label: sub.label, value: sub.topic),
+      ],
+      onSelected: (value) =>
+          ref.read(selectedTopicProvider.notifier).select(value),
+      trailing: _AddTopicButton(onTap: () => showSubscriptionEditor(context)),
     );
   }
 }

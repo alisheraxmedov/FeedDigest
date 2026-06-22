@@ -5,6 +5,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/neon_widgets.dart';
 import '../../../core/widgets/state_views.dart';
+import '../../../core/widgets/topic_chip_bar.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/article.dart';
 import '../../feed/view/article_detail_screen.dart';
@@ -48,31 +49,15 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
       ),
       body: Column(
         children: [
-          SizedBox(
-            height: 44,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: CategoryChip(
-                    label: l.chipAll,
-                    selected: _filter == null,
-                    onTap: () => setState(() => _filter = null),
-                  ),
-                ),
-                for (final topic in topics)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: CategoryChip(
-                      label: topic,
-                      selected: _filter == topic,
-                      onTap: () => setState(() => _filter = topic),
-                    ),
-                  ),
-              ],
-            ),
+          const SizedBox(height: 8),
+          TopicChipBar(
+            allLabel: l.chipAll,
+            selected: _filter,
+            items: [
+              for (final topic in topics)
+                TopicChipItem(label: topic, value: topic),
+            ],
+            onSelected: (value) => setState(() => _filter = value),
           ),
           const SizedBox(height: 4),
           Expanded(
