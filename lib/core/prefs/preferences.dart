@@ -36,9 +36,11 @@ class LocaleController extends Notifier<AppLanguage> {
   AppLanguage build() =>
       AppLanguage.fromCode(ref.read(metaBoxProvider).get(_key) as String?);
 
-  void select(AppLanguage lang) {
-    ref.read(metaBoxProvider).put(_key, lang.code);
+  Future<void> select(AppLanguage lang) async {
     state = lang;
+    final box = ref.read(metaBoxProvider);
+    await box.put(_key, lang.code);
+    await box.flush();
   }
 }
 
@@ -51,9 +53,11 @@ class ThemeModeController extends Notifier<ThemeMode> {
   @override
   ThemeMode build() => _decode(ref.read(metaBoxProvider).get(_key) as String?);
 
-  void select(ThemeMode mode) {
-    ref.read(metaBoxProvider).put(_key, mode.name);
+  Future<void> select(ThemeMode mode) async {
     state = mode;
+    final box = ref.read(metaBoxProvider);
+    await box.put(_key, mode.name);
+    await box.flush();
   }
 
   static ThemeMode _decode(String? value) => switch (value) {
@@ -76,9 +80,11 @@ class AiSummaryLangController extends Notifier<AppLanguage?> {
     return code == null ? null : AppLanguage.fromCode(code);
   }
 
-  void select(AppLanguage lang) {
-    ref.read(metaBoxProvider).put(_key, lang.code);
+  Future<void> select(AppLanguage lang) async {
     state = lang;
+    final box = ref.read(metaBoxProvider);
+    await box.put(_key, lang.code);
+    await box.flush();
   }
 }
 
