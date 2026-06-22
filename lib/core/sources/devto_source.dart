@@ -29,6 +29,25 @@ class DevtoSource implements ArticleSource {
           {int limit = AppConfig.searchLimit}) =>
       _fetch(query, limit, FeedSort.popular);
 
+  /// Fetches the complete article body via the single-article endpoint
+  /// (`/api/articles/{id}`). The list endpoint only carries a short
+  /// `description`; this returns the full `body_markdown`, or '' if missing.
+  /// [articleId] is the namespaced id (e.g. `devto-12345`).
+  Future<String> fetchFullBody(String articleId) async {
+    final numId =
+        articleId.startsWith('devto-') ? articleId.substring(6) : articleId;
+    if (numId.isEmpty) return '';
+    final resp = await _dio.getUri<dynamic>(
+      Uri.https(AppConfig.devtoHost, '/api/articles/$numId'),
+      options: Options(responseType: ResponseType.json),
+    );
+    final data = resp.data;
+    if (data is Map) {
+      return (data['body_markdown'] as String?)?.trim() ?? '';
+    }
+    return '';
+  }
+
   Future<List<Article>> _fetch(String tag, int limit, FeedSort sort) async {
     // Without `top` the Forem API returns the most recently published
     // articles; with `top=<days>` it returns the highest rated of that window.

@@ -46,6 +46,8 @@ dependencies:
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
   flutter_dotenv: ^6.0.1
+  flutter_markdown_plus: ^1.0.7
+  flutter_html: ^3.0.0
 
 dev_dependencies:
   flutter_test:

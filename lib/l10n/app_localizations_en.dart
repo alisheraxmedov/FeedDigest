@@ -46,6 +46,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiSummary => 'AI summary';
 
   @override
+  String get articleShort => 'Article';
+
+  @override
+  String get aiShort => 'AI';
+
+  @override
   String get close => 'Close';
 
   @override

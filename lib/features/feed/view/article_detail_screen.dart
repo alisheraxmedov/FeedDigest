@@ -6,6 +6,8 @@ actions: open the original article and request an AI summary.
 */
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
@@ -15,6 +17,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../models/article.dart';
 import '../../favorites/viewmodel/favorites_viewmodel.dart';
 import '../../summary/view/summary_sheet.dart';
+import '../viewmodel/article_body_viewmodel.dart';
 
 class ArticleDetailScreen extends ConsumerWidget {
   const ArticleDetailScreen({super.key, required this.article});
@@ -23,16 +26,12 @@ class ArticleDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context);
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
     ref.watch(favoritesViewModelProvider);
     final isFav =
         ref.read(favoritesViewModelProvider.notifier).isFavorite(article.id);
-    final body = article.body
-        .replaceAll(RegExp(r'<[^>]+>'), ' ')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
+    final bodyAsync = ref.watch(articleBodyProvider(article));
     return Scaffold(
       appBar: AppBar(
         title: Text(article.source),
@@ -47,8 +46,9 @@ class ArticleDetailScreen extends ConsumerWidget {
           ),
         ],
       ),
+      bottomNavigationBar: _BottomActions(article: article),
       body: ListView(
-        padding: const EdgeInsets.only(bottom: 32),
+        padding: const EdgeInsets.only(bottom: 24),
         children: [
           _Banner(article: article),
           Padding(
@@ -61,47 +61,76 @@ class ArticleDetailScreen extends ConsumerWidget {
                 Text(
                   article.title,
                   style: TextStyle(
-                    fontSize: 26,
-                    height: 1.2,
+                    fontSize: 21,
+                    height: 1.25,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: -0.3,
+                    letterSpacing: -0.2,
                     color: scheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 16),
                 _AuthorRow(article: article),
-                if (body.isNotEmpty) ...[
-                  const SizedBox(height: 20),
-                  Text(
-                    body,
-                    style: TextStyle(
-                      fontSize: 17,
-                      height: 1.55,
-                      color: scheme.onSurface.withValues(alpha: 0.9),
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 28),
-                NeonButton(
-                  label: l.openOriginal,
-                  uppercase: true,
-                  icon: Icons.open_in_new,
-                  onPressed: () => launchUrl(
-                    Uri.parse(article.link),
-                    mode: LaunchMode.externalApplication,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                NeonGhostButton(
-                  label: l.aiSummary,
-                  uppercase: true,
-                  icon: Icons.auto_awesome,
-                  onPressed: () => showSummarySheet(context, article),
+                bodyAsync.when(
+                  loading: () => _BodyContent(
+                      article: article, content: article.body, loading: true),
+                  error: (_, _) =>
+                      _BodyContent(article: article, content: article.body),
+                  data: (full) =>
+                      _BodyContent(article: article, content: full),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Fixed bottom action bar, pinned like a navbar so the two actions stay
+/// reachable without scrolling to the end of the article.
+class _BottomActions extends StatelessWidget {
+  const _BottomActions({required this.article});
+
+  final Article article;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final palette = AppPalette.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        border: Border(top: BorderSide(color: palette.mutedBorder)),
+      ),
+      child: SafeArea(
+        top: false,
+        minimum: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+        child: Row(
+          children: [
+            Expanded(
+              child: NeonButton(
+                label: l.articleShort,
+                uppercase: true,
+                icon: Icons.open_in_new,
+                onPressed: () => launchUrl(
+                  Uri.parse(article.link),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: NeonGhostButton(
+                label: l.aiShort,
+                uppercase: true,
+                icon: Icons.auto_awesome,
+                onPressed: () => showSummarySheet(context, article),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -152,6 +181,141 @@ class _Banner extends StatelessWidget {
               errorWidget: (_, _, _) =>
                   Icon(Icons.article_outlined, size: 48, color: palette.accentText),
             ),
+    );
+  }
+}
+
+/// Renders the article body with the viewer that matches the source's data:
+/// dev.to returns markdown (`body_markdown`) → Markdown viewer; Hacker News
+/// returns HTML (`story_text`) → HTML viewer.
+class _BodyContent extends StatelessWidget {
+  const _BodyContent({
+    required this.article,
+    required this.content,
+    this.loading = false,
+  });
+
+  final Article article;
+  final String content;
+  final bool loading;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    final trimmed = content.trim();
+    if (trimmed.isEmpty && !loading) return const SizedBox(height: 8);
+    final isMarkdown = article.id.startsWith('devto-');
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (trimmed.isNotEmpty)
+            isMarkdown ? _MarkdownView(data: trimmed) : _HtmlView(data: trimmed),
+          if (loading) ...[
+            const SizedBox(height: 14),
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: palette.accent,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+void _openLink(String? url) {
+  if (url == null || url.isEmpty) return;
+  final uri = Uri.tryParse(url);
+  if (uri != null) {
+    launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+}
+
+class _MarkdownView extends StatelessWidget {
+  const _MarkdownView({required this.data});
+
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final palette = AppPalette.of(context);
+    // Strip dev.to Liquid embeds ({% embed ... %}) that no renderer handles.
+    final clean = data.replaceAll(RegExp(r'\{%[^%]*%\}'), '').trim();
+    final body = TextStyle(
+      fontSize: 17,
+      height: 1.55,
+      color: scheme.onSurface.withValues(alpha: 0.9),
+    );
+    return MarkdownBody(
+      data: clean,
+      selectable: true,
+      onTapLink: (_, href, _) => _openLink(href),
+      styleSheet: MarkdownStyleSheet(
+        p: body,
+        a: TextStyle(
+          color: palette.accentText,
+          decoration: TextDecoration.underline,
+        ),
+        h1: TextStyle(
+            fontSize: 24, fontWeight: FontWeight.w700, color: scheme.onSurface),
+        h2: TextStyle(
+            fontSize: 21, fontWeight: FontWeight.w700, color: scheme.onSurface),
+        h3: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.w700, color: scheme.onSurface),
+        code: TextStyle(
+          fontFamily: 'monospace',
+          fontSize: 14.5,
+          color: scheme.onSurface,
+          backgroundColor: palette.iconCircle,
+        ),
+        codeblockPadding: const EdgeInsets.all(14),
+        codeblockDecoration: BoxDecoration(
+          color: palette.iconCircle,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: palette.mutedBorder),
+        ),
+        blockquotePadding: const EdgeInsets.symmetric(horizontal: 14),
+        blockquoteDecoration: BoxDecoration(
+          border: Border(left: BorderSide(color: palette.accent, width: 3)),
+        ),
+      ),
+    );
+  }
+}
+
+class _HtmlView extends StatelessWidget {
+  const _HtmlView({required this.data});
+
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final palette = AppPalette.of(context);
+    return Html(
+      data: data,
+      onLinkTap: (url, _, _) => _openLink(url),
+      style: {
+        'body': Style(
+          margin: Margins.zero,
+          padding: HtmlPaddings.zero,
+          fontSize: FontSize(17),
+          lineHeight: LineHeight.number(1.55),
+          color: scheme.onSurface.withValues(alpha: 0.9),
+        ),
+        'a': Style(color: palette.accentText),
+        'pre': Style(
+          backgroundColor: palette.iconCircle,
+          padding: HtmlPaddings.all(12),
+        ),
+      },
     );
   }
 }

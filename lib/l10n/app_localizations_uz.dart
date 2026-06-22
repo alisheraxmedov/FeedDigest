@@ -46,6 +46,12 @@ class AppLocalizationsUz extends AppLocalizations {
   String get aiSummary => 'AI xulosa';
 
   @override
+  String get articleShort => 'Maqola';
+
+  @override
+  String get aiShort => 'AI';
+
+  @override
   String get close => 'Yopish';
 
   @override

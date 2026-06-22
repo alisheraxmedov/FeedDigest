@@ -12,6 +12,8 @@
   "sourcesTitle": "Sources",
   "openOriginal": "Open original article",
   "aiSummary": "AI summary",
+  "articleShort": "Article",
+  "aiShort": "AI",
   "close": "Close",
   "settingsTitle": "Settings",
   "settingsSubtitle": "Manage app and service parameters",

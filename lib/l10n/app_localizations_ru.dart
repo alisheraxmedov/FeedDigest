@@ -45,6 +45,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aiSummary => 'AI-резюме';
 
   @override
+  String get articleShort => 'Статья';
+
+  @override
+  String get aiShort => 'AI';
+
+  @override
   String get close => 'Закрыть';
 
   @override

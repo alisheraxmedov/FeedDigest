@@ -172,6 +172,18 @@ abstract class AppLocalizations {
   /// **'AI summary'**
   String get aiSummary;
 
+  /// No description provided for @articleShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Article'**
+  String get articleShort;
+
+  /// No description provided for @aiShort.
+  ///
+  /// In en, this message translates to:
+  /// **'AI'**
+  String get aiShort;
+
   /// No description provided for @close.
   ///
   /// In en, this message translates to:
