@@ -1,0 +1,110 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/neon_widgets.dart';
+import '../../../core/widgets/state_views.dart';
+import '../../../data/gemini_repository.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../models/article.dart';
+import '../viewmodel/summary_viewmodel.dart';
+
+Future<void> showSummarySheet(BuildContext context, Article article) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    builder: (_) => SummarySheet(article: article),
+  );
+}
+
+class SummarySheet extends ConsumerWidget {
+  const SummarySheet({super.key, required this.article});
+
+  final Article article;
+
+  String _errorText(Object error, AppLocalizations l) {
+    if (error is GeminiException && error.code == 'no_key') {
+      return l.summaryNoKey;
+    }
+    return l.summaryFailed;
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    final palette = AppPalette.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final summary = ref.watch(summaryViewModelProvider(article));
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.auto_awesome, size: 18, color: palette.accent),
+                const SizedBox(width: 8),
+                Text(
+                  l.aiSummary.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.8,
+                    color: palette.accentText,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              article.title,
+              style: TextStyle(
+                fontSize: 19,
+                height: 1.25,
+                fontWeight: FontWeight.w700,
+                color: scheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              constraints: const BoxConstraints(minHeight: 96),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: scheme.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: palette.mutedBorder),
+              ),
+              child: summary.when(
+                loading: () => const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: LoadingView(),
+                ),
+                error: (e, _) => ErrorView(
+                  message: _errorText(e, l),
+                  onRetry: () =>
+                      ref.invalidate(summaryViewModelProvider(article)),
+                ),
+                data: (text) => Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 16,
+                    height: 1.55,
+                    color: scheme.onSurface,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            NeonButton(
+              label: l.close,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

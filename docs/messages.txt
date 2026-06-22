@@ -1,0 +1,5 @@
+Ok endi qiladigan ishing:
+1) initState va dispose methodlari to'g'ri qo'llanilganini
+2) final, const, late proper lar to'g'ri qo'llanilganiga 
+
+3) Endi driftda shunday narsa saqlanishi kerak xuddi bu obunalarga o'xshagan narsa bo'lishi kerak men qaysidur sahifaga UI da tugma orqali bossam databasega saqlanishi kerak va keyingi safar ilovaga kirganimda shu obuna bo'lganlarim orasidan menga yangiliklarni ko'rsatishi kerak !!!

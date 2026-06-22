@@ -1,25 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'app.dart';
-import 'core/config/env.dart';
-import 'features/settings/application/settings_providers.dart';
+import 'core/storage/hive_boxes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await _loadEnv();
+  await HiveBoxes.init();
+  runApp(const ProviderScope(child: FeedDigestApp()));
+}
 
-  // Load `.env` (optional — falls back to mock data when absent) and the
-  // persisted preferences before the first frame.
-  await EnvLoader.load();
-  final prefs = await SharedPreferences.getInstance();
-
-  runApp(
-    ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-      ],
-      child: const FeedDigestApp(),
-    ),
-  );
+Future<void> _loadEnv() async {
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (_) {}
 }

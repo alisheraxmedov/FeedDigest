@@ -1,40 +1,47 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
+import '../theme/app_theme.dart';
 
-/// Reusable, centred error state with an optional retry button.
-class AppErrorView extends StatelessWidget {
-  const AppErrorView({
-    super.key,
-    required this.message,
-    this.onRetry,
-    this.icon = Icons.cloud_off_rounded,
-  });
+class LoadingView extends StatelessWidget {
+  const LoadingView({super.key});
+
+  @override
+  Widget build(BuildContext context) =>
+      const Center(child: CircularProgressIndicator());
+}
+
+class ErrorView extends StatelessWidget {
+  const ErrorView({super.key, required this.message, this.onRetry});
 
   final String message;
   final VoidCallback? onRetry;
-  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 56, color: scheme.error),
-            const SizedBox(height: 16),
+            Icon(Icons.error_outline, size: 40, color: scheme.error),
+            const SizedBox(height: 12),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: TextStyle(color: palette.textDim),
             ),
             if (onRetry != null) ...[
-              const SizedBox(height: 20),
-              FilledButton.tonalIcon(
+              const SizedBox(height: 16),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: palette.accent,
+                  foregroundColor: palette.onAccent,
+                ),
                 onPressed: onRetry,
-                icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Qayta urinish'),
+                child: Text(AppLocalizations.of(context).retry),
               ),
             ],
           ],
@@ -44,73 +51,22 @@ class AppErrorView extends StatelessWidget {
   }
 }
 
-/// Reusable empty-state placeholder.
-class AppEmptyView extends StatelessWidget {
-  const AppEmptyView({
-    super.key,
-    required this.message,
-    this.icon = Icons.inbox_rounded,
-    this.title,
-  });
+class EmptyView extends StatelessWidget {
+  const EmptyView({super.key, required this.message});
 
   final String message;
-  final String? title;
-  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final palette = AppPalette.of(context);
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 64, color: scheme.outline),
-            const SizedBox(height: 16),
-            if (title != null) ...[
-              Text(
-                title!,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 6),
-            ],
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: scheme.onSurfaceVariant),
-            ),
-          ],
+        padding: const EdgeInsets.all(24),
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: palette.textDim, fontSize: 15),
         ),
-      ),
-    );
-  }
-}
-
-/// Simple branded loading indicator.
-class AppLoadingView extends StatelessWidget {
-  const AppLoadingView({super.key, this.label});
-
-  final String? label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const CircularProgressIndicator(strokeWidth: 2.6),
-          if (label != null) ...[
-            const SizedBox(height: 16),
-            Text(label!, style: Theme.of(context).textTheme.bodyMedium),
-          ],
-        ],
       ),
     );
   }
