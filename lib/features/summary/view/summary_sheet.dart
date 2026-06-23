@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/neon_widgets.dart';
@@ -68,31 +69,51 @@ class SummarySheet extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              constraints: const BoxConstraints(minHeight: 96),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: scheme.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: palette.mutedBorder),
-              ),
-              child: summary.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
-                  child: LoadingView(),
-                ),
-                error: (e, _) => ErrorView(
-                  message: _errorText(e, l),
-                  onRetry: () =>
-                      ref.invalidate(summaryViewModelProvider(article)),
-                ),
-                data: (text) => Text(
-                  text,
-                  style: TextStyle(
-                    fontSize: 16,
-                    height: 1.55,
-                    color: scheme.onSurface,
+            Flexible(
+              child: Container(
+                width: double.infinity,
+                constraints: const BoxConstraints(minHeight: 96),
+                padding: const EdgeInsets.all(16),
+                child: summary.when(
+                  loading: () => const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: LoadingView(),
+                  ),
+                  error: (e, _) => ErrorView(
+                    message: _errorText(e, l),
+                    onRetry: () =>
+                        ref.invalidate(summaryViewModelProvider(article)),
+                  ),
+                  data: (text) => SingleChildScrollView(
+                    child: MarkdownBody(
+                      data: text,
+                      styleSheet: MarkdownStyleSheet(
+                        p: TextStyle(
+                          fontSize: 16,
+                          height: 1.55,
+                          color: scheme.onSurface,
+                        ),
+                        h2: TextStyle(
+                          fontSize: 18,
+                          height: 1.4,
+                          fontWeight: FontWeight.w700,
+                          color: scheme.onSurface,
+                        ),
+                        h3: TextStyle(
+                          fontSize: 17,
+                          height: 1.4,
+                          fontWeight: FontWeight.w600,
+                          color: scheme.onSurface,
+                        ),
+                        strong: const TextStyle(fontWeight: FontWeight.w700),
+                        listBullet: TextStyle(
+                          fontSize: 16,
+                          height: 1.55,
+                          color: scheme.onSurface,
+                        ),
+                      ),
+                      selectable: true,
+                    ),
                   ),
                 ),
               ),
