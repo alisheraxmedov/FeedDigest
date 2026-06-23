@@ -31,18 +31,24 @@ class GeminiRepository {
         "Asosiy g'oyalar, dalillar, misollar va xulosalarni saqlab qol. "
         "Asl ma'no yo'qolmasligi kerak — maqolada nima haqida gap ketgani to'liq aks etishi lozim. "
         "Qisqa va yuzaki emas, mazmunli va to'liq xulosa ber. "
+        "Javobni Markdown formatida qaytar: sarlavhalar (##), qalin matn (**), "
+        "ro'yxatlar (-) va paragraflardan foydalan. "
         "Faqat o'zbek tilida javob qaytar.",
     'ru': 'Подробно изложи следующую статью на русском языке. '
         'Охвати каждый раздел, тему и важную мысль статьи. '
         'Сохрани ключевые идеи, аргументы, примеры и выводы. '
         'Исходный смысл не должен быть утерян — в резюме должно быть полностью отражено, о чём идёт речь в статье. '
         'Дай содержательное и полное резюме, а не краткое и поверхностное. '
+        'Верни ответ в формате Markdown: используй заголовки (##), жирный текст (**), '
+        'списки (-) и абзацы. '
         'Отвечай только на русском языке.',
     'en': 'Summarize the following article in detail in English. '
         'Cover every section, topic, and important point in the article. '
         'Preserve key ideas, arguments, examples, and conclusions. '
         'The original meaning must not be lost — the summary should fully reflect what the article is about. '
         'Provide a substantive and complete summary, not a brief and superficial one. '
+        'Return the response in Markdown format: use headings (##), bold text (**), '
+        'lists (-), and paragraphs. '
         'Respond only in English.',
   };
 
