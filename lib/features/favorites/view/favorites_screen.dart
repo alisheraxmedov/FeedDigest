@@ -83,10 +83,7 @@ class _SavedCard extends ConsumerWidget {
     final l = AppLocalizations.of(context);
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
-    final snippet = article.body
-        .replaceAll(RegExp(r'<[^>]+>'), ' ')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
+    final snippet = Formatters.plainSnippet(article.body);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: NeonCard(
@@ -178,6 +175,7 @@ class _Cover extends StatelessWidget {
     final palette = AppPalette.of(context);
     const radius = BorderRadius.vertical(top: Radius.circular(kCardRadius));
     if (article.hasImage) {
+      final dpr = MediaQuery.devicePixelRatioOf(context);
       return ClipRRect(
         borderRadius: radius,
         child: CachedNetworkImage(
@@ -185,6 +183,7 @@ class _Cover extends StatelessWidget {
           width: double.infinity,
           height: 160,
           fit: BoxFit.cover,
+          memCacheHeight: (160 * dpr).round(),
           errorWidget: (_, _, _) => _faviconCover(palette, radius),
         ),
       );

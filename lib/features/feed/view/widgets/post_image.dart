@@ -17,6 +17,9 @@ class PostImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
+    // Decode to the box's pixel size, not the source resolution. A 72pt thumb on
+    // a 3x screen needs ~216px; a 1200px source otherwise wastes ~30x the RAM.
+    final px = (size * MediaQuery.devicePixelRatioOf(context)).round();
     if (article.hasImage) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(14),
@@ -25,14 +28,16 @@ class PostImage extends StatelessWidget {
           width: size,
           height: size,
           fit: BoxFit.cover,
-          errorWidget: (_, _, _) => _favicon(context, palette),
+          memCacheWidth: px,
+          memCacheHeight: px,
+          errorWidget: (_, _, _) => _favicon(context, palette, px),
         ),
       );
     }
-    return _favicon(context, palette);
+    return _favicon(context, palette, px);
   }
 
-  Widget _favicon(BuildContext context, AppPalette palette) {
+  Widget _favicon(BuildContext context, AppPalette palette, int px) {
     final fallback = Icon(Icons.data_object, color: palette.accentText);
     return Container(
       width: size,
@@ -48,6 +53,8 @@ class PostImage extends StatelessWidget {
           : CachedNetworkImage(
               imageUrl: article.faviconUrl,
               fit: BoxFit.contain,
+              memCacheWidth: px,
+              memCacheHeight: px,
               errorWidget: (_, _, _) => fallback,
             ),
     );

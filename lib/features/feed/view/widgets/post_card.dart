@@ -21,9 +21,11 @@ class PostCard extends ConsumerWidget {
     final l = AppLocalizations.of(context);
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
-    ref.watch(favoritesViewModelProvider);
-    final isFav =
-        ref.read(favoritesViewModelProvider.notifier).isFavorite(article.id);
+    final isFav = ref.watch(
+      favoritesViewModelProvider.select(
+        (favs) => favs.any((a) => a.id == article.id),
+      ),
+    );
     final hasThumb = article.hasImage || article.faviconUrl.isNotEmpty;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
