@@ -43,11 +43,46 @@ class NeonCard extends StatelessWidget {
       child: child,
     );
     if (onTap == null) return decorated;
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(radius),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(onTap: onTap, child: decorated),
+    return _PressableCard(onTap: onTap!, radius: radius, child: decorated);
+  }
+}
+
+/// Wraps a tappable card with the ente-style press micro-interaction: a subtle
+/// scale-to-0.98 on touch-down layered over the Material ink ripple.
+class _PressableCard extends StatefulWidget {
+  const _PressableCard({
+    required this.child,
+    required this.onTap,
+    required this.radius,
+  });
+
+  final Widget child;
+  final VoidCallback onTap;
+  final double radius;
+
+  @override
+  State<_PressableCard> createState() => _PressableCardState();
+}
+
+class _PressableCardState extends State<_PressableCard> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedScale(
+      scale: _pressed ? 0.98 : 1,
+      duration: const Duration(milliseconds: 120),
+      curve: Curves.easeOutCubic,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(widget.radius),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: widget.onTap,
+          onHighlightChanged: (value) => setState(() => _pressed = value),
+          child: widget.child,
+        ),
+      ),
     );
   }
 }
@@ -135,9 +170,7 @@ class CategoryChip extends StatelessWidget {
           border: Border.all(
             color: selected ? palette.accent : palette.mutedBorder,
           ),
-          boxShadow: selected
-              ? [BoxShadow(color: palette.glow, blurRadius: 10)]
-              : null,
+          boxShadow: null,
         ),
         child: Row(
           mainAxisSize: width == null ? MainAxisSize.min : MainAxisSize.max,
@@ -225,12 +258,12 @@ class SettingsTile extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 18,
-                    height: 1.2,
-                    fontWeight: FontWeight.w600,
-                    color: scheme.onSurface,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontSize: 18,
+                        height: 1.2,
+                        fontWeight: FontWeight.w600,
+                        color: scheme.onSurface,
+                      ),
                 ),
                 if (value != null) ...[
                   const SizedBox(height: 2),
@@ -267,17 +300,8 @@ class NeonButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: onPressed == null
-            ? null
-            : [
-                BoxShadow(
-                  color: palette.accent.withValues(alpha: 0.25),
-                  blurRadius: 16,
-                  spreadRadius: -2,
-                ),
-              ],
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(18)),
       ),
       child: SizedBox(
         width: double.infinity,
@@ -326,7 +350,7 @@ class NeonGhostButton extends StatelessWidget {
           foregroundColor: palette.accentText,
           side: BorderSide(color: palette.accent),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(18),
           ),
         ),
         child: _ButtonLabel(label: label, icon: icon, uppercase: uppercase),
@@ -382,6 +406,7 @@ Future<void> showOptionPicker<T>({
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     builder: (sheetContext) => _OptionPickerSheet<T>(
       title: title,
       options: options,
@@ -420,11 +445,11 @@ class _OptionPickerSheet<T> extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: scheme.onSurface,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                          color: scheme.onSurface,
+                        ),
                   ),
                 ),
                 IconButton(

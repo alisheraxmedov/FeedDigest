@@ -49,12 +49,15 @@ class PostCard extends ConsumerWidget {
                       const SizedBox(height: 6),
                       Text(
                         article.title,
-                        style: TextStyle(
-                          fontSize: 19,
-                          height: 1.2,
-                          fontWeight: FontWeight.w600,
-                          color: scheme.onSurface,
-                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(
+                              fontSize: 19,
+                              height: 1.2,
+                              fontWeight: FontWeight.w600,
+                              color: scheme.onSurface,
+                            ),
                       ),
                     ],
                   ),

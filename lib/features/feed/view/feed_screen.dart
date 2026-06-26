@@ -7,6 +7,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../subscriptions/viewmodel/subscriptions_viewmodel.dart';
 import '../viewmodel/feed_source_viewmodel.dart';
 import '../viewmodel/feed_viewmodel.dart';
+import 'widgets/feed_pager.dart';
 import 'widgets/post_card.dart';
 import 'widgets/post_skeleton.dart';
 import 'widgets/subscription_bar.dart';
@@ -38,6 +39,8 @@ class FeedScreen extends ConsumerWidget {
     final subs = ref.watch(subscriptionsViewModelProvider);
     final feed = ref.watch(feedViewModelProvider);
     final sort = ref.watch(feedSortProvider);
+    final page = ref.watch(feedPageProvider);
+    final navClear = 64 + MediaQuery.viewPaddingOf(context).bottom;
     return Scaffold(
       appBar: AppBar(
         leading: Center(child: Icon(Icons.hub, color: palette.accent)),
@@ -72,17 +75,23 @@ class FeedScreen extends ConsumerWidget {
                       onRetry: () =>
                           ref.read(feedViewModelProvider.notifier).refresh(),
                     ),
-                    data: (articles) {
-                      if (articles.isEmpty) {
+                    data: (fp) {
+                      if (fp.items.isEmpty) {
                         return EmptyView(message: l.feedEmpty);
                       }
+                      final showPager = !(page == 1 && !fp.hasNext);
                       return RefreshIndicator(
                         onRefresh: () =>
                             ref.read(feedViewModelProvider.notifier).refresh(),
                         child: ListView.builder(
-                          padding: const EdgeInsets.only(top: 4, bottom: 96),
-                          itemCount: articles.length,
-                          itemBuilder: (_, i) => PostCard(article: articles[i]),
+                          key: ValueKey('feed-page-$page'),
+                          padding:
+                              EdgeInsets.only(top: 4, bottom: navClear + 16),
+                          itemCount: fp.items.length + (showPager ? 1 : 0),
+                          itemBuilder: (_, i) {
+                            if (i >= fp.items.length) return const FeedPager();
+                            return PostCard(article: fp.items[i]);
+                          },
                         ),
                       );
                     },

@@ -25,12 +25,11 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final scheme = Theme.of(context).colorScheme;
     final favorites = ref.watch(favoritesViewModelProvider);
     if (favorites.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: Text(l.savedTitle)),
-        body: EmptyView(message: l.savedEmpty),
+        body: EmptyView(message: l.savedEmpty, asset: AppAnim.savedEmpty),
       );
     }
     final topics = <String>{for (final a in favorites) a.topic}.toList();
@@ -39,14 +38,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
         ? favorites
         : favorites.where((a) => a.topic == _filter).toList();
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l.savedTitle),
-        titleTextStyle: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w700,
-          color: scheme.onSurface,
-        ),
-      ),
+      appBar: AppBar(title: Text(l.savedTitle)),
       body: Column(
         children: [
           const SizedBox(height: 8),
@@ -120,12 +112,12 @@ class _SavedCard extends ConsumerWidget {
                     article.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 18,
-                      height: 1.25,
-                      fontWeight: FontWeight.w700,
-                      color: scheme.onSurface,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: 18,
+                          height: 1.25,
+                          fontWeight: FontWeight.w600,
+                          color: scheme.onSurface,
+                        ),
                   ),
                   if (snippet.isNotEmpty) ...[
                     const SizedBox(height: 6),

@@ -1,11 +1,12 @@
 /*
-HomeShell hosts the four primary tabs behind a frosted, neon bottom navigation
-bar (iPhone-style blur with a 1px top border). The active tab uses a filled icon
-with a soft cyan glow and a cyan label; the body extends behind the bar so feed
-content scrolls under the blur.
+HomeShell hosts the four primary tabs behind a frosted bottom navigation bar
+(iPhone-style blur with a 1px top border). The active tab shows a hugeicons line
+icon inside an accent-tinted pill with a bolder label; the body extends behind
+the bar so feed content scrolls under the blur.
 */
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../favorites/view/favorites_screen.dart';
@@ -44,9 +45,8 @@ class _HomeShellState extends State<HomeShell> {
 }
 
 class _NavItem {
-  const _NavItem(this.activeIcon, this.icon, this.label);
-  final IconData activeIcon;
-  final IconData icon;
+  const _NavItem(this.icon, this.label);
+  final List<List<dynamic>> icon;
   final String label;
 }
 
@@ -62,10 +62,10 @@ class _FrostedNav extends StatelessWidget {
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
     final items = <_NavItem>[
-      _NavItem(Icons.home, Icons.home_outlined, l.navFeed),
-      _NavItem(Icons.search, Icons.search, l.navSearch),
-      _NavItem(Icons.bookmark, Icons.bookmark_border, l.navSaved),
-      _NavItem(Icons.settings, Icons.settings_outlined, l.navSettings),
+      _NavItem(HugeIcons.strokeRoundedHome01, l.navFeed),
+      _NavItem(HugeIcons.strokeRoundedSearch01, l.navSearch),
+      _NavItem(HugeIcons.strokeRoundedBookmark01, l.navSaved),
+      _NavItem(HugeIcons.strokeRoundedSettings01, l.navSettings),
     ];
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
@@ -117,27 +117,42 @@ class _NavButton extends StatelessWidget {
     final color = active ? palette.accent : scheme.onSurfaceVariant;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       child: SizedBox(
-        width: 70,
+        width: 76,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              active ? item.activeIcon : item.icon,
-              size: 24,
-              color: color,
-              shadows: active
-                  ? [Shadow(color: palette.glow, blurRadius: 8)]
-                  : null,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              item.label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOutCubic,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
+              decoration: BoxDecoration(
+                color: active ? palette.accentSoft : Colors.transparent,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: HugeIcon(
+                icon: item.icon,
+                size: 24,
                 color: color,
+                strokeWidth: active ? 2.2 : 1.7,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  item.label,
+                  maxLines: 1,
+                  softWrap: false,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                    color: color,
+                  ),
+                ),
               ),
             ),
           ],

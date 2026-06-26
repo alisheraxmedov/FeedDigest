@@ -42,6 +42,7 @@ abstract class ArticleSource {
   Future<List<Article>> topPosts(
     String topic, {
     int limit = AppConfig.feedLimit,
+    int page = 1,
     FeedSort sort = FeedSort.newest,
   });
 

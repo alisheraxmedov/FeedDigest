@@ -168,7 +168,29 @@ class AppTheme {
       colorScheme: scheme,
       useMaterial3: true,
     );
-    final text = GoogleFonts.interTextTheme(base.textTheme);
+    final inter = GoogleFonts.interTextTheme(base.textTheme);
+    final outfit = GoogleFonts.outfitTextTheme(base.textTheme);
+    // Body keeps Inter; display/headline switch to Outfit for the elegant,
+    // geometric title rhythm (mirrors the ente design language).
+    final text = inter.copyWith(
+      displayLarge: outfit.displayLarge
+          ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.5),
+      displayMedium: outfit.displayMedium
+          ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.5),
+      displaySmall: outfit.displaySmall
+          ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.3),
+      headlineLarge: outfit.headlineLarge
+          ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.3),
+      headlineMedium:
+          outfit.headlineMedium?.copyWith(fontWeight: FontWeight.w600),
+      headlineSmall:
+          outfit.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
+      titleLarge: outfit.titleLarge
+          ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.2),
+      titleMedium: outfit.titleMedium
+          ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.2),
+      titleSmall: outfit.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+    );
     return base.copyWith(
       scaffoldBackgroundColor: scheme.surface,
       textTheme: text,
@@ -180,9 +202,10 @@ class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        titleTextStyle: text.titleLarge?.copyWith(
-          fontWeight: FontWeight.w700,
+        titleTextStyle: GoogleFonts.outfit(
+          fontWeight: FontWeight.w600,
           fontSize: 20,
+          letterSpacing: -0.3,
           color: scheme.onSurface,
         ),
       ),

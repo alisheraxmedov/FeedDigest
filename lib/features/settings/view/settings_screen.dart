@@ -108,12 +108,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         children: [
           Text(
             l.settingsTitle,
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.5,
-              color: scheme.onSurface,
-            ),
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.5,
+                  color: scheme.onSurface,
+                ),
           ),
           const SizedBox(height: 6),
           Text(

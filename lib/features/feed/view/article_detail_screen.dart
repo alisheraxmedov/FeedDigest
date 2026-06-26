@@ -62,13 +62,13 @@ class ArticleDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 Text(
                   article.title,
-                  style: TextStyle(
-                    fontSize: 21,
-                    height: 1.25,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.2,
-                    color: scheme.onSurface,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 21,
+                        height: 1.25,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.2,
+                        color: scheme.onSurface,
+                      ),
                 ),
                 const SizedBox(height: 16),
                 _AuthorRow(article: article),

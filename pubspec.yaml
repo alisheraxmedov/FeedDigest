@@ -26,6 +26,8 @@ dependencies:
   flutter_dotenv: ^6.0.1
   flutter_markdown_plus: ^1.0.7
   flutter_html: ^3.0.0
+  lottie: ^3.4.0
+  hugeicons: ^1.1.7
 
 dev_dependencies:
   flutter_test:
@@ -41,6 +43,7 @@ flutter:
 
   assets:
     - .env
+    - assets/lottie/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
