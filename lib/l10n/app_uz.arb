@@ -51,5 +51,7 @@
   "summaryFailed": "Xulosani olishda xatolik",
   "sourceLabel": "Manba",
   "sortNewest": "Eng yangi",
-  "sortPopular": "Mashhur"
+  "sortPopular": "Mashhur",
+  "feedLoadError": "Maqolalarni yuklab bo'lmadi. Ulanishni tekshirib qayta urining.",
+  "summaryBlocked": "AI xavfsizlik filtri tomonidan bloklandi"
 }

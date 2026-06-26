@@ -2,8 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers.dart';
 import '../../../core/sources/article_source.dart';
 
-final feedSourceProvider =
-    NotifierProvider<FeedSourceController, FeedSource>(FeedSourceController.new);
+final feedSourceProvider = NotifierProvider<FeedSourceController, FeedSource>(
+  FeedSourceController.new,
+);
 
 class FeedSourceController extends Notifier<FeedSource> {
   static const String _key = 'feed_source';
@@ -12,8 +13,10 @@ class FeedSourceController extends Notifier<FeedSource> {
   FeedSource build() =>
       FeedSource.fromId(ref.read(metaBoxProvider).get(_key) as String?);
 
-  void select(FeedSource source) {
-    ref.read(metaBoxProvider).put(_key, source.id);
+  Future<void> select(FeedSource source) async {
+    final box = ref.read(metaBoxProvider);
+    await box.put(_key, source.id);
+    await box.flush();
     state = source;
   }
 }
@@ -25,8 +28,9 @@ final activeSourceProvider = Provider<ArticleSource>((ref) {
   };
 });
 
-final feedSortProvider =
-    NotifierProvider<FeedSortController, FeedSort>(FeedSortController.new);
+final feedSortProvider = NotifierProvider<FeedSortController, FeedSort>(
+  FeedSortController.new,
+);
 
 class FeedSortController extends Notifier<FeedSort> {
   static const String _key = 'feed_sort';
@@ -35,8 +39,10 @@ class FeedSortController extends Notifier<FeedSort> {
   FeedSort build() =>
       FeedSort.fromId(ref.read(metaBoxProvider).get(_key) as String?);
 
-  void select(FeedSort sort) {
-    ref.read(metaBoxProvider).put(_key, sort.id);
+  Future<void> select(FeedSort sort) async {
+    final box = ref.read(metaBoxProvider);
+    await box.put(_key, sort.id);
+    await box.flush();
     state = sort;
   }
 }

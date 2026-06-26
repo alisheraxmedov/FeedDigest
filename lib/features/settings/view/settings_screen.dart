@@ -35,10 +35,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   String _themeLabel(AppLocalizations l, ThemeMode mode) => switch (mode) {
-        ThemeMode.system => l.themeSystem,
-        ThemeMode.light => l.themeLight,
-        ThemeMode.dark => l.themeDark,
-      };
+    ThemeMode.system => l.themeSystem,
+    ThemeMode.light => l.themeLight,
+    ThemeMode.dark => l.themeDark,
+  };
 
   void _pickAppLanguage(AppLocalizations l) {
     showOptionPicker<AppLanguage>(
@@ -47,7 +47,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       selected: ref.read(localeProvider),
       options: [
         for (final lang in AppLanguage.values)
-          PickerOption(value: lang, label: lang.nativeLabel, icon: Icons.language),
+          PickerOption(
+            value: lang,
+            label: lang.nativeLabel,
+            icon: Icons.language,
+          ),
       ],
       onSelected: (lang) => ref.read(localeProvider.notifier).select(lang),
     );
@@ -60,7 +64,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       selected: ref.read(effectiveAiLangProvider),
       options: [
         for (final lang in AppLanguage.values)
-          PickerOption(value: lang, label: lang.nativeLabel, icon: Icons.translate),
+          PickerOption(
+            value: lang,
+            label: lang.nativeLabel,
+            icon: Icons.translate,
+          ),
       ],
       onSelected: (lang) =>
           ref.read(aiSummaryLangProvider.notifier).select(lang),
@@ -74,15 +82,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       selected: ref.read(themeModeProvider),
       options: [
         PickerOption(
-            value: ThemeMode.system,
-            label: l.themeSystem,
-            icon: Icons.brightness_auto),
+          value: ThemeMode.system,
+          label: l.themeSystem,
+          icon: Icons.brightness_auto,
+        ),
         PickerOption(
-            value: ThemeMode.light,
-            label: l.themeLight,
-            icon: Icons.light_mode),
+          value: ThemeMode.light,
+          label: l.themeLight,
+          icon: Icons.light_mode,
+        ),
         PickerOption(
-            value: ThemeMode.dark, label: l.themeDark, icon: Icons.dark_mode),
+          value: ThemeMode.dark,
+          label: l.themeDark,
+          icon: Icons.dark_mode,
+        ),
       ],
       onSelected: (mode) => ref.read(themeModeProvider.notifier).select(mode),
     );
@@ -109,11 +122,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Text(
             l.settingsTitle,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: -0.5,
-                  color: scheme.onSurface,
-                ),
+              fontSize: 26,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.5,
+              color: scheme.onSurface,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
@@ -144,8 +157,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           const SizedBox(height: 4),
                           Text(
                             l.geminiSubtitle,
-                            style:
-                                TextStyle(fontSize: 13, color: palette.textDim),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: palette.textDim,
+                            ),
                           ),
                         ],
                       ),
@@ -179,7 +194,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       backgroundColor: palette.accent,
                       foregroundColor: palette.onAccent,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 28, vertical: 14),
+                        horizontal: 28,
+                        vertical: 14,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

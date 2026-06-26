@@ -411,6 +411,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Popular'**
   String get sortPopular;
+
+  /// No description provided for @feedLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load articles. Check your connection and try again.'**
+  String get feedLoadError;
+
+  /// No description provided for @summaryBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked by the AI safety filter'**
+  String get summaryBlocked;
 }
 
 class _AppLocalizationsDelegate

@@ -71,10 +71,7 @@ class FeedPager extends ConsumerWidget {
         children: [
           arrow(HugeIcons.strokeRoundedArrowLeft01, page > 1, controller.prev),
           const SizedBox(width: 8),
-          for (final n in numbers) ...[
-            number(n),
-            const SizedBox(width: 8),
-          ],
+          for (final n in numbers) ...[number(n), const SizedBox(width: 8)],
           arrow(HugeIcons.strokeRoundedArrowRight01, hasNext, controller.next),
         ],
       ),

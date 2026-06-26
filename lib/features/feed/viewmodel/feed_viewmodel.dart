@@ -5,8 +5,9 @@ import '../../../models/article.dart';
 import '../../subscriptions/viewmodel/subscriptions_viewmodel.dart';
 import 'feed_source_viewmodel.dart';
 
-final selectedTopicProvider =
-    NotifierProvider<SelectedTopic, String?>(SelectedTopic.new);
+final selectedTopicProvider = NotifierProvider<SelectedTopic, String?>(
+  SelectedTopic.new,
+);
 
 class SelectedTopic extends Notifier<String?> {
   @override
@@ -37,8 +38,9 @@ class FeedPage {
 
 /// Current 1-indexed feed page. Resets to 1 whenever the underlying query
 /// (topic, sort, source or subscriptions) changes.
-final feedPageProvider =
-    NotifierProvider<FeedPageController, int>(FeedPageController.new);
+final feedPageProvider = NotifierProvider<FeedPageController, int>(
+  FeedPageController.new,
+);
 
 class FeedPageController extends Notifier<int> {
   @override
@@ -61,8 +63,9 @@ class FeedPageController extends Notifier<int> {
   }
 }
 
-final feedViewModelProvider =
-    AsyncNotifierProvider<FeedViewModel, FeedPage>(FeedViewModel.new);
+final feedViewModelProvider = AsyncNotifierProvider<FeedViewModel, FeedPage>(
+  FeedViewModel.new,
+);
 
 class FeedViewModel extends AsyncNotifier<FeedPage> {
   @override
@@ -76,37 +79,74 @@ class FeedViewModel extends AsyncNotifier<FeedPage> {
       return const FeedPage(items: [], page: 1, hasNext: false);
     }
 
+    // Fetch one extra item as a probe: a next page exists only if that probe
+    // came back, which guarantees page+1 is non-empty (no dead-end trap).
+    const probe = AppConfig.feedLimit + 1;
+
     if (selected != null) {
-      final raw = await source.topPosts(selected, page: page, sort: sort);
-      return FeedPage(
-        items: sortArticles(raw, sort),
+      final raw = await source.topPosts(
+        selected,
+        limit: probe,
         page: page,
-        hasNext: raw.length >= AppConfig.feedLimit,
+        sort: sort,
       );
+      return pageFromRaw(raw, page, sort);
     }
 
     final topics = subs.map((s) => s.topic).toList();
     final lists = <List<Article>>[];
+    var failures = 0;
     for (var i = 0; i < topics.length; i += AppConfig.fetchConcurrency) {
       final chunk = topics.skip(i).take(AppConfig.fetchConcurrency);
       final results = await Future.wait(
-        chunk.map((topic) =>
-            source.topPosts(topic, page: page, sort: sort).catchError(
-              (_) => <Article>[],
-            )),
+        chunk.map((topic) async {
+          try {
+            return await source.topPosts(
+              topic,
+              limit: probe,
+              page: page,
+              sort: sort,
+            );
+          } catch (_) {
+            failures++;
+            return <Article>[];
+          }
+        }),
       );
       lists.addAll(results);
     }
+    // Surface a real error (with retry) when every topic failed, instead of a
+    // misleading "nothing found" empty state.
+    if (failures == topics.length) {
+      throw Exception('feed_unavailable');
+    }
+    final hasNext = lists.any((l) => l.length > AppConfig.feedLimit);
+    final trimmed = lists
+        .map((l) => l.take(AppConfig.feedLimit).toList())
+        .toList();
     return FeedPage(
-      items: aggregate(lists, sort),
+      items: aggregate(trimmed, sort),
       page: page,
-      hasNext: lists.any((l) => l.length >= AppConfig.feedLimit),
+      hasNext: hasNext,
     );
   }
 
   Future<void> refresh() {
     ref.invalidateSelf();
     return future;
+  }
+
+  /// Splits a probe-sized fetch (feedLimit + 1 items) into the visible page and
+  /// whether a further page exists: a next page exists only when the probe item
+  /// came back, which guarantees page+1 is non-empty (no dead-end).
+  static FeedPage pageFromRaw(List<Article> raw, int page, FeedSort sort) {
+    final hasNext = raw.length > AppConfig.feedLimit;
+    final items = hasNext ? raw.take(AppConfig.feedLimit).toList() : raw;
+    return FeedPage(
+      items: sortArticles(items, sort),
+      page: page,
+      hasNext: hasNext,
+    );
   }
 
   static List<Article> aggregate(List<List<Article>> lists, FeedSort sort) {

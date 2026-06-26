@@ -168,4 +168,11 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get sortPopular => 'Mashhur';
+
+  @override
+  String get feedLoadError =>
+      'Maqolalarni yuklab bo\'lmadi. Ulanishni tekshirib qayta urining.';
+
+  @override
+  String get summaryBlocked => 'AI xavfsizlik filtri tomonidan bloklandi';
 }

@@ -6,6 +6,10 @@ different sources never collide in favorites or when aggregating feeds.
 */
 import 'package:flutter/foundation.dart';
 
+/// Defensive cast: a present-but-non-String JSON field decodes to '' instead of
+/// throwing a ClassCastException.
+String _str(dynamic value) => value is String ? value : '';
+
 @immutable
 class Article {
   const Article({
@@ -50,37 +54,37 @@ class Article {
   String get contentText => body.isNotEmpty ? body : url;
 
   factory Article.fromJson(Map<String, dynamic> json) => Article(
-        id: json['id'] as String? ?? '',
-        title: json['title'] as String? ?? '',
-        body: json['body'] as String? ?? '',
-        url: json['url'] as String? ?? '',
-        commentsUrl: json['commentsUrl'] as String? ?? '',
-        author: json['author'] as String? ?? '',
-        topic: json['topic'] as String? ?? '',
-        source: json['source'] as String? ?? '',
-        score: (json['score'] as num?)?.toInt() ?? 0,
-        commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
-        publishedAt: DateTime.fromMillisecondsSinceEpoch(
-          (json['publishedAt'] as num?)?.toInt() ?? 0,
-          isUtc: true,
-        ),
-        imageUrl: json['imageUrl'] as String? ?? '',
-      );
+    id: _str(json['id']),
+    title: _str(json['title']),
+    body: _str(json['body']),
+    url: _str(json['url']),
+    commentsUrl: _str(json['commentsUrl']),
+    author: _str(json['author']),
+    topic: _str(json['topic']),
+    source: _str(json['source']),
+    score: (json['score'] as num?)?.toInt() ?? 0,
+    commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
+    publishedAt: DateTime.fromMillisecondsSinceEpoch(
+      (json['publishedAt'] as num?)?.toInt() ?? 0,
+      isUtc: true,
+    ),
+    imageUrl: _str(json['imageUrl']),
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'body': body,
-        'url': url,
-        'commentsUrl': commentsUrl,
-        'author': author,
-        'topic': topic,
-        'source': source,
-        'score': score,
-        'commentCount': commentCount,
-        'publishedAt': publishedAt.millisecondsSinceEpoch,
-        'imageUrl': imageUrl,
-      };
+    'id': id,
+    'title': title,
+    'body': body,
+    'url': url,
+    'commentsUrl': commentsUrl,
+    'author': author,
+    'topic': topic,
+    'source': source,
+    'score': score,
+    'commentCount': commentCount,
+    'publishedAt': publishedAt.millisecondsSinceEpoch,
+    'imageUrl': imageUrl,
+  };
 
   @override
   bool operator ==(Object other) => other is Article && other.id == id;

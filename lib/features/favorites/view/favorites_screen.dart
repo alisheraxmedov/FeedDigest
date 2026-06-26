@@ -54,7 +54,10 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
           const SizedBox(height: 4),
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.only(top: 4, bottom: 96),
+              padding: EdgeInsets.only(
+                top: 4,
+                bottom: 64 + MediaQuery.viewPaddingOf(context).bottom + 16,
+              ),
               itemCount: shown.length,
               itemBuilder: (_, i) => _SavedCard(article: shown[i]),
             ),
@@ -101,8 +104,10 @@ class _SavedCard extends ConsumerWidget {
                       Icon(Icons.schedule, size: 13, color: palette.textDim),
                       const SizedBox(width: 4),
                       Text(
-                        Formatters.timeAgo(article.publishedAt,
-                            nowLabel: l.timeNow),
+                        Formatters.timeAgo(
+                          article.publishedAt,
+                          nowLabel: l.timeNow,
+                        ),
                         style: TextStyle(fontSize: 12, color: palette.textDim),
                       ),
                     ],
@@ -113,11 +118,11 @@ class _SavedCard extends ConsumerWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontSize: 18,
-                          height: 1.25,
-                          fontWeight: FontWeight.w600,
-                          color: scheme.onSurface,
-                        ),
+                      fontSize: 18,
+                      height: 1.25,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurface,
+                    ),
                   ),
                   if (snippet.isNotEmpty) ...[
                     const SizedBox(height: 6),
@@ -133,17 +138,22 @@ class _SavedCard extends ConsumerWidget {
                     children: [
                       Text(
                         article.source,
-                        style:
-                            TextStyle(fontSize: 12, color: palette.textDim),
+                        style: TextStyle(fontSize: 12, color: palette.textDim),
                       ),
                       const Spacer(),
-                      InkWell(
-                        borderRadius: BorderRadius.circular(999),
-                        onTap: () => ref
-                            .read(favoritesViewModelProvider.notifier)
-                            .toggle(article),
-                        child: Icon(Icons.bookmark,
-                            size: 22, color: palette.accent),
+                      Tooltip(
+                        message: l.navSaved,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(999),
+                          onTap: () => ref
+                              .read(favoritesViewModelProvider.notifier)
+                              .toggle(article),
+                          child: Icon(
+                            Icons.bookmark,
+                            size: 22,
+                            color: palette.accent,
+                          ),
+                        ),
                       ),
                     ],
                   ),

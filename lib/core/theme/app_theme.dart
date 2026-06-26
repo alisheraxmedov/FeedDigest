@@ -35,8 +35,6 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color iconCircle;
   final Color textDim;
 
-  Color get glow => accent.withValues(alpha: 0.18);
-
   static AppPalette of(BuildContext context) =>
       Theme.of(context).extension<AppPalette>()!;
 
@@ -115,46 +113,48 @@ class AppTheme {
   );
 
   static ThemeData dark() {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.electricCyan,
-      brightness: Brightness.dark,
-    ).copyWith(
-      primary: AppColors.electricCyan,
-      onPrimary: AppColors.onCyan,
-      surface: AppColors.darkBackground,
-      onSurface: AppColors.darkOnSurface,
-      onSurfaceVariant: AppColors.darkOnSurfaceVariant,
-      surfaceContainerLowest: AppColors.darkContainerLowest,
-      surfaceContainerLow: AppColors.darkCard,
-      surfaceContainer: AppColors.darkContainer,
-      surfaceContainerHigh: AppColors.darkContainerHigh,
-      surfaceContainerHighest: AppColors.darkContainerHighest,
-      outline: AppColors.darkOutline,
-      outlineVariant: AppColors.darkOutlineVariant,
-      error: AppColors.darkError,
-      onError: const Color(0xFF690005),
-    );
+    final scheme =
+        ColorScheme.fromSeed(
+          seedColor: AppColors.electricCyan,
+          brightness: Brightness.dark,
+        ).copyWith(
+          primary: AppColors.electricCyan,
+          onPrimary: AppColors.onCyan,
+          surface: AppColors.darkBackground,
+          onSurface: AppColors.darkOnSurface,
+          onSurfaceVariant: AppColors.darkOnSurfaceVariant,
+          surfaceContainerLowest: AppColors.darkContainerLowest,
+          surfaceContainerLow: AppColors.darkCard,
+          surfaceContainer: AppColors.darkContainer,
+          surfaceContainerHigh: AppColors.darkContainerHigh,
+          surfaceContainerHighest: AppColors.darkContainerHighest,
+          outline: AppColors.darkOutline,
+          outlineVariant: AppColors.darkOutlineVariant,
+          error: AppColors.darkError,
+          onError: const Color(0xFF690005),
+        );
     return _build(Brightness.dark, scheme, _darkPalette);
   }
 
   static ThemeData light() {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.lightCyan,
-      brightness: Brightness.light,
-    ).copyWith(
-      primary: AppColors.lightCyan,
-      onPrimary: AppColors.onLightCyan,
-      surface: AppColors.lightBackground,
-      onSurface: AppColors.lightOnSurface,
-      onSurfaceVariant: AppColors.lightOnSurfaceVariant,
-      surfaceContainerLowest: Colors.white,
-      surfaceContainerLow: AppColors.lightInputFill,
-      surfaceContainer: AppColors.lightContainer,
-      surfaceContainerHighest: AppColors.lightContainerHighest,
-      outline: const Color(0xFF6C7A7B),
-      outlineVariant: AppColors.lightBorder,
-      error: AppColors.lightError,
-    );
+    final scheme =
+        ColorScheme.fromSeed(
+          seedColor: AppColors.lightCyan,
+          brightness: Brightness.light,
+        ).copyWith(
+          primary: AppColors.lightCyan,
+          onPrimary: AppColors.onLightCyan,
+          surface: AppColors.lightBackground,
+          onSurface: AppColors.lightOnSurface,
+          onSurfaceVariant: AppColors.lightOnSurfaceVariant,
+          surfaceContainerLowest: Colors.white,
+          surfaceContainerLow: AppColors.lightInputFill,
+          surfaceContainer: AppColors.lightContainer,
+          surfaceContainerHighest: AppColors.lightContainerHighest,
+          outline: const Color(0xFF6C7A7B),
+          outlineVariant: AppColors.lightBorder,
+          error: AppColors.lightError,
+        );
     return _build(Brightness.light, scheme, _lightPalette);
   }
 
@@ -173,22 +173,36 @@ class AppTheme {
     // Body keeps Inter; display/headline switch to Outfit for the elegant,
     // geometric title rhythm (mirrors the ente design language).
     final text = inter.copyWith(
-      displayLarge: outfit.displayLarge
-          ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.5),
-      displayMedium: outfit.displayMedium
-          ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.5),
-      displaySmall: outfit.displaySmall
-          ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.3),
-      headlineLarge: outfit.headlineLarge
-          ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.3),
-      headlineMedium:
-          outfit.headlineMedium?.copyWith(fontWeight: FontWeight.w600),
-      headlineSmall:
-          outfit.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
-      titleLarge: outfit.titleLarge
-          ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.2),
-      titleMedium: outfit.titleMedium
-          ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.2),
+      displayLarge: outfit.displayLarge?.copyWith(
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.5,
+      ),
+      displayMedium: outfit.displayMedium?.copyWith(
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.5,
+      ),
+      displaySmall: outfit.displaySmall?.copyWith(
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.3,
+      ),
+      headlineLarge: outfit.headlineLarge?.copyWith(
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.3,
+      ),
+      headlineMedium: outfit.headlineMedium?.copyWith(
+        fontWeight: FontWeight.w600,
+      ),
+      headlineSmall: outfit.headlineSmall?.copyWith(
+        fontWeight: FontWeight.w600,
+      ),
+      titleLarge: outfit.titleLarge?.copyWith(
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.2,
+      ),
+      titleMedium: outfit.titleMedium?.copyWith(
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.2,
+      ),
       titleSmall: outfit.titleSmall?.copyWith(fontWeight: FontWeight.w600),
     );
     return base.copyWith(
@@ -222,8 +236,7 @@ class AppTheme {
         space: 1,
       ),
       iconTheme: IconThemeData(color: scheme.onSurfaceVariant),
-      progressIndicatorTheme:
-          ProgressIndicatorThemeData(color: palette.accent),
+      progressIndicatorTheme: ProgressIndicatorThemeData(color: palette.accent),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: palette.cardColor,
         contentTextStyle: text.bodyMedium?.copyWith(color: scheme.onSurface),
@@ -237,8 +250,10 @@ class AppTheme {
         filled: true,
         fillColor: palette.inputFill,
         hintStyle: TextStyle(color: scheme.onSurfaceVariant),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: palette.mutedBorder),

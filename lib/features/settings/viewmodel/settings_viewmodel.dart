@@ -6,8 +6,9 @@ final geminiKeyPresentProvider = FutureProvider<bool>((ref) async {
   return key != null && key.isNotEmpty;
 });
 
-final settingsActionsProvider =
-    Provider<SettingsActions>((ref) => SettingsActions(ref));
+final settingsActionsProvider = Provider<SettingsActions>(
+  (ref) => SettingsActions(ref),
+);
 
 class SettingsActions {
   SettingsActions(this._ref);

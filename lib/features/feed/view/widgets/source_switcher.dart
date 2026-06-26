@@ -11,9 +11,9 @@ import '../../../../l10n/app_localizations.dart';
 import '../../viewmodel/feed_source_viewmodel.dart';
 
 IconData sourceIcon(FeedSource source) => switch (source) {
-      FeedSource.hackerNews => Icons.local_fire_department,
-      FeedSource.devto => Icons.code,
-    };
+  FeedSource.hackerNews => Icons.local_fire_department,
+  FeedSource.devto => Icons.code,
+};
 
 void openSourcePicker(BuildContext context, WidgetRef ref) {
   final l = AppLocalizations.of(context);

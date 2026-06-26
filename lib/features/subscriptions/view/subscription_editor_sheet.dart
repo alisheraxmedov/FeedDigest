@@ -13,6 +13,7 @@ Future<void> showSubscriptionEditor(BuildContext context) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     builder: (_) => const SubscriptionEditorSheet(),
   );
 }
@@ -59,9 +60,9 @@ class _SubscriptionEditorSheetState
           children: [
             Text(
               l.topicsTitle,
-              style: TextStyle(
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontSize: 22,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: scheme.onSurface,
               ),
             ),
@@ -89,7 +90,7 @@ class _SubscriptionEditorSheetState
                       backgroundColor: palette.accent,
                       foregroundColor: palette.onAccent,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(18),
                       ),
                     ),
                     child: Text(

@@ -13,34 +13,52 @@ import 'sources/hacker_news_source.dart';
 import 'storage/hive_boxes.dart';
 import 'storage/secure_store.dart';
 
-final dioProvider = Provider<Dio>((ref) => Dio());
+final dioProvider = Provider<Dio>(
+  (ref) => Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 30),
+      sendTimeout: const Duration(seconds: 15),
+    ),
+  ),
+);
 
-final metaBoxProvider =
-    Provider<Box<dynamic>>((ref) => Hive.box<dynamic>(HiveBoxes.meta));
+final metaBoxProvider = Provider<Box<dynamic>>(
+  (ref) => Hive.box<dynamic>(HiveBoxes.meta),
+);
 
-final hackerNewsSourceProvider =
-    Provider<ArticleSource>((ref) => HackerNewsSource(ref.watch(dioProvider)));
+final hackerNewsSourceProvider = Provider<ArticleSource>(
+  (ref) => HackerNewsSource(ref.watch(dioProvider)),
+);
 
-final devtoSourceProvider =
-    Provider<ArticleSource>((ref) => DevtoSource(ref.watch(dioProvider)));
+final devtoSourceProvider = Provider<ArticleSource>(
+  (ref) => DevtoSource(ref.watch(dioProvider)),
+);
 
 final secureStoreProvider = Provider<SecureStore>((ref) => SecureStore());
 
 final settingsRepositoryProvider = Provider<SettingsRepository>(
-    (ref) => SettingsRepository(ref.watch(secureStoreProvider)));
+  (ref) => SettingsRepository(ref.watch(secureStoreProvider)),
+);
 
-final geminiRepositoryProvider = Provider<GeminiRepository>((ref) =>
-    GeminiRepository(
-        ref.watch(dioProvider), ref.watch(settingsRepositoryProvider)));
+final geminiRepositoryProvider = Provider<GeminiRepository>(
+  (ref) => GeminiRepository(
+    ref.watch(dioProvider),
+    ref.watch(settingsRepositoryProvider),
+  ),
+);
 
 final favoritesRepositoryProvider = Provider<FavoritesRepository>(
-    (ref) => FavoritesRepository(Hive.box<dynamic>(HiveBoxes.favorites)));
+  (ref) => FavoritesRepository(Hive.box<dynamic>(HiveBoxes.favorites)),
+);
 
 final summaryCacheRepositoryProvider = Provider<SummaryCacheRepository>(
-    (ref) => SummaryCacheRepository(Hive.box<dynamic>(HiveBoxes.summaries)));
+  (ref) => SummaryCacheRepository(Hive.box<dynamic>(HiveBoxes.summaries)),
+);
 
 final subscriptionRepositoryProvider = Provider<SubscriptionRepository>(
-    (ref) => SubscriptionRepository(
-          Hive.box<dynamic>(HiveBoxes.subscriptions),
-          Hive.box<dynamic>(HiveBoxes.meta),
-        ));
+  (ref) => SubscriptionRepository(
+    Hive.box<dynamic>(HiveBoxes.subscriptions),
+    Hive.box<dynamic>(HiveBoxes.meta),
+  ),
+);

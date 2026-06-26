@@ -8,9 +8,9 @@ class AiSummary {
   final String summary;
 
   factory AiSummary.fromJson(Map<String, dynamic> json) => AiSummary(
-        postId: json['postId'] as String? ?? '',
-        summary: json['summary'] as String? ?? '',
-      );
+    postId: json['postId'] as String? ?? '',
+    summary: json['summary'] as String? ?? '',
+  );
 
   Map<String, dynamic> toJson() => {'postId': postId, 'summary': summary};
 }

@@ -115,47 +115,55 @@ class _NavButton extends StatelessWidget {
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
     final color = active ? palette.accent : scheme.onSurfaceVariant;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: SizedBox(
-        width: 76,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              curve: Curves.easeOutCubic,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
-              decoration: BoxDecoration(
-                color: active ? palette.accentSoft : Colors.transparent,
-                borderRadius: BorderRadius.circular(999),
+    return Semantics(
+      button: true,
+      selected: active,
+      label: item.label,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: SizedBox(
+          width: 76,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOutCubic,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 3,
+                ),
+                decoration: BoxDecoration(
+                  color: active ? palette.accentSoft : Colors.transparent,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: HugeIcon(
+                  icon: item.icon,
+                  size: 24,
+                  color: color,
+                  strokeWidth: active ? 2.2 : 1.7,
+                ),
               ),
-              child: HugeIcon(
-                icon: item.icon,
-                size: 24,
-                color: color,
-                strokeWidth: active ? 2.2 : 1.7,
-              ),
-            ),
-            const SizedBox(height: 3),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 2),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  item.label,
-                  maxLines: 1,
-                  softWrap: false,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-                    color: color,
+              const SizedBox(height: 3),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    item.label,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                      color: color,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

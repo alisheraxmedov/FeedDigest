@@ -27,14 +27,15 @@ class LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-        child: Lottie.asset(
-          asset,
-          width: size,
-          height: size,
-          repeat: true,
-          errorBuilder: (_, _, _) => const SizedBox.shrink(),
-        ),
-      );
+    child: Lottie.asset(
+      asset,
+      width: size,
+      height: size,
+      repeat: true,
+      errorBuilder: (_, _, _) =>
+          const Center(child: CircularProgressIndicator()),
+    ),
+  );
 }
 
 /// Error state: a Lottie illustration, a muted message and an optional retry
@@ -71,7 +72,11 @@ class ErrorView extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, height: 1.4, color: palette.textDim),
+              style: TextStyle(
+                fontSize: 15,
+                height: 1.4,
+                color: palette.textDim,
+              ),
             ),
             if (onRetry != null) ...[
               const SizedBox(height: 16),
@@ -79,8 +84,10 @@ class ErrorView extends StatelessWidget {
                 style: FilledButton.styleFrom(
                   backgroundColor: palette.accent,
                   foregroundColor: palette.onAccent,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -135,16 +142,20 @@ class EmptyView extends StatelessWidget {
               message,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: scheme.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
+                color: scheme.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 8),
               Text(
                 subtitle!,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, height: 1.4, color: palette.textDim),
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.4,
+                  color: palette.textDim,
+                ),
               ),
             ],
           ],

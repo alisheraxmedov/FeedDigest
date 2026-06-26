@@ -170,16 +170,17 @@ class CategoryChip extends StatelessWidget {
           border: Border.all(
             color: selected ? palette.accent : palette.mutedBorder,
           ),
-          boxShadow: null,
         ),
         child: Row(
           mainAxisSize: width == null ? MainAxisSize.min : MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
-              Icon(icon,
-                  size: 16,
-                  color: selected ? palette.accentText : palette.textDim),
+              Icon(
+                icon,
+                size: 16,
+                color: selected ? palette.accentText : palette.textDim,
+              ),
               const SizedBox(width: 6),
             ],
             width == null ? labelText : Flexible(child: labelText),
@@ -213,8 +214,10 @@ class NeonBadge extends StatelessWidget {
             Container(
               width: 8,
               height: 8,
-              decoration:
-                  BoxDecoration(color: palette.accent, shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: palette.accent,
+                shape: BoxShape.circle,
+              ),
             ),
             const SizedBox(width: 6),
           ],
@@ -259,11 +262,11 @@ class SettingsTile extends StatelessWidget {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontSize: 18,
-                        height: 1.2,
-                        fontWeight: FontWeight.w600,
-                        color: scheme.onSurface,
-                      ),
+                    fontSize: 18,
+                    height: 1.2,
+                    fontWeight: FontWeight.w600,
+                    color: scheme.onSurface,
+                  ),
                 ),
                 if (value != null) ...[
                   const SizedBox(height: 2),
@@ -446,10 +449,10 @@ class _OptionPickerSheet<T> extends StatelessWidget {
                   child: Text(
                     title,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                          color: scheme.onSurface,
-                        ),
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurface,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -524,8 +527,7 @@ class _OptionTile<T> extends StatelessWidget {
                   ),
                 ),
               ),
-              if (selected)
-                Icon(Icons.check_circle, color: palette.accent),
+              if (selected) Icon(Icons.check_circle, color: palette.accent),
             ],
           ),
         ),

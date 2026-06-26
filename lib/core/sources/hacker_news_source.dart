@@ -19,23 +19,35 @@ class HackerNewsSource implements ArticleSource {
   FeedSource get kind => FeedSource.hackerNews;
 
   @override
-  Future<List<Article>> topPosts(String topic,
-          {int limit = AppConfig.feedLimit,
-          int page = 1,
-          FeedSort sort = FeedSort.newest}) =>
-      _fetch(topic, limit, page, sort);
+  Future<List<Article>> topPosts(
+    String topic, {
+    int limit = AppConfig.feedLimit,
+    int page = 1,
+    FeedSort sort = FeedSort.newest,
+  }) => _fetch(topic, limit, page, sort);
 
   @override
-  Future<List<Article>> search(String query,
-          {int limit = AppConfig.searchLimit}) =>
-      _fetch(query, limit, 1, FeedSort.popular);
+  Future<List<Article>> search(
+    String query, {
+    int limit = AppConfig.searchLimit,
+  }) => _fetch(query, limit, 1, FeedSort.popular);
+
+  // Hacker News carries no full article text in the API; the feed body is all
+  // there is.
+  @override
+  Future<String> fullBody(Article article) async => article.body;
 
   Future<List<Article>> _fetch(
-      String query, int limit, int page, FeedSort sort) async {
+    String query,
+    int limit,
+    int page,
+    FeedSort sort,
+  ) async {
     // search_by_date returns the most recent stories first; search ranks by
     // relevance/popularity. Algolia pages are 0-indexed.
-    final path =
-        sort == FeedSort.newest ? '/api/v1/search_by_date' : '/api/v1/search';
+    final path = sort == FeedSort.newest
+        ? '/api/v1/search_by_date'
+        : '/api/v1/search';
     final resp = await _dio.getUri<dynamic>(
       Uri.https(AppConfig.hackerNewsHost, path, {
         'query': query,
@@ -75,8 +87,10 @@ class HackerNewsSource implements ArticleSource {
       source: FeedSource.hackerNews.label,
       score: (hit['points'] as num?)?.toInt() ?? 0,
       commentCount: (hit['num_comments'] as num?)?.toInt() ?? 0,
-      publishedAt:
-          DateTime.fromMillisecondsSinceEpoch(createdAt * 1000, isUtc: true),
+      publishedAt: DateTime.fromMillisecondsSinceEpoch(
+        createdAt * 1000,
+        isUtc: true,
+      ),
       imageUrl: '',
     );
   }
