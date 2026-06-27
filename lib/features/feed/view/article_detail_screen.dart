@@ -153,14 +153,19 @@ class _Banner extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: article.hasImage
-            ? CachedNetworkImage(
-                imageUrl: article.imageUrl,
+            ? Container(
                 width: double.infinity,
                 height: 200,
-                fit: BoxFit.cover,
-                memCacheHeight: (200 * MediaQuery.devicePixelRatioOf(context))
-                    .round(),
-                errorWidget: (_, _, _) => _faviconBanner(palette),
+                alignment: Alignment.center,
+                child: CachedNetworkImage(
+                  imageUrl: article.imageUrl,
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.contain,
+                  memCacheHeight: (200 * MediaQuery.devicePixelRatioOf(context))
+                      .round(),
+                  errorWidget: (_, _, _) => _faviconBanner(palette),
+                ),
               )
             : _faviconBanner(palette),
       ),
