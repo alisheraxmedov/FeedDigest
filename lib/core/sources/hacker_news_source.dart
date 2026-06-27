@@ -21,17 +21,19 @@ class HackerNewsSource implements ArticleSource {
   @override
   Future<List<Article>> topPosts(String topic,
           {int limit = AppConfig.feedLimit,
+          int page = 1,
           FeedSort sort = FeedSort.newest}) =>
-      _fetch(topic, limit, sort);
+      _fetch(topic, limit, page, sort);
 
   @override
   Future<List<Article>> search(String query,
           {int limit = AppConfig.searchLimit}) =>
-      _fetch(query, limit, FeedSort.popular);
+      _fetch(query, limit, 1, FeedSort.popular);
 
-  Future<List<Article>> _fetch(String query, int limit, FeedSort sort) async {
+  Future<List<Article>> _fetch(
+      String query, int limit, int page, FeedSort sort) async {
     // search_by_date returns the most recent stories first; search ranks by
-    // relevance/popularity.
+    // relevance/popularity. Algolia pages are 0-indexed.
     final path =
         sort == FeedSort.newest ? '/api/v1/search_by_date' : '/api/v1/search';
     final resp = await _dio.getUri<dynamic>(
@@ -39,6 +41,7 @@ class HackerNewsSource implements ArticleSource {
         'query': query,
         'tags': 'story',
         'hitsPerPage': '$limit',
+        'page': '${page < 1 ? 0 : page - 1}',
       }),
       options: Options(responseType: ResponseType.json),
     );

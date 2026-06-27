@@ -28,9 +28,11 @@ class ArticleDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
-    ref.watch(favoritesViewModelProvider);
-    final isFav =
-        ref.read(favoritesViewModelProvider.notifier).isFavorite(article.id);
+    final isFav = ref.watch(
+      favoritesViewModelProvider.select(
+        (favs) => favs.any((a) => a.id == article.id),
+      ),
+    );
     final bodyAsync = ref.watch(articleBodyProvider(article));
     return Scaffold(
       appBar: AppBar(
@@ -60,13 +62,13 @@ class ArticleDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 Text(
                   article.title,
-                  style: TextStyle(
-                    fontSize: 21,
-                    height: 1.25,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.2,
-                    color: scheme.onSurface,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 21,
+                        height: 1.25,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.2,
+                        color: scheme.onSurface,
+                      ),
                 ),
                 const SizedBox(height: 16),
                 _AuthorRow(article: article),
@@ -154,6 +156,8 @@ class _Banner extends StatelessWidget {
                 width: double.infinity,
                 height: 200,
                 fit: BoxFit.cover,
+                memCacheHeight:
+                    (200 * MediaQuery.devicePixelRatioOf(context)).round(),
                 errorWidget: (_, _, _) => _faviconBanner(palette),
               )
             : _faviconBanner(palette),

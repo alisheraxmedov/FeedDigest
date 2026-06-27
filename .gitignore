@@ -88,3 +88,4 @@ app.*.map.json
 # Local design references and handoff notes (not tracked)
 stitch_feeddigest_ai_reader/
 HANDOFF.md
+logs.txt

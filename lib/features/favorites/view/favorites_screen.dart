@@ -25,12 +25,11 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final scheme = Theme.of(context).colorScheme;
     final favorites = ref.watch(favoritesViewModelProvider);
     if (favorites.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: Text(l.savedTitle)),
-        body: EmptyView(message: l.savedEmpty),
+        body: EmptyView(message: l.savedEmpty, asset: AppAnim.savedEmpty),
       );
     }
     final topics = <String>{for (final a in favorites) a.topic}.toList();
@@ -39,14 +38,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
         ? favorites
         : favorites.where((a) => a.topic == _filter).toList();
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l.savedTitle),
-        titleTextStyle: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w700,
-          color: scheme.onSurface,
-        ),
-      ),
+      appBar: AppBar(title: Text(l.savedTitle)),
       body: Column(
         children: [
           const SizedBox(height: 8),
@@ -83,10 +75,7 @@ class _SavedCard extends ConsumerWidget {
     final l = AppLocalizations.of(context);
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
-    final snippet = article.body
-        .replaceAll(RegExp(r'<[^>]+>'), ' ')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
+    final snippet = Formatters.plainSnippet(article.body);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: NeonCard(
@@ -123,12 +112,12 @@ class _SavedCard extends ConsumerWidget {
                     article.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 18,
-                      height: 1.25,
-                      fontWeight: FontWeight.w700,
-                      color: scheme.onSurface,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: 18,
+                          height: 1.25,
+                          fontWeight: FontWeight.w600,
+                          color: scheme.onSurface,
+                        ),
                   ),
                   if (snippet.isNotEmpty) ...[
                     const SizedBox(height: 6),
@@ -178,6 +167,7 @@ class _Cover extends StatelessWidget {
     final palette = AppPalette.of(context);
     const radius = BorderRadius.vertical(top: Radius.circular(kCardRadius));
     if (article.hasImage) {
+      final dpr = MediaQuery.devicePixelRatioOf(context);
       return ClipRRect(
         borderRadius: radius,
         child: CachedNetworkImage(
@@ -185,6 +175,7 @@ class _Cover extends StatelessWidget {
           width: double.infinity,
           height: 160,
           fit: BoxFit.cover,
+          memCacheHeight: (160 * dpr).round(),
           errorWidget: (_, _, _) => _faviconCover(palette, radius),
         ),
       );

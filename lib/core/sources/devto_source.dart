@@ -21,13 +21,14 @@ class DevtoSource implements ArticleSource {
   @override
   Future<List<Article>> topPosts(String topic,
           {int limit = AppConfig.feedLimit,
+          int page = 1,
           FeedSort sort = FeedSort.newest}) =>
-      _fetch(topic, limit, sort);
+      _fetch(topic, limit, page, sort);
 
   @override
   Future<List<Article>> search(String query,
           {int limit = AppConfig.searchLimit}) =>
-      _fetch(query, limit, FeedSort.popular);
+      _fetch(query, limit, 1, FeedSort.popular);
 
   /// Fetches the complete article body via the single-article endpoint
   /// (`/api/articles/{id}`). The list endpoint only carries a short
@@ -48,12 +49,15 @@ class DevtoSource implements ArticleSource {
     return '';
   }
 
-  Future<List<Article>> _fetch(String tag, int limit, FeedSort sort) async {
+  Future<List<Article>> _fetch(
+      String tag, int limit, int page, FeedSort sort) async {
     // Without `top` the Forem API returns the most recently published
     // articles; with `top=<days>` it returns the highest rated of that window.
+    // Forem pages are 1-indexed.
     final params = {
       'tag': tag.toLowerCase(),
       'per_page': '$limit',
+      'page': '${page < 1 ? 1 : page}',
       if (sort == FeedSort.popular) 'top': '${AppConfig.devtoTopDays}',
     };
     final resp = await _dio.getUri<dynamic>(

@@ -95,13 +95,19 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               ),
             Expanded(
               child: _query.isEmpty
-                  ? EmptyView(message: l.searchPrompt)
+                  ? EmptyView(
+                      message: l.searchPrompt,
+                      asset: AppAnim.searchEmpty,
+                    )
                   : results.when(
                       loading: () => const LoadingView(),
                       error: (e, _) => ErrorView(message: '$e'),
                       data: (articles) {
                         if (articles.isEmpty) {
-                          return EmptyView(message: l.searchEmpty);
+                          return EmptyView(
+                            message: l.searchEmpty,
+                            asset: AppAnim.searchEmpty,
+                          );
                         }
                         return ListView.builder(
                           padding: const EdgeInsets.only(bottom: 96),
@@ -129,10 +135,7 @@ class SearchResultCard extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
-    final snippet = article.body
-        .replaceAll(RegExp(r'<[^>]+>'), ' ')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
+    final snippet = Formatters.plainSnippet(article.body);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: NeonCard(
@@ -170,12 +173,12 @@ class SearchResultCard extends StatelessWidget {
                     article.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 1.25,
-                      fontWeight: FontWeight.w600,
-                      color: scheme.onSurface,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontSize: 16,
+                          height: 1.25,
+                          fontWeight: FontWeight.w600,
+                          color: scheme.onSurface,
+                        ),
                   ),
                   if (snippet.isNotEmpty) ...[
                     const SizedBox(height: 4),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
@@ -13,6 +14,7 @@ Future<void> showSummarySheet(BuildContext context, Article article) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     builder: (_) => SummarySheet(article: article),
   );
 }
@@ -38,14 +40,29 @@ class SummarySheet extends ConsumerWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: palette.mutedBorder,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ),
             Row(
               children: [
-                Icon(Icons.auto_awesome, size: 18, color: palette.accent),
+                HugeIcon(
+                  icon: HugeIcons.strokeRoundedAiMagic,
+                  color: palette.accent,
+                  size: 18,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   l.aiSummary.toUpperCase(),
@@ -61,12 +78,12 @@ class SummarySheet extends ConsumerWidget {
             const SizedBox(height: 12),
             Text(
               article.title,
-              style: TextStyle(
-                fontSize: 19,
-                height: 1.25,
-                fontWeight: FontWeight.w700,
-                color: scheme.onSurface,
-              ),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: 19,
+                    height: 1.25,
+                    fontWeight: FontWeight.w600,
+                    color: scheme.onSurface,
+                  ),
             ),
             const SizedBox(height: 16),
             Flexible(
@@ -76,10 +93,11 @@ class SummarySheet extends ConsumerWidget {
                 padding: const EdgeInsets.all(16),
                 child: summary.when(
                   loading: () => const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 24),
-                    child: LoadingView(),
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: LoadingView(asset: AppAnim.aiThinking, size: 140),
                   ),
                   error: (e, _) => ErrorView(
+                    compact: true,
                     message: _errorText(e, l),
                     onRetry: () =>
                         ref.invalidate(summaryViewModelProvider(article)),
