@@ -167,4 +167,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sortPopular => 'Популярные';
+
+  @override
+  String get feedLoadError =>
+      'Не удалось загрузить статьи. Проверьте подключение и повторите.';
+
+  @override
+  String get summaryBlocked => 'Заблокировано фильтром безопасности AI';
 }

@@ -5,12 +5,12 @@ import 'package:feeddigest/core/widgets/state_views.dart';
 import 'package:feeddigest/l10n/app_localizations.dart';
 
 Widget _wrap(Widget child) => MaterialApp(
-      theme: AppTheme.dark(),
-      locale: const Locale('uz'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: child),
-    );
+  theme: AppTheme.dark(),
+  locale: const Locale('uz'),
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  supportedLocales: AppLocalizations.supportedLocales,
+  home: Scaffold(body: child),
+);
 
 void main() {
   testWidgets('EmptyView shows its message', (tester) async {

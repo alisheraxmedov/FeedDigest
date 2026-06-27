@@ -1,5 +1,9 @@
 # FeedDigest — Ma'lumot manbasi muammosi va yechimlar rejasi
 
+> ✅ HAL QILINDI (2026-06-26): Reddit butunlay olib tashlandi. App endi Hacker News
+> (Algolia Search API) va dev.to (Forem API) manbalaridan foydalanadi. Quyidagi
+> hujjat tarixiy (arxiv) sifatida saqlanadi.
+>
 > Holat: 2026-06-20 da yozildi. Reddit `.json` scraping ishlamayapti (403 Blocked).
 
 ---

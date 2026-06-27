@@ -4,15 +4,12 @@ import '../../../models/subscription.dart';
 
 final subscriptionsViewModelProvider =
     NotifierProvider<SubscriptionsViewModel, List<Subscription>>(
-        SubscriptionsViewModel.new);
+      SubscriptionsViewModel.new,
+    );
 
 class SubscriptionsViewModel extends Notifier<List<Subscription>> {
   @override
-  List<Subscription> build() {
-    final repo = ref.watch(subscriptionRepositoryProvider);
-    repo.seedDefaultsIfNeeded();
-    return repo.all();
-  }
+  List<Subscription> build() => ref.watch(subscriptionRepositoryProvider).all();
 
   bool isSubscribed(String topic) =>
       ref.read(subscriptionRepositoryProvider).isSubscribed(topic);

@@ -1,56 +1,78 @@
 # FeedDigest
 
-A developer news reading application — aggregating topics from **dev.to** and **Hacker News**, with search and short summaries (post + comments separately) using **AI**.
+A developer-news reader that aggregates topics from **Hacker News** and
+**dev.to**, with search and on-demand **AI summaries** (Google Gemini) so you can
+get the gist of an article quickly. Built with Flutter + Riverpod 3 (MVVM).
 
 ## Features
 
-- 🏠 **Home page** — combined feed of your favorite dev.to and Hacker News topics.
-- ➕ **Subscribe / unsubscribe** — manage your topics and tags in the settings.
-- 📰 **Multiple Sources** — reads articles from dev.to API and Hacker News API.
-- 🔀 Sorting: latest / top / rising, infinite scroll, pull-to-refresh.
-- 🖼️ Developer-friendly cards — title, source, score, comments count.
-- 📄 Post detail screen — full text + top comments.
-- ✨ **AI Summary** — short summary of the post and comments (separately) so you can get the gist quickly.
-- 🔎 Search — search articles across supported platforms (with debounce).
-- ⚙️ Settings — theme, add/edit/delete/reorder topics.
-- 💾 Topics, theme, and session are saved locally on the device.
-
-> The app also works fully with **mock data** without keys (demo mode).
+- 🏠 **Home feed** — your subscribed topics from Hacker News and dev.to, merged
+  and de-duplicated.
+- 🔀 **Source switch & sort** — pick Hacker News or dev.to; sort by newest or
+  popular.
+- 🔢 **Pagination** — a numbered pager at the end of the feed (`‹ 1 2 3 ›`).
+- 🔁 **Pull-to-refresh** on the feed.
+- ➕ **Topics** — subscribe / unsubscribe to the tags that build your feed.
+- 📄 **Article detail** — full text rendered as Markdown (dev.to) or HTML
+  (Hacker News), with a link to the original.
+- ✨ **AI summary** — a detailed Gemini summary of the article, in your chosen
+  language (Uzbek / Russian / English).
+- 🔎 **Search** — search articles on the active source.
+- 💾 **Saved** — bookmark articles, filterable by topic.
+- ⚙️ **Settings** — Gemini API key, source, app language, AI-summary language,
+  theme (system / light / dark).
+- 🎨 Polished UI — Outfit + Inter typography, Lottie illustrations for
+  empty/loading/error states, and localized into Uzbek, Russian and English.
+- Topics, theme and language are persisted locally (Hive); the Gemini key is kept
+  in secure storage.
 
 ## Architecture
 
-Feature-first + **Riverpod 3**:
+Feature-first **MVVM** on **Riverpod 3** (no code generation):
 
 ```text
 lib/
-  core/        config, theme, network, utils, models, widgets
+  core/        config, prefs, providers (DI), sources (HN + dev.to),
+               storage (Hive + secure store), theme, widgets
+  data/        repositories (favorites, gemini, settings, subscription,
+               summary cache)
   features/
-    feed/      data(models, repository, devto_api, hn_api, mock) · application · presentation
-    detail/    presentation (post + comments)
-    search/    application · presentation
-    settings/  data(prefs) · application · presentation
-    summary/   data(ai_summary) · application · presentation
-    shell/     presentation (bottom nav)
+    feed/      view/ (+ widgets) · viewmodel/
+    search/    view/ · viewmodel/
+    favorites/ view/ · viewmodel/
+    settings/  view/ · viewmodel/
+    summary/   view/ · viewmodel/
+    subscriptions/ view/ · viewmodel/
+    shell/     view/ (bottom nav)
+  l10n/        ARB files (en / ru / uz)
+  models/      Article, AiSummary, Subscription
 ```
 
-Each feature has three layers: **data → application (providers) → presentation**.
-If there is no real API, providers automatically select mock implementation.
+- A **View** (`ConsumerWidget`) renders state and forwards intents; its
+  **ViewModel** (a Riverpod notifier) holds the logic and calls repositories.
+- `ArticleSource` is the common interface; `HackerNewsSource` and `DevtoSource`
+  implement it. Networking is `dio`; persistence is `hive_ce` +
+  `flutter_secure_storage`.
 
-## Getting Started
+## Getting started
 
 ```bash
 flutter pub get
 flutter run
 ```
 
-- The app connects to public APIs directly, so no `.env` or API keys are required.
-- If network APIs fail, the feed can gracefully fall back to **mock** data.
+- The Hacker News and dev.to APIs are public — no key required to browse.
+- For AI summaries, open **Settings** and paste a Gemini API key
+  (https://aistudio.google.com/apikey). The key is stored in secure storage.
 
 ## Test
 
 ```bash
-flutter analyze
-flutter test
+flutter analyze   # clean
+flutter test      # unit + widget tests
 ```
 
-> Note: The code is written and compilation/testing is clean, but live APIs will be verified after you run the app.
+## Changelog
+
+See [`CHANGESLOGS/CHANGELOG.md`](CHANGESLOGS/CHANGELOG.md) for the full history of
+changes.

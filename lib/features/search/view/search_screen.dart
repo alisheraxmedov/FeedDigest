@@ -54,16 +54,21 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               child: TextField(
                 controller: _controller,
                 textInputAction: TextInputAction.search,
+                onChanged: (_) => setState(() {}),
                 onSubmitted: _submit,
                 decoration: InputDecoration(
                   hintText: l.searchHint,
-                  prefixIcon:
-                      Icon(Icons.search, color: scheme.onSurfaceVariant),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: scheme.onSurfaceVariant,
+                  ),
                   suffixIcon: _controller.text.isEmpty
                       ? null
                       : IconButton(
-                          icon: Icon(Icons.close,
-                              color: scheme.onSurfaceVariant),
+                          icon: Icon(
+                            Icons.close,
+                            color: scheme.onSurfaceVariant,
+                          ),
                           onPressed: _clear,
                         ),
                 ),
@@ -101,7 +106,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     )
                   : results.when(
                       loading: () => const LoadingView(),
-                      error: (e, _) => ErrorView(message: '$e'),
+                      error: (e, _) => ErrorView(message: l.feedLoadError),
                       data: (articles) {
                         if (articles.isEmpty) {
                           return EmptyView(
@@ -110,7 +115,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           );
                         }
                         return ListView.builder(
-                          padding: const EdgeInsets.only(bottom: 96),
+                          padding: EdgeInsets.only(
+                            bottom:
+                                64 +
+                                MediaQuery.viewPaddingOf(context).bottom +
+                                16,
+                          ),
                           itemCount: articles.length,
                           itemBuilder: (_, i) =>
                               SearchResultCard(article: articles[i]),
@@ -158,12 +168,13 @@ class SearchResultCard extends StatelessWidget {
                     children: [
                       TopicBadge(topic: article.topic),
                       const Spacer(),
-                      Icon(Icons.schedule,
-                          size: 13, color: palette.textDim),
+                      Icon(Icons.schedule, size: 13, color: palette.textDim),
                       const SizedBox(width: 4),
                       Text(
-                        Formatters.timeAgo(article.publishedAt,
-                            nowLabel: l.timeNow),
+                        Formatters.timeAgo(
+                          article.publishedAt,
+                          nowLabel: l.timeNow,
+                        ),
                         style: TextStyle(fontSize: 12, color: palette.textDim),
                       ),
                     ],
@@ -174,11 +185,11 @@ class SearchResultCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontSize: 16,
-                          height: 1.25,
-                          fontWeight: FontWeight.w600,
-                          color: scheme.onSurface,
-                        ),
+                      fontSize: 16,
+                      height: 1.25,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurface,
+                    ),
                   ),
                   if (snippet.isNotEmpty) ...[
                     const SizedBox(height: 4),
@@ -191,10 +202,7 @@ class SearchResultCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       l.readingTime(Formatters.readingMinutes(snippet)),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: palette.accentText,
-                      ),
+                      style: TextStyle(fontSize: 12, color: palette.accentText),
                     ),
                   ],
                 ],

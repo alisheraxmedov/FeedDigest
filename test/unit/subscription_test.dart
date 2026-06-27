@@ -10,20 +10,28 @@ void main() {
   });
 
   test('create keeps a given label', () {
-    final s = Subscription.create('rust',
-        label: 'Rust lang', createdAt: DateTime.utc(2024));
+    final s = Subscription.create(
+      'rust',
+      label: 'Rust lang',
+      createdAt: DateTime.utc(2024),
+    );
     expect(s.label, 'Rust lang');
   });
 
   test('round-trips through json', () {
-    final s = Subscription.create('rust',
-        label: 'Rust', createdAt: DateTime.utc(2024, 1, 1));
+    final s = Subscription.create(
+      'rust',
+      label: 'Rust',
+      createdAt: DateTime.utc(2024, 1, 1),
+    );
     final back = Subscription.fromJson(s.toJson());
     expect(back.id, 'rust');
     expect(back.label, 'Rust');
     expect(back.topic, 'rust');
-    expect(back.createdAt.millisecondsSinceEpoch,
-        DateTime.utc(2024, 1, 1).millisecondsSinceEpoch);
+    expect(
+      back.createdAt.millisecondsSinceEpoch,
+      DateTime.utc(2024, 1, 1).millisecondsSinceEpoch,
+    );
   });
 
   test('equality keyed on id (case-insensitive topic)', () {

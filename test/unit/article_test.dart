@@ -12,16 +12,23 @@ void main() {
   test('hasImage requires an http url', () {
     expect(Article.fromJson(const {'imageUrl': 'self'}).hasImage, false);
     expect(
-        Article.fromJson(const {'imageUrl': 'https://x/y.jpg'}).hasImage, true);
+      Article.fromJson(const {'imageUrl': 'https://x/y.jpg'}).hasImage,
+      true,
+    );
   });
 
   test('link prefers url then falls back to comments', () {
     expect(
-        Article.fromJson(const {'url': 'https://a', 'commentsUrl': 'https://b'})
-            .link,
-        'https://a');
-    expect(Article.fromJson(const {'commentsUrl': 'https://b'}).link,
-        'https://b');
+      Article.fromJson(const {
+        'url': 'https://a',
+        'commentsUrl': 'https://b',
+      }).link,
+      'https://a',
+    );
+    expect(
+      Article.fromJson(const {'commentsUrl': 'https://b'}).link,
+      'https://b',
+    );
   });
 
   test('round-trips through json', () {

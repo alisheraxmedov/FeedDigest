@@ -168,4 +168,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sortPopular => 'Popular';
+
+  @override
+  String get feedLoadError =>
+      'Couldn\'t load articles. Check your connection and try again.';
+
+  @override
+  String get summaryBlocked => 'Blocked by the AI safety filter';
 }

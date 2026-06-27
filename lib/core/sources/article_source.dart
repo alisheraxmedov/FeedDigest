@@ -17,9 +17,9 @@ enum FeedSource {
   final String label;
 
   static FeedSource fromId(String? id) => FeedSource.values.firstWhere(
-        (source) => source.id == id,
-        orElse: () => FeedSource.hackerNews,
-      );
+    (source) => source.id == id,
+    orElse: () => FeedSource.hackerNews,
+  );
 }
 
 enum FeedSort {
@@ -31,9 +31,9 @@ enum FeedSort {
   final String id;
 
   static FeedSort fromId(String? id) => FeedSort.values.firstWhere(
-        (sort) => sort.id == id,
-        orElse: () => FeedSort.newest,
-      );
+    (sort) => sort.id == id,
+    orElse: () => FeedSort.newest,
+  );
 }
 
 abstract class ArticleSource {
@@ -46,5 +46,13 @@ abstract class ArticleSource {
     FeedSort sort = FeedSort.newest,
   });
 
-  Future<List<Article>> search(String query, {int limit = AppConfig.searchLimit});
+  Future<List<Article>> search(
+    String query, {
+    int limit = AppConfig.searchLimit,
+  });
+
+  /// Full readable body for an article. Sources whose feed carries only a short
+  /// description override this to fetch the complete text; the default returns
+  /// whatever body the feed already provided.
+  Future<String> fullBody(Article article) async => article.body;
 }

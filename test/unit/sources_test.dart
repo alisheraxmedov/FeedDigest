@@ -15,12 +15,8 @@ void main() {
           'num_comments': 713,
           'created_at_i': 1700000000,
         },
-        {
-          'objectID': '222',
-          'title': '',
-          'points': 10,
-        },
-      ]
+        {'objectID': '222', 'title': '', 'points': 10},
+      ],
     };
     final articles = HackerNewsSource.parse(data, 'flutter');
     expect(articles.length, 1);
@@ -37,8 +33,8 @@ void main() {
   test('HackerNewsSource.parse uses comments url when story has no url', () {
     final data = {
       'hits': [
-        {'objectID': '333', 'title': 'Ask HN', 'points': 5}
-      ]
+        {'objectID': '333', 'title': 'Ask HN', 'points': 5},
+      ],
     };
     final a = HackerNewsSource.parse(data, 'ask').first;
     expect(a.url, 'https://news.ycombinator.com/item?id=333');

@@ -4,9 +4,8 @@ import '../../../core/providers.dart';
 import '../../../models/ai_summary.dart';
 import '../../../models/article.dart';
 
-final summaryViewModelProvider =
-    AsyncNotifierProvider.family<SummaryViewModel, String, Article>(
-        SummaryViewModel.new);
+final summaryViewModelProvider = AsyncNotifierProvider.autoDispose
+    .family<SummaryViewModel, String, Article>(SummaryViewModel.new);
 
 class SummaryViewModel extends AsyncNotifier<String> {
   SummaryViewModel(this.article);

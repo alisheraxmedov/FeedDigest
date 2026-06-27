@@ -25,8 +25,9 @@ class SummarySheet extends ConsumerWidget {
   final Article article;
 
   String _errorText(Object error, AppLocalizations l) {
-    if (error is GeminiException && error.code == 'no_key') {
-      return l.summaryNoKey;
+    if (error is GeminiException) {
+      if (error.code == 'no_key') return l.summaryNoKey;
+      if (error.code == 'blocked') return l.summaryBlocked;
     }
     return l.summaryFailed;
   }
@@ -79,11 +80,11 @@ class SummarySheet extends ConsumerWidget {
             Text(
               article.title,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontSize: 19,
-                    height: 1.25,
-                    fontWeight: FontWeight.w600,
-                    color: scheme.onSurface,
-                  ),
+                fontSize: 19,
+                height: 1.25,
+                fontWeight: FontWeight.w600,
+                color: scheme.onSurface,
+              ),
             ),
             const SizedBox(height: 16),
             Flexible(

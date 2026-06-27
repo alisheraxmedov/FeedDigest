@@ -21,13 +21,14 @@ enum AppLanguage {
   Locale get locale => Locale(code);
 
   static AppLanguage fromCode(String? code) => AppLanguage.values.firstWhere(
-        (lang) => lang.code == code,
-        orElse: () => AppLanguage.uz,
-      );
+    (lang) => lang.code == code,
+    orElse: () => AppLanguage.uz,
+  );
 }
 
-final localeProvider =
-    NotifierProvider<LocaleController, AppLanguage>(LocaleController.new);
+final localeProvider = NotifierProvider<LocaleController, AppLanguage>(
+  LocaleController.new,
+);
 
 class LocaleController extends Notifier<AppLanguage> {
   static const String _key = 'app_locale';
@@ -44,8 +45,9 @@ class LocaleController extends Notifier<AppLanguage> {
   }
 }
 
-final themeModeProvider =
-    NotifierProvider<ThemeModeController, ThemeMode>(ThemeModeController.new);
+final themeModeProvider = NotifierProvider<ThemeModeController, ThemeMode>(
+  ThemeModeController.new,
+);
 
 class ThemeModeController extends Notifier<ThemeMode> {
   static const String _key = 'theme_mode';
@@ -61,15 +63,16 @@ class ThemeModeController extends Notifier<ThemeMode> {
   }
 
   static ThemeMode _decode(String? value) => switch (value) {
-        'light' => ThemeMode.light,
-        'system' => ThemeMode.system,
-        _ => ThemeMode.dark,
-      };
+    'light' => ThemeMode.light,
+    'system' => ThemeMode.system,
+    _ => ThemeMode.dark,
+  };
 }
 
 final aiSummaryLangProvider =
     NotifierProvider<AiSummaryLangController, AppLanguage?>(
-        AiSummaryLangController.new);
+      AiSummaryLangController.new,
+    );
 
 class AiSummaryLangController extends Notifier<AppLanguage?> {
   static const String _key = 'ai_summary_lang';
@@ -89,4 +92,5 @@ class AiSummaryLangController extends Notifier<AppLanguage?> {
 }
 
 final effectiveAiLangProvider = Provider<AppLanguage>(
-    (ref) => ref.watch(aiSummaryLangProvider) ?? ref.watch(localeProvider));
+  (ref) => ref.watch(aiSummaryLangProvider) ?? ref.watch(localeProvider),
+);

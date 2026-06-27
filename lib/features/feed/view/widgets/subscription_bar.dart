@@ -20,34 +20,42 @@ class SubscriptionBar extends ConsumerWidget {
       allLabel: l.chipAll,
       selected: selected,
       items: [
-        for (final sub in subs) TopicChipItem(label: sub.label, value: sub.topic),
+        for (final sub in subs)
+          TopicChipItem(label: sub.label, value: sub.topic),
       ],
       onSelected: (value) =>
           ref.read(selectedTopicProvider.notifier).select(value),
-      trailing: _AddTopicButton(onTap: () => showSubscriptionEditor(context)),
+      trailing: _AddTopicButton(
+        tooltip: l.topicsTitle,
+        onTap: () => showSubscriptionEditor(context),
+      ),
     );
   }
 }
 
 class _AddTopicButton extends StatelessWidget {
-  const _AddTopicButton({required this.onTap});
+  const _AddTopicButton({required this.onTap, required this.tooltip});
 
   final VoidCallback onTap;
+  final String tooltip;
 
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
-    return InkWell(
-      borderRadius: BorderRadius.circular(999),
-      onTap: onTap,
-      child: Container(
-        width: 34,
-        height: 34,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: palette.mutedBorder),
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onTap,
+        child: Container(
+          width: 34,
+          height: 34,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: palette.mutedBorder),
+          ),
+          child: Icon(Icons.add, size: 18, color: palette.textDim),
         ),
-        child: Icon(Icons.add, size: 18, color: palette.textDim),
       ),
     );
   }

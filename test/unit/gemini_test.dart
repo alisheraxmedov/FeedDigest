@@ -8,17 +8,19 @@ void main() {
         {
           'content': {
             'parts': [
-              {'text': '  Bu xulosa.  '}
-            ]
-          }
-        }
-      ]
+              {'text': '  Bu xulosa.  '},
+            ],
+          },
+        },
+      ],
     };
     expect(GeminiRepository.extractText(data), 'Bu xulosa.');
   });
 
   test('extractText throws on bad shape', () {
-    expect(() => GeminiRepository.extractText(const {}),
-        throwsA(isA<GeminiException>()));
+    expect(
+      () => GeminiRepository.extractText(const {}),
+      throwsA(isA<GeminiException>()),
+    );
   });
 }

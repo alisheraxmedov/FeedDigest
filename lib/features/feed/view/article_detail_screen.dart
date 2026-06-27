@@ -63,22 +63,24 @@ class ArticleDetailScreen extends ConsumerWidget {
                 Text(
                   article.title,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontSize: 21,
-                        height: 1.25,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: -0.2,
-                        color: scheme.onSurface,
-                      ),
+                    fontSize: 21,
+                    height: 1.25,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
+                    color: scheme.onSurface,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 _AuthorRow(article: article),
                 bodyAsync.when(
                   loading: () => _BodyContent(
-                      article: article, content: article.body, loading: true),
+                    article: article,
+                    content: article.body,
+                    loading: true,
+                  ),
                   error: (_, _) =>
                       _BodyContent(article: article, content: article.body),
-                  data: (full) =>
-                      _BodyContent(article: article, content: full),
+                  data: (full) => _BodyContent(article: article, content: full),
                 ),
               ],
             ),
@@ -151,14 +153,19 @@ class _Banner extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: article.hasImage
-            ? CachedNetworkImage(
-                imageUrl: article.imageUrl,
+            ? Container(
                 width: double.infinity,
                 height: 200,
-                fit: BoxFit.cover,
-                memCacheHeight:
-                    (200 * MediaQuery.devicePixelRatioOf(context)).round(),
-                errorWidget: (_, _, _) => _faviconBanner(palette),
+                alignment: Alignment.center,
+                child: CachedNetworkImage(
+                  imageUrl: article.imageUrl,
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.contain,
+                  memCacheHeight: (200 * MediaQuery.devicePixelRatioOf(context))
+                      .round(),
+                  errorWidget: (_, _, _) => _faviconBanner(palette),
+                ),
               )
             : _faviconBanner(palette),
       ),
@@ -182,8 +189,11 @@ class _Banner extends StatelessWidget {
               width: 56,
               height: 56,
               fit: BoxFit.contain,
-              errorWidget: (_, _, _) =>
-                  Icon(Icons.article_outlined, size: 48, color: palette.accentText),
+              errorWidget: (_, _, _) => Icon(
+                Icons.article_outlined,
+                size: 48,
+                color: palette.accentText,
+              ),
             ),
     );
   }
@@ -215,7 +225,9 @@ class _BodyContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (trimmed.isNotEmpty)
-            isMarkdown ? _MarkdownView(data: trimmed) : _HtmlView(data: trimmed),
+            isMarkdown
+                ? _MarkdownView(data: trimmed)
+                : _HtmlView(data: trimmed),
           if (loading) ...[
             const SizedBox(height: 14),
             SizedBox(
@@ -268,11 +280,20 @@ class _MarkdownView extends StatelessWidget {
           decoration: TextDecoration.underline,
         ),
         h1: TextStyle(
-            fontSize: 24, fontWeight: FontWeight.w700, color: scheme.onSurface),
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+          color: scheme.onSurface,
+        ),
         h2: TextStyle(
-            fontSize: 21, fontWeight: FontWeight.w700, color: scheme.onSurface),
+          fontSize: 21,
+          fontWeight: FontWeight.w700,
+          color: scheme.onSurface,
+        ),
         h3: TextStyle(
-            fontSize: 18, fontWeight: FontWeight.w700, color: scheme.onSurface),
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          color: scheme.onSurface,
+        ),
         code: TextStyle(
           fontFamily: 'monospace',
           fontSize: 14.5,
@@ -335,21 +356,31 @@ class _TopicLine extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Row(
       children: [
-        Text(
-          article.source,
-          style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
+        Flexible(
+          child: Text(
+            article.source,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
+          ),
         ),
         const SizedBox(width: 8),
         Container(
           width: 3,
           height: 3,
-          decoration:
-              BoxDecoration(color: palette.mutedBorder, shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: palette.mutedBorder,
+            shape: BoxShape.circle,
+          ),
         ),
         const SizedBox(width: 8),
-        Text(
-          '#${article.topic}',
-          style: TextStyle(fontSize: 13, color: palette.accentText),
+        Flexible(
+          child: Text(
+            '#${article.topic}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 13, color: palette.accentText),
+          ),
         ),
       ],
     );
@@ -375,14 +406,18 @@ class _AuthorRow extends StatelessWidget {
         Container(
           width: 36,
           height: 36,
-          decoration:
-              BoxDecoration(color: palette.iconCircle, shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: palette.iconCircle,
+            shape: BoxShape.circle,
+          ),
           child: Icon(Icons.person, size: 20, color: scheme.onSurfaceVariant),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
             meta,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 13, color: palette.textDim),
           ),
         ),
@@ -393,7 +428,11 @@ class _AuthorRow extends StatelessWidget {
           style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
         ),
         const SizedBox(width: 12),
-        Icon(Icons.chat_bubble_outline, size: 16, color: scheme.onSurfaceVariant),
+        Icon(
+          Icons.chat_bubble_outline,
+          size: 16,
+          color: scheme.onSurfaceVariant,
+        ),
         const SizedBox(width: 4),
         Text(
           Formatters.compactScore(article.commentCount),

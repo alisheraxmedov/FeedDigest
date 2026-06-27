@@ -61,5 +61,7 @@
   "summaryFailed": "Failed to get summary",
   "sourceLabel": "Source",
   "sortNewest": "Newest",
-  "sortPopular": "Popular"
+  "sortPopular": "Popular",
+  "feedLoadError": "Couldn't load articles. Check your connection and try again.",
+  "summaryBlocked": "Blocked by the AI safety filter"
 }

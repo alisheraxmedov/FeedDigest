@@ -15,8 +15,13 @@ import 'widgets/subscription_bar.dart';
 class FeedScreen extends ConsumerWidget {
   const FeedScreen({super.key});
 
-  PopupMenuItem<FeedSort> _sortItem(FeedSort value, String label,
-      IconData icon, FeedSort current, AppPalette palette) {
+  PopupMenuItem<FeedSort> _sortItem(
+    FeedSort value,
+    String label,
+    IconData icon,
+    FeedSort current,
+    AppPalette palette,
+  ) {
     final active = value == current;
     return PopupMenuItem<FeedSort>(
       value: value,
@@ -52,10 +57,20 @@ class FeedScreen extends ConsumerWidget {
             onSelected: (value) =>
                 ref.read(feedSortProvider.notifier).select(value),
             itemBuilder: (context) => [
-              _sortItem(FeedSort.newest, l.sortNewest, Icons.schedule, sort,
-                  palette),
-              _sortItem(FeedSort.popular, l.sortPopular,
-                  Icons.local_fire_department, sort, palette),
+              _sortItem(
+                FeedSort.newest,
+                l.sortNewest,
+                Icons.schedule,
+                sort,
+                palette,
+              ),
+              _sortItem(
+                FeedSort.popular,
+                l.sortPopular,
+                Icons.local_fire_department,
+                sort,
+                palette,
+              ),
             ],
           ),
         ],
@@ -69,9 +84,10 @@ class FeedScreen extends ConsumerWidget {
             child: subs.isEmpty
                 ? EmptyView(message: l.feedNoSubscriptions)
                 : feed.when(
+                    skipLoadingOnReload: true,
                     loading: () => const PostSkeleton(),
                     error: (e, _) => ErrorView(
-                      message: '$e',
+                      message: l.feedLoadError,
                       onRetry: () =>
                           ref.read(feedViewModelProvider.notifier).refresh(),
                     ),
@@ -85,8 +101,10 @@ class FeedScreen extends ConsumerWidget {
                             ref.read(feedViewModelProvider.notifier).refresh(),
                         child: ListView.builder(
                           key: ValueKey('feed-page-$page'),
-                          padding:
-                              EdgeInsets.only(top: 4, bottom: navClear + 16),
+                          padding: EdgeInsets.only(
+                            top: 4,
+                            bottom: navClear + 16,
+                          ),
                           itemCount: fp.items.length + (showPager ? 1 : 0),
                           itemBuilder: (_, i) {
                             if (i >= fp.items.length) return const FeedPager();

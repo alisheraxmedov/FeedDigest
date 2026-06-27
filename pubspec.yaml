@@ -1,5 +1,5 @@
 name: feeddigest
-description: "FeedDigest — Reddit + Gemini AI reader."
+description: "FeedDigest — Hacker News + dev.to reader with Gemini AI summaries."
 publish_to: 'none'
 
 version: 1.0.0+1

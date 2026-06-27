@@ -26,7 +26,8 @@ class GeminiRepository {
   final SettingsRepository _settings;
 
   static const Map<String, String> _instructions = {
-    'uz': "Quyidagi maqolani o'zbek tilida batafsil xulosa qil. "
+    'uz':
+        "Quyidagi maqolani o'zbek tilida batafsil xulosa qil. "
         "Maqoladagi har bir bo'lim, mavzu va muhim fikrni qamrab ol. "
         "Asosiy g'oyalar, dalillar, misollar va xulosalarni saqlab qol. "
         "Asl ma'no yo'qolmasligi kerak — maqolada nima haqida gap ketgani to'liq aks etishi lozim. "
@@ -34,7 +35,8 @@ class GeminiRepository {
         "Javobni Markdown formatida qaytar: sarlavhalar (##), qalin matn (**), "
         "ro'yxatlar (-) va paragraflardan foydalan. "
         "Faqat o'zbek tilida javob qaytar.",
-    'ru': 'Подробно изложи следующую статью на русском языке. '
+    'ru':
+        'Подробно изложи следующую статью на русском языке. '
         'Охвати каждый раздел, тему и важную мысль статьи. '
         'Сохрани ключевые идеи, аргументы, примеры и выводы. '
         'Исходный смысл не должен быть утерян — в резюме должно быть полностью отражено, о чём идёт речь в статье. '
@@ -42,7 +44,8 @@ class GeminiRepository {
         'Верни ответ в формате Markdown: используй заголовки (##), жирный текст (**), '
         'списки (-) и абзацы. '
         'Отвечай только на русском языке.',
-    'en': 'Summarize the following article in detail in English. '
+    'en':
+        'Summarize the following article in detail in English. '
         'Cover every section, topic, and important point in the article. '
         'Preserve key ideas, arguments, examples, and conclusions. '
         'The original meaning must not be lost — the summary should fully reflect what the article is about. '
@@ -63,18 +66,18 @@ class GeminiRepository {
     try {
       final resp = await _dio.post<dynamic>(
         '${AppConfig.geminiEndpoint}/${AppConfig.geminiModel}:generateContent',
-        options: Options(headers: {
-          'x-goog-api-key': key,
-          'Content-Type': 'application/json',
-        }),
+        options: Options(
+          receiveTimeout: const Duration(seconds: 60),
+          headers: {'x-goog-api-key': key, 'Content-Type': 'application/json'},
+        ),
         data: {
           'contents': [
             {
               'parts': [
-                {'text': prompt}
-              ]
-            }
-          ]
+                {'text': prompt},
+              ],
+            },
+          ],
         },
       );
       return extractText(resp.data);
@@ -85,8 +88,20 @@ class GeminiRepository {
 
   static String extractText(dynamic data) {
     try {
+      if (data is Map) {
+        final blockReason = data['promptFeedback']?['blockReason'];
+        if (blockReason != null) {
+          throw GeminiException('blocked', '$blockReason');
+        }
+        final candidates = data['candidates'];
+        if (candidates is List && candidates.isEmpty) {
+          throw GeminiException('blocked');
+        }
+      }
       final text = data['candidates'][0]['content']['parts'][0]['text'];
       if (text is String && text.trim().isNotEmpty) return text.trim();
+    } on GeminiException {
+      rethrow;
     } catch (_) {
       throw GeminiException('parse');
     }

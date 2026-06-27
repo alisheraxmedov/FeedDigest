@@ -49,15 +49,14 @@ class PostCard extends ConsumerWidget {
                       const SizedBox(height: 6),
                       Text(
                         article.title,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(
-                              fontSize: 19,
-                              height: 1.2,
-                              fontWeight: FontWeight.w600,
-                              color: scheme.onSurface,
-                            ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: 19,
+                          height: 1.2,
+                          fontWeight: FontWeight.w600,
+                          color: scheme.onSurface,
+                        ),
                       ),
                     ],
                   ),
@@ -116,23 +115,33 @@ class _MetaRow extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final dim = TextStyle(fontSize: 13, color: scheme.onSurfaceVariant);
     Widget dot() => Container(
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-          width: 3,
-          height: 3,
-          decoration:
-              BoxDecoration(color: palette.mutedBorder, shape: BoxShape.circle),
-        );
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      width: 3,
+      height: 3,
+      decoration: BoxDecoration(
+        color: palette.mutedBorder,
+        shape: BoxShape.circle,
+      ),
+    );
     return Row(
       children: [
         Flexible(
-          child: Text(article.source, style: dim, overflow: TextOverflow.ellipsis),
+          child: Text(
+            article.source,
+            style: dim,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
         dot(),
-        Text(
-          '#${article.topic}',
-          style: TextStyle(
-            fontSize: 13,
-            color: palette.accentText.withValues(alpha: 0.8),
+        Flexible(
+          child: Text(
+            '#${article.topic}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 13,
+              color: palette.accentText.withValues(alpha: 0.8),
+            ),
           ),
         ),
         dot(),
