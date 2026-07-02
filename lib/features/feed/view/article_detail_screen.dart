@@ -10,6 +10,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../core/prefs/preferences.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/neon_widgets.dart';
@@ -21,6 +22,7 @@ import '../../summary/view/summary_sheet.dart';
 import '../viewmodel/article_body_viewmodel.dart';
 import '../viewmodel/article_translation_viewmodel.dart';
 import '../viewmodel/read_state_viewmodel.dart';
+import 'widgets/reader_settings_sheet.dart';
 
 class ArticleDetailScreen extends ConsumerStatefulWidget {
   const ArticleDetailScreen({super.key, required this.article});
@@ -40,10 +42,12 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
     // provider mid-build).
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      ref.read(readStateProvider.notifier).markRead(
-        widget.article.id,
-        nowMs: DateTime.now().millisecondsSinceEpoch,
-      );
+      ref
+          .read(readStateProvider.notifier)
+          .markRead(
+            widget.article.id,
+            nowMs: DateTime.now().millisecondsSinceEpoch,
+          );
     });
   }
 
@@ -60,17 +64,28 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
     );
     final bodyAsync = ref.watch(articleBodyProvider(article));
     final translation = ref.watch(articleTranslationProvider(article));
+    // Compose the reader's text scale with the system scale rather than
+    // replacing it (accessibility-friendly).
+    final systemScale = MediaQuery.textScalerOf(context).scale(1);
+    final readerScaler = TextScaler.linear(
+      ref.watch(readerTextScaleProvider) * systemScale,
+    );
     ref.listen(articleTranslationProvider(article), (prev, next) {
       if (next.error && (prev == null || !prev.error)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.summaryFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.summaryFailed)));
       }
     });
     return Scaffold(
       appBar: AppBar(
         title: Text(article.source),
         actions: [
+          IconButton(
+            tooltip: l.readerText,
+            icon: Icon(Icons.text_fields, color: scheme.onSurface),
+            onPressed: () => showReaderSettingsSheet(context),
+          ),
           IconButton(
             tooltip: l.translateTooltip,
             icon: translation.loading
@@ -117,45 +132,48 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
           _Banner(article: article),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _TopicLine(article: article),
-                const SizedBox(height: 12),
-                Text(
-                  article.title,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontSize: 21,
-                    height: 1.25,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: -0.2,
-                    color: scheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _AuthorRow(article: article),
-                if (translation.showing && translation.text != null)
-                  _BodyContent(
-                    article: article,
-                    content: translation.text!,
-                    forceMarkdown: true,
-                  )
-                else
-                  bodyAsync.when(
-                    loading: () => _BodyContent(
-                      article: article,
-                      content: article.body,
-                      loading: true,
-                    ),
-                    error: (_, _) =>
-                        _BodyContent(article: article, content: article.body),
-                    data: (full) => _BodyContent(
-                      article: article,
-                      content: full,
-                      loading: translation.loading,
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: readerScaler),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _TopicLine(article: article),
+                  const SizedBox(height: 12),
+                  Text(
+                    article.title,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontSize: 21,
+                      height: 1.25,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.2,
+                      color: scheme.onSurface,
                     ),
                   ),
-              ],
+                  const SizedBox(height: 16),
+                  _AuthorRow(article: article),
+                  if (translation.showing && translation.text != null)
+                    _BodyContent(
+                      article: article,
+                      content: translation.text!,
+                      forceMarkdown: true,
+                    )
+                  else
+                    bodyAsync.when(
+                      loading: () => _BodyContent(
+                        article: article,
+                        content: article.body,
+                        loading: true,
+                      ),
+                      error: (_, _) =>
+                          _BodyContent(article: article, content: article.body),
+                      data: (full) => _BodyContent(
+                        article: article,
+                        content: full,
+                        loading: translation.loading,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ],

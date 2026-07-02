@@ -232,4 +232,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportFailed => 'Export failed';
+
+  @override
+  String get readerText => 'Text size';
+
+  @override
+  String get readerTextSample =>
+      'Sample text — pick a comfortable reading size.';
 }

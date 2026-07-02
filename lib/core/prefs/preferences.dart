@@ -133,6 +133,33 @@ class SummaryDepthController extends Notifier<SummaryDepth> {
   }
 }
 
+/// Reading text scale for the article detail screen, persisted in the meta box.
+/// Composed with the system text scale rather than replacing it.
+final readerTextScaleProvider =
+    NotifierProvider<ReaderTextScaleController, double>(
+      ReaderTextScaleController.new,
+    );
+
+class ReaderTextScaleController extends Notifier<double> {
+  static const String _key = 'reader_text_scale';
+  static const double minScale = 0.85;
+  static const double maxScale = 1.6;
+
+  @override
+  double build() {
+    final value = ref.read(metaBoxProvider).get(_key);
+    return value is num ? value.toDouble().clamp(minScale, maxScale) : 1.0;
+  }
+
+  Future<void> set(double value) async {
+    final clamped = value.clamp(minScale, maxScale);
+    state = clamped;
+    final box = ref.read(metaBoxProvider);
+    await box.put(_key, clamped);
+    await box.flush();
+  }
+}
+
 /// Daily digest reminder settings, persisted in the meta box. The actual OS
 /// scheduling lives in NotificationService; this only holds the user's choice.
 class NotificationPrefs {

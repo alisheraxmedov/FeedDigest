@@ -8,7 +8,19 @@ All notable changes to this project, newest first. Dates are ISO (UTC).
 
 Feature work from the FEATURES.md roadmap: Sprint 1 (BYO-key hardening + summary
 controls), Sprint 2 (AI daily digest + reminder), Sprint 3 (AI reading tools),
-and Sprint 4 (reading state, offline, data export).
+Sprint 4 (reading state, offline, data export), and Sprint 5 (reading comfort).
+
+### Reading comfort (Sprint 5)
+
+- **Text size control** — the article detail screen has a text-size action that
+  opens a slider; the chosen scale is persisted and composed with the system
+  text scale (accessibility-friendly), so the whole article reflows live.
+
+Deferred from Sprint 5, with reasons: **§15 generic RSS** (the `FeedSource` enum
+is a single-select with an exhaustive switch; per-URL RSS needs an enum→registry
+refactor plus a topic/search/pagination shim that can't be safely validated
+without a device build), and **§11 highlights / §12 explain-a-term** (both need
+in-rendered-text selection UX that is impractical to verify without a device).
 
 ### Reading state, offline & data ownership (Sprint 4)
 

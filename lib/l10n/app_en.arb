@@ -82,5 +82,7 @@
   "chatEmpty": "Ask anything about this article",
   "exportData": "Export data",
   "exportDataDesc": "Subscriptions and saved (JSON + OPML)",
-  "exportFailed": "Export failed"
+  "exportFailed": "Export failed",
+  "readerText": "Text size",
+  "readerTextSample": "Sample text — pick a comfortable reading size."
 }

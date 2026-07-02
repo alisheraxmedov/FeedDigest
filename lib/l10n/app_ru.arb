@@ -72,5 +72,7 @@
   "chatEmpty": "Спросите что угодно об этой статье",
   "exportData": "Экспорт данных",
   "exportDataDesc": "Подписки и сохранённое (JSON + OPML)",
-  "exportFailed": "Ошибка экспорта"
+  "exportFailed": "Ошибка экспорта",
+  "readerText": "Размер текста",
+  "readerTextSample": "Пример текста — выберите удобный для чтения размер."
 }

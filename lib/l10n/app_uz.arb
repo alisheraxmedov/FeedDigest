@@ -72,5 +72,7 @@
   "chatEmpty": "Maqola haqida istalgan savolni bering",
   "exportData": "Ma'lumotlarni eksport qilish",
   "exportDataDesc": "Obunalar va saqlanganlar (JSON + OPML)",
-  "exportFailed": "Eksport qilishda xatolik"
+  "exportFailed": "Eksport qilishda xatolik",
+  "readerText": "Matn o'lchami",
+  "readerTextSample": "Namuna matn — o'qish qulayligi uchun o'lchamni tanlang."
 }

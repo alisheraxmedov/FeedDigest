@@ -537,6 +537,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Export failed'**
   String get exportFailed;
+
+  /// No description provided for @readerText.
+  ///
+  /// In en, this message translates to:
+  /// **'Text size'**
+  String get readerText;
+
+  /// No description provided for @readerTextSample.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample text — pick a comfortable reading size.'**
+  String get readerTextSample;
 }
 
 class _AppLocalizationsDelegate

@@ -232,4 +232,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get exportFailed => 'Ошибка экспорта';
+
+  @override
+  String get readerText => 'Размер текста';
+
+  @override
+  String get readerTextSample =>
+      'Пример текста — выберите удобный для чтения размер.';
 }

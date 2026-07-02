@@ -232,4 +232,11 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get exportFailed => 'Eksport qilishda xatolik';
+
+  @override
+  String get readerText => 'Matn o\'lchami';
+
+  @override
+  String get readerTextSample =>
+      'Namuna matn — o\'qish qulayligi uchun o\'lchamni tanlang.';
 }
