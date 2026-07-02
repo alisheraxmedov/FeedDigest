@@ -244,4 +244,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String streakDays(int count) {
     return '$count-day reading streak';
   }
+
+  @override
+  String get menu => 'Menu';
+
+  @override
+  String get sortLabel => 'Sort';
+
+  @override
+  String get streakTitle => 'Reading streak';
+
+  @override
+  String get streakNone => 'No streak yet';
+
+  @override
+  String get sectionMore => 'More';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get aboutDescription =>
+      'Hacker News + dev.to reader with Gemini AI summaries.';
+
+  @override
+  String version(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get shareApp => 'Share app';
+
+  @override
+  String get shareAppText =>
+      'Check out FeedDigest — a Hacker News + dev.to reader with AI summaries.';
+
+  @override
+  String get rateApp => 'Rate the app';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get termsOfService => 'Terms of Service';
+
+  @override
+  String get support => 'Support';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get sectionComingSoon => 'This section will be available soon.';
 }

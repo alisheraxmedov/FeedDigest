@@ -90,5 +90,26 @@
     "placeholders": {
       "count": { "type": "int" }
     }
-  }
+  },
+  "menu": "Menu",
+  "sortLabel": "Sort",
+  "streakTitle": "Reading streak",
+  "streakNone": "No streak yet",
+  "sectionMore": "More",
+  "about": "About",
+  "aboutDescription": "Hacker News + dev.to reader with Gemini AI summaries.",
+  "version": "Version {version}",
+  "@version": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "shareApp": "Share app",
+  "shareAppText": "Check out FeedDigest — a Hacker News + dev.to reader with AI summaries.",
+  "rateApp": "Rate the app",
+  "privacyPolicy": "Privacy Policy",
+  "termsOfService": "Terms of Service",
+  "support": "Support",
+  "comingSoon": "Coming soon",
+  "sectionComingSoon": "This section will be available soon."
 }

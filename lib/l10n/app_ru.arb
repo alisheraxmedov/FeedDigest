@@ -75,5 +75,21 @@
   "exportFailed": "Ошибка экспорта",
   "readerText": "Размер текста",
   "readerTextSample": "Пример текста — выберите удобный для чтения размер.",
-  "streakDays": "{count} дней подряд"
+  "streakDays": "{count} дней подряд",
+  "menu": "Меню",
+  "sortLabel": "Сортировка",
+  "streakTitle": "Серия чтения",
+  "streakNone": "Серии пока нет",
+  "sectionMore": "Ещё",
+  "about": "О приложении",
+  "aboutDescription": "Читалка Hacker News + dev.to с ИИ-обзорами Gemini.",
+  "version": "Версия {version}",
+  "shareApp": "Поделиться приложением",
+  "shareAppText": "Попробуйте FeedDigest — читалку Hacker News + dev.to с ИИ-обзорами.",
+  "rateApp": "Оценить приложение",
+  "privacyPolicy": "Политика конфиденциальности",
+  "termsOfService": "Условия использования",
+  "support": "Поддержка",
+  "comingSoon": "Скоро",
+  "sectionComingSoon": "Этот раздел скоро появится."
 }

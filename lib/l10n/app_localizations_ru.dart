@@ -244,4 +244,56 @@ class AppLocalizationsRu extends AppLocalizations {
   String streakDays(int count) {
     return '$count дней подряд';
   }
+
+  @override
+  String get menu => 'Меню';
+
+  @override
+  String get sortLabel => 'Сортировка';
+
+  @override
+  String get streakTitle => 'Серия чтения';
+
+  @override
+  String get streakNone => 'Серии пока нет';
+
+  @override
+  String get sectionMore => 'Ещё';
+
+  @override
+  String get about => 'О приложении';
+
+  @override
+  String get aboutDescription =>
+      'Читалка Hacker News + dev.to с ИИ-обзорами Gemini.';
+
+  @override
+  String version(String version) {
+    return 'Версия $version';
+  }
+
+  @override
+  String get shareApp => 'Поделиться приложением';
+
+  @override
+  String get shareAppText =>
+      'Попробуйте FeedDigest — читалку Hacker News + dev.to с ИИ-обзорами.';
+
+  @override
+  String get rateApp => 'Оценить приложение';
+
+  @override
+  String get privacyPolicy => 'Политика конфиденциальности';
+
+  @override
+  String get termsOfService => 'Условия использования';
+
+  @override
+  String get support => 'Поддержка';
+
+  @override
+  String get comingSoon => 'Скоро';
+
+  @override
+  String get sectionComingSoon => 'Этот раздел скоро появится.';
 }
