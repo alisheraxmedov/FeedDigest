@@ -32,12 +32,12 @@ class SubscriptionRepository {
     return isSubscribed(id) ? unsubscribe(id) : subscribe(topic, label: label);
   }
 
-  void seedDefaultsIfNeeded() {
+  Future<void> seedDefaultsIfNeeded() async {
     if (_meta.get(_seededKey) == true) return;
     for (final entry in AppConfig.defaultTopics) {
       final sub = Subscription.create(entry.topic, label: entry.label);
-      _box.put(sub.id, sub.toJson());
+      await _box.put(sub.id, sub.toJson());
     }
-    _meta.put(_seededKey, true);
+    await _meta.put(_seededKey, true);
   }
 }
