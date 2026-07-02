@@ -74,5 +74,6 @@
   "exportDataDesc": "Obunalar va saqlanganlar (JSON + OPML)",
   "exportFailed": "Eksport qilishda xatolik",
   "readerText": "Matn o'lchami",
-  "readerTextSample": "Namuna matn — o'qish qulayligi uchun o'lchamni tanlang."
+  "readerTextSample": "Namuna matn — o'qish qulayligi uchun o'lchamni tanlang.",
+  "streakDays": "{count} kun ketma-ket o'qildi"
 }

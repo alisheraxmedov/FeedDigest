@@ -74,5 +74,6 @@
   "exportDataDesc": "Подписки и сохранённое (JSON + OPML)",
   "exportFailed": "Ошибка экспорта",
   "readerText": "Размер текста",
-  "readerTextSample": "Пример текста — выберите удобный для чтения размер."
+  "readerTextSample": "Пример текста — выберите удобный для чтения размер.",
+  "streakDays": "{count} дней подряд"
 }

@@ -8,7 +8,24 @@ All notable changes to this project, newest first. Dates are ISO (UTC).
 
 Feature work from the FEATURES.md roadmap: Sprint 1 (BYO-key hardening + summary
 controls), Sprint 2 (AI daily digest + reminder), Sprint 3 (AI reading tools),
-Sprint 4 (reading state, offline, data export), and Sprint 5 (reading comfort).
+Sprint 4 (reading state, offline, data export), Sprint 5 (reading comfort), and
+Sprint 6 (engagement + read-aloud).
+
+### Engagement & read-aloud (Sprint 6)
+
+- **Reading streak** — consecutive days on which you opened an article, tracked
+  locally (no account); a flame chip in the feed app bar shows the current
+  streak.
+- **Reading-time badge** — feed cards with enough body text show an estimated
+  minutes-to-read badge for faster triage.
+- **Read-aloud (TTS)** — AI summaries and the daily digest can be played aloud.
+  Voice availability is checked per language and the control hides itself when no
+  voice exists for the target locale (Uzbek TTS is absent on most devices), and
+  Markdown is stripped before speaking.
+
+Deferred: **§16 share-as-image-card** (off-screen RepaintBoundary capture +
+native share, better validated on a device) and the full **§17 AI-scripted audio
+digest** (the read-aloud above already narrates the digest text).
 
 ### Reading comfort (Sprint 5)
 

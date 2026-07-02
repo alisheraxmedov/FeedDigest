@@ -549,6 +549,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sample text — pick a comfortable reading size.'**
   String get readerTextSample;
+
+  /// No description provided for @streakDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}-day reading streak'**
+  String streakDays(int count);
 }
 
 class _AppLocalizationsDelegate

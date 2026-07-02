@@ -239,4 +239,9 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get readerTextSample =>
       'Пример текста — выберите удобный для чтения размер.';
+
+  @override
+  String streakDays(int count) {
+    return '$count дней подряд';
+  }
 }

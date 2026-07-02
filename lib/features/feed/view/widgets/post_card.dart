@@ -34,6 +34,10 @@ class PostCard extends ConsumerWidget {
     // to the destination host so the card never renders an empty gap.
     final bodySnippet = Formatters.plainSnippet(article.body);
     final snippet = bodySnippet.isNotEmpty ? bodySnippet : article.linkHost;
+    // Reading-time badge only when there's enough body to estimate from.
+    final readMins = article.body.trim().length > 80
+        ? Formatters.readingMinutes(article.body)
+        : null;
     final isRead = ref.watch(
       readStateProvider.select((ids) => ids.contains(article.id)),
     );
@@ -108,6 +112,13 @@ class PostCard extends ConsumerWidget {
                           icon: Icons.chat_bubble_outline,
                           value: Formatters.compactScore(article.commentCount),
                         ),
+                        if (readMins != null) ...[
+                          const SizedBox(width: 16),
+                          _Metric(
+                            icon: Icons.schedule,
+                            value: l.readingTime(readMins),
+                          ),
+                        ],
                         const Spacer(),
                         IconButton(
                           visualDensity: VisualDensity.compact,

@@ -22,6 +22,7 @@ import '../../summary/view/summary_sheet.dart';
 import '../viewmodel/article_body_viewmodel.dart';
 import '../viewmodel/article_translation_viewmodel.dart';
 import '../viewmodel/read_state_viewmodel.dart';
+import '../viewmodel/streak_viewmodel.dart';
 import 'widgets/reader_settings_sheet.dart';
 
 class ArticleDetailScreen extends ConsumerStatefulWidget {
@@ -42,12 +43,15 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
     // provider mid-build).
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      final now = DateTime.now();
       ref
           .read(readStateProvider.notifier)
-          .markRead(
-            widget.article.id,
-            nowMs: DateTime.now().millisecondsSinceEpoch,
-          );
+          .markRead(widget.article.id, nowMs: now.millisecondsSinceEpoch);
+      // Local day index (days since epoch at local midnight) for the streak.
+      final dayIndex =
+          DateTime(now.year, now.month, now.day).millisecondsSinceEpoch ~/
+          Duration.millisecondsPerDay;
+      ref.read(streakProvider.notifier).recordActivity(dayIndex);
     });
   }
 

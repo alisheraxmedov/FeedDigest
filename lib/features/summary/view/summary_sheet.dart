@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/prefs/preferences.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/neon_widgets.dart';
+import '../../../core/widgets/read_aloud_button.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../data/gemini_repository.dart';
 import '../../../l10n/app_localizations.dart';
@@ -118,6 +119,12 @@ class SummarySheet extends ConsumerWidget {
                     color: palette.accentText,
                   ),
                 ),
+                const Spacer(),
+                if (summary.value != null && summary.value!.isNotEmpty)
+                  ReadAloudButton(
+                    text: summary.value!,
+                    langCode: ref.watch(effectiveAiLangProvider).code,
+                  ),
               ],
             ),
             const SizedBox(height: 12),

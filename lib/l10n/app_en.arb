@@ -84,5 +84,11 @@
   "exportDataDesc": "Subscriptions and saved (JSON + OPML)",
   "exportFailed": "Export failed",
   "readerText": "Text size",
-  "readerTextSample": "Sample text — pick a comfortable reading size."
+  "readerTextSample": "Sample text — pick a comfortable reading size.",
+  "streakDays": "{count}-day reading streak",
+  "@streakDays": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

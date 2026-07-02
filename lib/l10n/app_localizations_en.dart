@@ -239,4 +239,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get readerTextSample =>
       'Sample text — pick a comfortable reading size.';
+
+  @override
+  String streakDays(int count) {
+    return '$count-day reading streak';
+  }
 }

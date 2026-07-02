@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
+import '../../../core/prefs/preferences.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/neon_widgets.dart';
+import '../../../core/widgets/read_aloud_button.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../data/gemini_repository.dart';
 import '../../../l10n/app_localizations.dart';
@@ -70,6 +72,12 @@ class DigestSheet extends ConsumerWidget {
                     color: palette.accentText,
                   ),
                 ),
+                const Spacer(),
+                if (digest.value != null && digest.value!.isNotEmpty)
+                  ReadAloudButton(
+                    text: digest.value!,
+                    langCode: ref.watch(effectiveAiLangProvider).code,
+                  ),
               ],
             ),
             const SizedBox(height: 16),

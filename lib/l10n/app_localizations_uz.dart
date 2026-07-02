@@ -239,4 +239,9 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get readerTextSample =>
       'Namuna matn — o\'qish qulayligi uchun o\'lchamni tanlang.';
+
+  @override
+  String streakDays(int count) {
+    return '$count kun ketma-ket o\'qildi';
+  }
 }
