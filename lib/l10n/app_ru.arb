@@ -56,5 +56,7 @@
   "summaryBlocked": "Заблокировано фильтром безопасности AI",
   "summaryDepthBrief": "Кратко",
   "summaryDepthDetailed": "Подробно",
-  "summaryAddKey": "Добавить ключ"
+  "summaryAddKey": "Добавить ключ",
+  "digestTitle": "Дайджест дня",
+  "digestTooltip": "AI ежедневный дайджест"
 }

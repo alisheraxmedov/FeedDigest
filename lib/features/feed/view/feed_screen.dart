@@ -4,6 +4,7 @@ import '../../../core/sources/article_source.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../digest/view/digest_sheet.dart';
 import '../../subscriptions/viewmodel/subscriptions_viewmodel.dart';
 import '../viewmodel/feed_source_viewmodel.dart';
 import '../viewmodel/feed_viewmodel.dart';
@@ -45,12 +46,19 @@ class FeedScreen extends ConsumerWidget {
     final feed = ref.watch(feedViewModelProvider);
     final sort = ref.watch(feedSortProvider);
     final page = ref.watch(feedPageProvider);
+    final hasItems = feed.value?.items.isNotEmpty ?? false;
     final navClear = 64 + MediaQuery.viewPaddingOf(context).bottom;
     return Scaffold(
       appBar: AppBar(
         leading: Center(child: Icon(Icons.hub, color: palette.accent)),
         title: Text(l.appTitle),
         actions: [
+          if (hasItems)
+            IconButton(
+              tooltip: l.digestTooltip,
+              icon: Icon(Icons.auto_awesome, color: palette.accent),
+              onPressed: () => showDigestSheet(context),
+            ),
           PopupMenuButton<FeedSort>(
             tooltip: l.filter,
             icon: Icon(Icons.more_vert, color: scheme.onSurface),

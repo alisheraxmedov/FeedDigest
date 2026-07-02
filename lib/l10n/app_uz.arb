@@ -56,5 +56,7 @@
   "summaryBlocked": "AI xavfsizlik filtri tomonidan bloklandi",
   "summaryDepthBrief": "Qisqa",
   "summaryDepthDetailed": "Batafsil",
-  "summaryAddKey": "Kalit qo'shish"
+  "summaryAddKey": "Kalit qo'shish",
+  "digestTitle": "Bugungi digest",
+  "digestTooltip": "AI kunlik digest"
 }

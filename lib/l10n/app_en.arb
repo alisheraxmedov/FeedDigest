@@ -66,5 +66,7 @@
   "summaryBlocked": "Blocked by the AI safety filter",
   "summaryDepthBrief": "Brief",
   "summaryDepthDetailed": "Detailed",
-  "summaryAddKey": "Add key"
+  "summaryAddKey": "Add key",
+  "digestTitle": "Today's digest",
+  "digestTooltip": "AI daily digest"
 }

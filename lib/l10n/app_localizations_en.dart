@@ -184,4 +184,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get summaryAddKey => 'Add key';
+
+  @override
+  String get digestTitle => 'Today\'s digest';
+
+  @override
+  String get digestTooltip => 'AI daily digest';
 }

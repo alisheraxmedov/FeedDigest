@@ -441,6 +441,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add key'**
   String get summaryAddKey;
+
+  /// No description provided for @digestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s digest'**
+  String get digestTitle;
+
+  /// No description provided for @digestTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'AI daily digest'**
+  String get digestTooltip;
 }
 
 class _AppLocalizationsDelegate

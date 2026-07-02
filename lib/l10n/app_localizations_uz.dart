@@ -184,4 +184,10 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get summaryAddKey => 'Kalit qo\'shish';
+
+  @override
+  String get digestTitle => 'Bugungi digest';
+
+  @override
+  String get digestTooltip => 'AI kunlik digest';
 }

@@ -109,6 +109,74 @@ class GeminiRepository {
     }
   }
 
+  static const Map<String, String> _digestIntro = {
+    'uz':
+        "Quyida bugungi eng muhim dasturlash/texnologiya yangiliklari ro'yxati. "
+        "Ularni o'zbek tilida yaxlit kunlik digest qilib umumlashtir. "
+        "Boshida bitta umumiy sarlavha (##) va bir jumlalik kirish ber. "
+        "Keyin har bir xabarni alohida ko'rsat: sarlavhasi (###), so'ng 1-2 "
+        "jumlada nima haqida ekani va nega muhimligi. "
+        "Markdown ishlat (##, ###, **, -). Faqat o'zbek tilida javob qaytar.",
+    'ru':
+        'Ниже список самых важных новостей разработки/технологий за сегодня. '
+        'Сделай из них цельный ежедневный дайджест на русском языке. '
+        'В начале дай общий заголовок (##) и вводное предложение. '
+        'Затем по каждой новости: заголовок (###), затем 1-2 предложения о том, '
+        'о чём она и почему важна. '
+        'Используй Markdown (##, ###, **, -). Отвечай только на русском языке.',
+    'en':
+        'Below is a list of today\'s most important dev/technology news. '
+        'Turn them into one cohesive daily digest in English. '
+        'Start with an overall heading (##) and a one-sentence intro. '
+        'Then for each story: a heading (###), then 1-2 sentences on what it is '
+        'and why it matters. '
+        'Use Markdown (##, ###, **, -). Respond only in English.',
+  };
+
+  /// Summarizes several articles into a single daily digest in one API call.
+  /// Feeds only titles + short snippets (not full bodies) to keep the request
+  /// within context and spare the user's quota.
+  Future<String> digest(
+    List<Article> articles, {
+    required String langCode,
+  }) async {
+    final key = await _settings.getGeminiKey();
+    if (key == null || key.isEmpty) {
+      throw GeminiException('no_key');
+    }
+    final intro = _digestIntro[langCode] ?? _digestIntro['uz']!;
+    final buf = StringBuffer();
+    for (var i = 0; i < articles.length; i++) {
+      final a = articles[i];
+      final snip = a.body.replaceAll(RegExp(r'<[^>]+>'), ' ').trim();
+      final short = snip.length > 240 ? '${snip.substring(0, 240)}…' : snip;
+      buf.writeln('${i + 1}. [${a.source}] ${a.title}');
+      if (short.isNotEmpty) buf.writeln('   $short');
+    }
+    final prompt = '$intro\n\n$buf';
+    try {
+      final resp = await _dio.post<dynamic>(
+        '${AppConfig.geminiEndpoint}/${AppConfig.geminiModel}:generateContent',
+        options: Options(
+          receiveTimeout: const Duration(seconds: 60),
+          headers: {'x-goog-api-key': key, 'Content-Type': 'application/json'},
+        ),
+        data: {
+          'contents': [
+            {
+              'parts': [
+                {'text': prompt},
+              ],
+            },
+          ],
+        },
+      );
+      return extractText(resp.data);
+    } on DioException catch (e) {
+      throw GeminiException('request', e.message ?? '');
+    }
+  }
+
   static String extractText(dynamic data) {
     try {
       if (data is Map) {

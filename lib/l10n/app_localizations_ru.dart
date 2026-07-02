@@ -183,4 +183,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get summaryAddKey => 'Добавить ключ';
+
+  @override
+  String get digestTitle => 'Дайджест дня';
+
+  @override
+  String get digestTooltip => 'AI ежедневный дайджест';
 }
