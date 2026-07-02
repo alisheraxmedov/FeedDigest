@@ -9,7 +9,6 @@ import '../../../core/widgets/topic_chip_bar.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/article.dart';
 import '../../feed/view/article_detail_screen.dart';
-import '../../search/view/search_screen.dart';
 import '../viewmodel/favorites_viewmodel.dart';
 
 class FavoritesScreen extends ConsumerStatefulWidget {

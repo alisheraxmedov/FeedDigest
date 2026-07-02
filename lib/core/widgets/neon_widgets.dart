@@ -191,6 +191,34 @@ class CategoryChip extends StatelessWidget {
   }
 }
 
+/// Rounded accent pill showing a topic like `#flutter`. Shared across the feed,
+/// search, and saved cards so the tag reads identically everywhere.
+class TopicBadge extends StatelessWidget {
+  const TopicBadge({super.key, required this.topic});
+
+  final String topic;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: palette.accentSoft,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        '#$topic',
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: palette.accentText,
+        ),
+      ),
+    );
+  }
+}
+
 class NeonBadge extends StatelessWidget {
   const NeonBadge({super.key, required this.label, this.dot = true});
 

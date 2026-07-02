@@ -44,6 +44,13 @@ class Article {
 
   String get link => url.isNotEmpty ? url : commentsUrl;
 
+  /// Bare host of the link (no scheme, no `www.`) — used as a light snippet
+  /// fallback so link posts with no body still show where they point.
+  String get linkHost {
+    final host = Uri.tryParse(link)?.host ?? '';
+    return host.startsWith('www.') ? host.substring(4) : host;
+  }
+
   String get faviconUrl {
     final host = Uri.tryParse(link)?.host ?? '';
     return host.isEmpty
@@ -69,6 +76,21 @@ class Article {
       isUtc: true,
     ),
     imageUrl: _str(json['imageUrl']),
+  );
+
+  Article copyWith({String? body}) => Article(
+    id: id,
+    title: title,
+    body: body ?? this.body,
+    url: url,
+    commentsUrl: commentsUrl,
+    author: author,
+    topic: topic,
+    source: source,
+    score: score,
+    commentCount: commentCount,
+    publishedAt: publishedAt,
+    imageUrl: imageUrl,
   );
 
   Map<String, dynamic> toJson() => {

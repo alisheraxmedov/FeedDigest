@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -9,6 +10,8 @@ import '../../../favorites/viewmodel/favorites_viewmodel.dart';
 import '../article_detail_screen.dart';
 import 'post_image.dart';
 
+/// The feed card, LinkedIn-style: a full-width cover, an author + time header,
+/// the title, a body snippet, then the topic tag and engagement metrics.
 class PostCard extends ConsumerWidget {
   const PostCard({super.key, required this.article});
 
@@ -26,10 +29,14 @@ class PostCard extends ConsumerWidget {
         (favs) => favs.any((a) => a.id == article.id),
       ),
     );
-    final hasThumb = article.hasImage || article.faviconUrl.isNotEmpty;
+    // Link posts (e.g. most Hacker News stories) carry no body text; fall back
+    // to the destination host so the card never renders an empty gap.
+    final bodySnippet = Formatters.plainSnippet(article.body);
+    final snippet = bodySnippet.isNotEmpty ? bodySnippet : article.linkHost;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: NeonCard(
+        padding: EdgeInsets.zero,
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => ArticleDetailScreen(article: article),
@@ -38,63 +45,81 @@ class PostCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            // Header + title above the cover.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _AuthorRow(article: article),
+                  const SizedBox(height: 12),
+                  Text(
+                    article.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontSize: 19,
+                      height: 1.25,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Full-bleed cover between the title and the body snippet.
+            PostCover(article: article, borderRadius: BorderRadius.zero),
+            // Snippet + engagement metrics below the cover.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (snippet.isNotEmpty) ...[
+                    Text(
+                      snippet,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                        height: 1.4,
+                        color: palette.textDim,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                  ],
+                  Row(
                     children: [
-                      _MetaRow(article: article),
-                      const SizedBox(height: 6),
-                      Text(
-                        article.title,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontSize: 19,
-                          height: 1.2,
-                          fontWeight: FontWeight.w600,
-                          color: scheme.onSurface,
+                      _Metric(
+                        icon: _isHackerNews
+                            ? Icons.arrow_upward
+                            : Icons.favorite_border,
+                        value: Formatters.compactScore(article.score),
+                      ),
+                      const SizedBox(width: 16),
+                      _Metric(
+                        icon: Icons.chat_bubble_outline,
+                        value: Formatters.compactScore(article.commentCount),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        tooltip: l.navSaved,
+                        icon: Icon(
+                          isFav ? Icons.bookmark : Icons.bookmark_border,
+                          size: 22,
+                          color: isFav
+                              ? palette.accent
+                              : scheme.onSurfaceVariant,
                         ),
+                        onPressed: () => ref
+                            .read(favoritesViewModelProvider.notifier)
+                            .toggle(article),
                       ),
                     ],
                   ),
-                ),
-                if (hasThumb) ...[
-                  const SizedBox(width: 16),
-                  PostImage(article: article),
                 ],
-              ],
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                _Metric(
-                  icon: _isHackerNews
-                      ? Icons.arrow_upward
-                      : Icons.favorite_border,
-                  value: Formatters.compactScore(article.score),
-                ),
-                const SizedBox(width: 16),
-                _Metric(
-                  icon: Icons.chat_bubble_outline,
-                  value: Formatters.compactScore(article.commentCount),
-                ),
-                const Spacer(),
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  tooltip: l.navSaved,
-                  icon: Icon(
-                    isFav ? Icons.bookmark : Icons.bookmark_border,
-                    size: 22,
-                    color: isFav ? palette.accent : scheme.onSurfaceVariant,
-                  ),
-                  onPressed: () => ref
-                      .read(favoritesViewModelProvider.notifier)
-                      .toggle(article),
-                ),
-              ],
+              ),
             ),
           ],
         ),
@@ -103,8 +128,9 @@ class PostCard extends ConsumerWidget {
   }
 }
 
-class _MetaRow extends StatelessWidget {
-  const _MetaRow({required this.article});
+/// LinkedIn-style header: domain avatar, who posted it and when, topic tag.
+class _AuthorRow extends StatelessWidget {
+  const _AuthorRow({required this.article});
 
   final Article article;
 
@@ -113,43 +139,78 @@ class _MetaRow extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
-    final dim = TextStyle(fontSize: 13, color: scheme.onSurfaceVariant);
-    Widget dot() => Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      width: 3,
-      height: 3,
-      decoration: BoxDecoration(
-        color: palette.mutedBorder,
-        shape: BoxShape.circle,
-      ),
-    );
+    final name = article.author.isNotEmpty ? article.author : article.source;
+    final when = Formatters.timeAgo(article.publishedAt, nowLabel: l.timeNow);
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Flexible(
-          child: Text(
-            article.source,
-            style: dim,
-            overflow: TextOverflow.ellipsis,
+        _Avatar(article: article),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: scheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                '${article.source} · $when',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 12, color: palette.textDim),
+              ),
+            ],
           ),
         ),
-        dot(),
-        Flexible(
-          child: Text(
-            '#${article.topic}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 13,
-              color: palette.accentText.withValues(alpha: 0.8),
-            ),
-          ),
-        ),
-        dot(),
-        Text(
-          Formatters.timeAgo(article.publishedAt, nowLabel: l.timeNow),
-          style: dim,
-        ),
+        const SizedBox(width: 8),
+        TopicBadge(topic: article.topic),
       ],
+    );
+  }
+}
+
+/// Circular domain favicon shown next to the author name.
+class _Avatar extends StatelessWidget {
+  const _Avatar({required this.article});
+
+  final Article article;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    const size = 40.0;
+    final px = (size * MediaQuery.devicePixelRatioOf(context)).round();
+    final fallback = Icon(Icons.person_outline, size: 20, color: palette.accentText);
+    return Container(
+      width: size,
+      height: size,
+      clipBehavior: Clip.antiAlias,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: palette.iconCircle,
+        shape: BoxShape.circle,
+        border: Border.all(color: palette.mutedBorder),
+      ),
+      child: article.faviconUrl.isEmpty
+          ? fallback
+          : CachedNetworkImage(
+              imageUrl: article.faviconUrl,
+              width: 22,
+              height: 22,
+              fit: BoxFit.contain,
+              memCacheWidth: px,
+              memCacheHeight: px,
+              errorWidget: (_, _, _) => fallback,
+            ),
     );
   }
 }

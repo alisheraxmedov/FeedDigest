@@ -90,3 +90,8 @@ app.*.map.json
 stitch_feeddigest_ai_reader/
 HANDOFF.md
 logs.txt
+
+# Local planning / tooling docs — not for the repo
+PLANS.md
+FEATURES.md
+skills-lock.json

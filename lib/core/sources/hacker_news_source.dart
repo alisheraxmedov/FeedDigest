@@ -7,6 +7,7 @@ When a story has no url (e.g. Ask HN), its discussion (item) page is used as the
 */
 import 'package:dio/dio.dart';
 import '../config/app_config.dart';
+import '../utils/html_readable.dart';
 import '../../models/article.dart';
 import 'article_source.dart';
 
@@ -32,10 +33,33 @@ class HackerNewsSource implements ArticleSource {
     int limit = AppConfig.searchLimit,
   }) => _fetch(query, limit, 1, FeedSort.popular);
 
-  // Hacker News carries no full article text in the API; the feed body is all
-  // there is.
+  // The Algolia API carries `story_text` only for text posts (Ask/Show HN);
+  // link submissions — the bulk of the feed — have no body at all. For those we
+  // fetch the linked page and extract its readable text so the reader and AI
+  // summary have real content. Failures fall back to the (empty) feed body.
   @override
-  Future<String> fullBody(Article article) async => article.body;
+  Future<String> fullBody(Article article) async {
+    if (article.body.trim().isNotEmpty) return article.body;
+    final url = article.url;
+    if (!url.startsWith('http') || url.contains('news.ycombinator.com')) {
+      return '';
+    }
+    try {
+      final resp = await _dio.getUri<String>(
+        Uri.parse(url),
+        options: Options(
+          responseType: ResponseType.plain,
+          receiveTimeout: const Duration(seconds: 20),
+          followRedirects: true,
+          headers: {'User-Agent': AppConfig.readerUserAgent},
+          validateStatus: (s) => s != null && s >= 200 && s < 400,
+        ),
+      );
+      return HtmlReadable.extract(resp.data ?? '');
+    } catch (_) {
+      return '';
+    }
+  }
 
   Future<List<Article>> _fetch(
     String query,

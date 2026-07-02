@@ -6,6 +6,7 @@ favicon is shown centered in a tinted box with a neon-tinted icon fallback.
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/neon_widgets.dart';
 import '../../../../models/article.dart';
 
 class PostImage extends StatelessWidget {
@@ -56,6 +57,75 @@ class PostImage extends StatelessWidget {
               memCacheWidth: px,
               memCacheHeight: px,
               errorWidget: (_, _, _) => fallback,
+            ),
+    );
+  }
+}
+
+/// PostCover is the full-width, LinkedIn-style banner at the top of a feed card.
+/// dev.to covers fill edge-to-edge; Hacker News has no image, so a shorter
+/// tinted band shows the domain favicon (or a neon icon) centered.
+class PostCover extends StatelessWidget {
+  const PostCover({
+    super.key,
+    required this.article,
+    this.height = 200,
+    this.borderRadius = _topRounded,
+  });
+
+  final Article article;
+  final double height;
+
+  /// Corner rounding. Defaults to top-only (card header); pass [BorderRadius.zero]
+  /// when the cover sits mid-card between the title and the body snippet.
+  final BorderRadius borderRadius;
+
+  static const _topRounded = BorderRadius.vertical(
+    top: Radius.circular(kCardRadius),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    if (article.hasImage) {
+      // Decode to the band height in device pixels, not the source resolution.
+      final ph = (height * MediaQuery.devicePixelRatioOf(context)).round();
+      return ClipRRect(
+        borderRadius: borderRadius,
+        child: CachedNetworkImage(
+          imageUrl: article.imageUrl,
+          width: double.infinity,
+          height: height,
+          fit: BoxFit.cover,
+          memCacheHeight: ph,
+          errorWidget: (_, _, _) => _fallback(palette),
+        ),
+      );
+    }
+    return _fallback(palette);
+  }
+
+  Widget _fallback(AppPalette palette) {
+    final icon = Icon(Icons.data_object, size: 44, color: palette.accentText);
+    return Container(
+      width: double.infinity,
+      height: height * 0.62,
+      decoration: BoxDecoration(
+        color: palette.iconCircle,
+        borderRadius: borderRadius,
+        border: Border.symmetric(
+          horizontal: BorderSide(color: palette.mutedBorder),
+        ),
+      ),
+      alignment: Alignment.center,
+      child: article.faviconUrl.isEmpty
+          ? icon
+          : CachedNetworkImage(
+              imageUrl: article.faviconUrl,
+              width: 52,
+              height: 52,
+              fit: BoxFit.contain,
+              errorWidget: (_, _, _) => icon,
             ),
     );
   }

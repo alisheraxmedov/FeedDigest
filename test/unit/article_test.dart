@@ -43,4 +43,32 @@ void main() {
     expect(back.score, 5);
     expect(back.publishedAt, a.publishedAt);
   });
+
+  test('linkHost strips scheme and www', () {
+    expect(
+      Article.fromJson(const {'url': 'https://www.example.com/a/b'}).linkHost,
+      'example.com',
+    );
+    expect(
+      Article.fromJson(const {'commentsUrl': 'https://news.ycombinator.com/x'})
+          .linkHost,
+      'news.ycombinator.com',
+    );
+    expect(Article.fromJson(const {}).linkHost, '');
+  });
+
+  test('copyWith overrides body and keeps the rest', () {
+    final a = Article.fromJson(const {
+      'id': 'hn-1',
+      'title': 'T',
+      'body': 'old',
+      'score': 5,
+    });
+    final b = a.copyWith(body: 'new');
+    expect(b.body, 'new');
+    expect(b.id, 'hn-1');
+    expect(b.title, 'T');
+    expect(b.score, 5);
+    expect(a.body, 'old');
+  });
 }

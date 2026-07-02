@@ -215,28 +215,3 @@ class SearchResultCard extends StatelessWidget {
   }
 }
 
-class TopicBadge extends StatelessWidget {
-  const TopicBadge({super.key, required this.topic});
-
-  final String topic;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = AppPalette.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: palette.accentSoft,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        '#$topic',
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: palette.accentText,
-        ),
-      ),
-    );
-  }
-}
