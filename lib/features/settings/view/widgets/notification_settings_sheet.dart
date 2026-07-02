@@ -1,7 +1,9 @@
 /*
 Bottom sheet to enable the daily digest reminder and pick its time. Enabling
 requests OS notification permission first; every change is persisted and the OS
-schedule is (re)armed via NotificationService with localized text.
+schedule is (re)armed via NotificationService with localized text. The new pref
+is only persisted once the OS (re)schedule succeeds, so the switch never shows
+"on" while nothing is actually scheduled.
 */
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,14 +31,19 @@ class NotificationSettingsSheet extends ConsumerStatefulWidget {
 
 class _NotificationSettingsSheetState
     extends ConsumerState<NotificationSettingsSheet> {
-  Future<void> _reschedule(NotificationPrefs prefs) async {
-    final l = AppLocalizations.of(context);
+  // Localized text is passed in (captured before any await) so this never reads
+  // a possibly-stale BuildContext after an async gap.
+  Future<void> _reschedule(
+    NotificationPrefs prefs, {
+    required String title,
+    required String body,
+  }) async {
     if (prefs.enabled) {
       await NotificationService.instance.scheduleDaily(
         hour: prefs.hour,
         minute: prefs.minute,
-        title: l.appTitle,
-        body: l.notifBody,
+        title: title,
+        body: body,
       );
     } else {
       await NotificationService.instance.cancelDaily();
@@ -45,6 +52,8 @@ class _NotificationSettingsSheetState
 
   Future<void> _toggle(bool value) async {
     final l = AppLocalizations.of(context);
+    final title = l.appTitle;
+    final body = l.notifBody;
     final ctrl = ref.read(notificationPrefsProvider.notifier);
     final prefs = ref.read(notificationPrefsProvider);
     if (value) {
@@ -59,11 +68,25 @@ class _NotificationSettingsSheetState
       }
     }
     final updated = prefs.copyWith(enabled: value);
+    // (Re)schedule first; only persist the new pref if the OS call succeeds.
+    try {
+      await _reschedule(updated, title: title, body: body);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.notifScheduleFailed)));
+      }
+      return;
+    }
     await ctrl.save(updated);
-    await _reschedule(updated);
   }
 
   Future<void> _pickTime() async {
+    final l = AppLocalizations.of(context);
+    final title = l.appTitle;
+    final body = l.notifBody;
+    final ctrl = ref.read(notificationPrefsProvider.notifier);
     final prefs = ref.read(notificationPrefsProvider);
     final picked = await showTimePicker(
       context: context,
@@ -71,8 +94,17 @@ class _NotificationSettingsSheetState
     );
     if (picked == null) return;
     final updated = prefs.copyWith(hour: picked.hour, minute: picked.minute);
-    await ref.read(notificationPrefsProvider.notifier).save(updated);
-    await _reschedule(updated);
+    try {
+      await _reschedule(updated, title: title, body: body);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.notifScheduleFailed)));
+      }
+      return;
+    }
+    await ctrl.save(updated);
   }
 
   @override

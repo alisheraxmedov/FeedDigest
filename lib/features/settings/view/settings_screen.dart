@@ -30,12 +30,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _save() async {
-    await ref.read(settingsActionsProvider).saveKey(_key.text);
+    final l = AppLocalizations.of(context);
+    try {
+      await ref.read(settingsActionsProvider).saveKey(_key.text);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.keySaveFailed)));
+      return;
+    }
     if (!mounted) return;
     _key.clear();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context).keySaved)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.keySaved)));
   }
 
   Future<void> _exportData() async {

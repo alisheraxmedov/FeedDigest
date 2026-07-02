@@ -82,6 +82,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get keySaved => 'Key saved';
 
   @override
+  String get keySaveFailed => 'Couldn\'t save the key';
+
+  @override
+  String get notifScheduleFailed => 'Couldn\'t set the reminder';
+
+  @override
   String get appLanguage => 'App language';
 
   @override

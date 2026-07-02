@@ -24,6 +24,8 @@
   "geminiHint": "Введите API-ключ...",
   "save": "Сохранить",
   "keySaved": "Ключ сохранён",
+  "keySaveFailed": "Не удалось сохранить ключ",
+  "notifScheduleFailed": "Не удалось настроить напоминание",
   "appLanguage": "Язык приложения",
   "aiSummaryLanguage": "Язык AI-резюме",
   "theme": "Тема",

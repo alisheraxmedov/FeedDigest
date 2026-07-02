@@ -24,6 +24,8 @@
   "geminiHint": "API kalitni kiriting...",
   "save": "Saqlash",
   "keySaved": "Kalit saqlandi",
+  "keySaveFailed": "Kalitni saqlab bo'lmadi",
+  "notifScheduleFailed": "Eslatmani o'rnatib bo'lmadi",
   "appLanguage": "Ilova tili",
   "aiSummaryLanguage": "AI xulosalari tili",
   "theme": "Mavzu",

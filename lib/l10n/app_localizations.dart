@@ -244,6 +244,18 @@ abstract class AppLocalizations {
   /// **'Key saved'**
   String get keySaved;
 
+  /// No description provided for @keySaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the key'**
+  String get keySaveFailed;
+
+  /// No description provided for @notifScheduleFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t set the reminder'**
+  String get notifScheduleFailed;
+
   /// No description provided for @appLanguage.
   ///
   /// In en, this message translates to:

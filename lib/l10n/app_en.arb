@@ -24,6 +24,8 @@
   "geminiHint": "Enter API key...",
   "save": "Save",
   "keySaved": "Key saved",
+  "keySaveFailed": "Couldn't save the key",
+  "notifScheduleFailed": "Couldn't set the reminder",
   "appLanguage": "App language",
   "aiSummaryLanguage": "AI summary language",
   "theme": "Theme",

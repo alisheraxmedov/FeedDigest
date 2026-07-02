@@ -81,6 +81,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get keySaved => 'Ключ сохранён';
 
   @override
+  String get keySaveFailed => 'Не удалось сохранить ключ';
+
+  @override
+  String get notifScheduleFailed => 'Не удалось настроить напоминание';
+
+  @override
   String get appLanguage => 'Язык приложения';
 
   @override

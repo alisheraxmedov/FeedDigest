@@ -82,6 +82,12 @@ class AppLocalizationsUz extends AppLocalizations {
   String get keySaved => 'Kalit saqlandi';
 
   @override
+  String get keySaveFailed => 'Kalitni saqlab bo\'lmadi';
+
+  @override
+  String get notifScheduleFailed => 'Eslatmani o\'rnatib bo\'lmadi';
+
+  @override
   String get appLanguage => 'Ilova tili';
 
   @override
