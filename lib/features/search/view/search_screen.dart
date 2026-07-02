@@ -8,6 +8,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../models/article.dart';
 import '../../feed/view/article_detail_screen.dart';
 import '../../feed/view/widgets/post_image.dart';
+import '../../feed/viewmodel/read_state_viewmodel.dart';
 import '../viewmodel/search_viewmodel.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
@@ -135,83 +136,95 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 }
 
-class SearchResultCard extends StatelessWidget {
+class SearchResultCard extends ConsumerWidget {
   const SearchResultCard({super.key, required this.article});
 
   final Article article;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
     final snippet = Formatters.plainSnippet(article.body);
+    final isRead = ref.watch(
+      readStateProvider.select((ids) => ids.contains(article.id)),
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: NeonCard(
-        padding: const EdgeInsets.all(12),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => ArticleDetailScreen(article: article),
+      child: AnimatedOpacity(
+        opacity: isRead ? 0.6 : 1,
+        duration: const Duration(milliseconds: 200),
+        child: NeonCard(
+          padding: const EdgeInsets.all(12),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ArticleDetailScreen(article: article),
+            ),
           ),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            PostImage(article: article, size: 88),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      TopicBadge(topic: article.topic),
-                      const Spacer(),
-                      Icon(Icons.schedule, size: 13, color: palette.textDim),
-                      const SizedBox(width: 4),
-                      Text(
-                        Formatters.timeAgo(
-                          article.publishedAt,
-                          nowLabel: l.timeNow,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              PostImage(article: article, size: 88),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        TopicBadge(topic: article.topic),
+                        const Spacer(),
+                        Icon(Icons.schedule, size: 13, color: palette.textDim),
+                        const SizedBox(width: 4),
+                        Text(
+                          Formatters.timeAgo(
+                            article.publishedAt,
+                            nowLabel: l.timeNow,
+                          ),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: palette.textDim,
+                          ),
                         ),
-                        style: TextStyle(fontSize: 12, color: palette.textDim),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    article.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontSize: 16,
-                      height: 1.25,
-                      fontWeight: FontWeight.w600,
-                      color: scheme.onSurface,
-                    ),
-                  ),
-                  if (snippet.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      snippet,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 13, color: palette.textDim),
+                      ],
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      l.readingTime(Formatters.readingMinutes(snippet)),
-                      style: TextStyle(fontSize: 12, color: palette.accentText),
+                      article.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontSize: 16,
+                        height: 1.25,
+                        fontWeight: FontWeight.w600,
+                        color: scheme.onSurface,
+                      ),
                     ),
+                    if (snippet.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        snippet,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 13, color: palette.textDim),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l.readingTime(Formatters.readingMinutes(snippet)),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: palette.accentText,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
-

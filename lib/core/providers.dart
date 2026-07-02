@@ -2,11 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 
+import '../data/article_body_cache_repository.dart';
 import '../data/favorites_repository.dart';
 import '../data/gemini_repository.dart';
+import '../data/read_state_repository.dart';
 import '../data/settings_repository.dart';
 import '../data/subscription_repository.dart';
 import '../data/summary_cache_repository.dart';
+import 'services/export_service.dart';
 import 'sources/article_source.dart';
 import 'sources/devto_source.dart';
 import 'sources/hacker_news_source.dart';
@@ -55,6 +58,16 @@ final favoritesRepositoryProvider = Provider<FavoritesRepository>(
 final summaryCacheRepositoryProvider = Provider<SummaryCacheRepository>(
   (ref) => SummaryCacheRepository(Hive.box<dynamic>(HiveBoxes.summaries)),
 );
+
+final readStateRepositoryProvider = Provider<ReadStateRepository>(
+  (ref) => ReadStateRepository(Hive.box<dynamic>(HiveBoxes.read)),
+);
+
+final articleBodyCacheRepositoryProvider = Provider<ArticleBodyCacheRepository>(
+  (ref) => ArticleBodyCacheRepository(Hive.box<dynamic>(HiveBoxes.bodies)),
+);
+
+final exportServiceProvider = Provider<ExportService>((ref) => ExportService());
 
 final subscriptionRepositoryProvider = Provider<SubscriptionRepository>(
   (ref) => SubscriptionRepository(

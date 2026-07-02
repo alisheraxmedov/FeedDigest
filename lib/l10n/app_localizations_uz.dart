@@ -175,4 +175,73 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get summaryBlocked => 'AI xavfsizlik filtri tomonidan bloklandi';
+
+  @override
+  String get summaryDepthBrief => 'Qisqa';
+
+  @override
+  String get summaryDepthDetailed => 'Batafsil';
+
+  @override
+  String get summaryAddKey => 'Kalit qo\'shish';
+
+  @override
+  String get digestTitle => 'Bugungi digest';
+
+  @override
+  String get digestTooltip => 'AI kunlik digest';
+
+  @override
+  String get notifDigestLabel => 'Kunlik digest';
+
+  @override
+  String get notifDigestDesc => 'Har kuni belgilangan vaqtda o\'qish eslatmasi';
+
+  @override
+  String get notifTimeLabel => 'Vaqt';
+
+  @override
+  String get notifBody => 'Bugungi digest tayyor — o\'qishga vaqt!';
+
+  @override
+  String get notifDenied => 'Bildirishnomaga ruxsat berilmadi';
+
+  @override
+  String get notifOff => 'O\'chirilgan';
+
+  @override
+  String get translateTooltip => 'Tarjima qilish';
+
+  @override
+  String get chatTooltip => 'Maqola bilan suhbat';
+
+  @override
+  String get chatTitle => 'Maqola bilan suhbat';
+
+  @override
+  String get chatHint => 'Savol bering...';
+
+  @override
+  String get chatEmpty => 'Maqola haqida istalgan savolni bering';
+
+  @override
+  String get exportData => 'Ma\'lumotlarni eksport qilish';
+
+  @override
+  String get exportDataDesc => 'Obunalar va saqlanganlar (JSON + OPML)';
+
+  @override
+  String get exportFailed => 'Eksport qilishda xatolik';
+
+  @override
+  String get readerText => 'Matn o\'lchami';
+
+  @override
+  String get readerTextSample =>
+      'Namuna matn — o\'qish qulayligi uchun o\'lchamni tanlang.';
+
+  @override
+  String streakDays(int count) {
+    return '$count kun ketma-ket o\'qildi';
+  }
 }

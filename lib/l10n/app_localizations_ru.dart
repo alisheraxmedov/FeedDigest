@@ -174,4 +174,74 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get summaryBlocked => 'Заблокировано фильтром безопасности AI';
+
+  @override
+  String get summaryDepthBrief => 'Кратко';
+
+  @override
+  String get summaryDepthDetailed => 'Подробно';
+
+  @override
+  String get summaryAddKey => 'Добавить ключ';
+
+  @override
+  String get digestTitle => 'Дайджест дня';
+
+  @override
+  String get digestTooltip => 'AI ежедневный дайджест';
+
+  @override
+  String get notifDigestLabel => 'Дайджест дня';
+
+  @override
+  String get notifDigestDesc =>
+      'Ежедневное напоминание почитать в выбранное время';
+
+  @override
+  String get notifTimeLabel => 'Время';
+
+  @override
+  String get notifBody => 'Дайджест дня готов — время читать!';
+
+  @override
+  String get notifDenied => 'Разрешение на уведомления не получено';
+
+  @override
+  String get notifOff => 'Выключено';
+
+  @override
+  String get translateTooltip => 'Перевести';
+
+  @override
+  String get chatTooltip => 'Чат по статье';
+
+  @override
+  String get chatTitle => 'Чат по статье';
+
+  @override
+  String get chatHint => 'Задайте вопрос...';
+
+  @override
+  String get chatEmpty => 'Спросите что угодно об этой статье';
+
+  @override
+  String get exportData => 'Экспорт данных';
+
+  @override
+  String get exportDataDesc => 'Подписки и сохранённое (JSON + OPML)';
+
+  @override
+  String get exportFailed => 'Ошибка экспорта';
+
+  @override
+  String get readerText => 'Размер текста';
+
+  @override
+  String get readerTextSample =>
+      'Пример текста — выберите удобный для чтения размер.';
+
+  @override
+  String streakDays(int count) {
+    return '$count дней подряд';
+  }
 }

@@ -63,5 +63,32 @@
   "sortNewest": "Newest",
   "sortPopular": "Popular",
   "feedLoadError": "Couldn't load articles. Check your connection and try again.",
-  "summaryBlocked": "Blocked by the AI safety filter"
+  "summaryBlocked": "Blocked by the AI safety filter",
+  "summaryDepthBrief": "Brief",
+  "summaryDepthDetailed": "Detailed",
+  "summaryAddKey": "Add key",
+  "digestTitle": "Today's digest",
+  "digestTooltip": "AI daily digest",
+  "notifDigestLabel": "Daily digest",
+  "notifDigestDesc": "A daily reminder to read at your chosen time",
+  "notifTimeLabel": "Time",
+  "notifBody": "Your daily digest is ready — time to read!",
+  "notifDenied": "Notification permission denied",
+  "notifOff": "Off",
+  "translateTooltip": "Translate",
+  "chatTooltip": "Chat about article",
+  "chatTitle": "Chat about article",
+  "chatHint": "Ask a question...",
+  "chatEmpty": "Ask anything about this article",
+  "exportData": "Export data",
+  "exportDataDesc": "Subscriptions and saved (JSON + OPML)",
+  "exportFailed": "Export failed",
+  "readerText": "Text size",
+  "readerTextSample": "Sample text — pick a comfortable reading size.",
+  "streakDays": "{count}-day reading streak",
+  "@streakDays": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

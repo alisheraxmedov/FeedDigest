@@ -4,9 +4,11 @@ import '../../../core/sources/article_source.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../digest/view/digest_sheet.dart';
 import '../../subscriptions/viewmodel/subscriptions_viewmodel.dart';
 import '../viewmodel/feed_source_viewmodel.dart';
 import '../viewmodel/feed_viewmodel.dart';
+import '../viewmodel/streak_viewmodel.dart';
 import 'widgets/feed_pager.dart';
 import 'widgets/post_card.dart';
 import 'widgets/post_skeleton.dart';
@@ -45,12 +47,56 @@ class FeedScreen extends ConsumerWidget {
     final feed = ref.watch(feedViewModelProvider);
     final sort = ref.watch(feedSortProvider);
     final page = ref.watch(feedPageProvider);
+    final hasItems = feed.value?.items.isNotEmpty ?? false;
+    final streak = ref.watch(streakProvider);
     final navClear = 64 + MediaQuery.viewPaddingOf(context).bottom;
     return Scaffold(
       appBar: AppBar(
         leading: Center(child: Icon(Icons.hub, color: palette.accent)),
         title: Text(l.appTitle),
         actions: [
+          if (streak.current > 0)
+            Center(
+              child: Tooltip(
+                message: l.streakDays(streak.current),
+                child: Container(
+                  margin: const EdgeInsets.only(right: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: palette.accentSoft,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.local_fire_department,
+                        size: 16,
+                        color: palette.accentText,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${streak.current}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: palette.accentText,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          if (hasItems)
+            IconButton(
+              tooltip: l.digestTooltip,
+              icon: Icon(Icons.auto_awesome, color: palette.accent),
+              onPressed: () => showDigestSheet(context),
+            ),
           PopupMenuButton<FeedSort>(
             tooltip: l.filter,
             icon: Icon(Icons.more_vert, color: scheme.onSurface),

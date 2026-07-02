@@ -175,4 +175,73 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get summaryBlocked => 'Blocked by the AI safety filter';
+
+  @override
+  String get summaryDepthBrief => 'Brief';
+
+  @override
+  String get summaryDepthDetailed => 'Detailed';
+
+  @override
+  String get summaryAddKey => 'Add key';
+
+  @override
+  String get digestTitle => 'Today\'s digest';
+
+  @override
+  String get digestTooltip => 'AI daily digest';
+
+  @override
+  String get notifDigestLabel => 'Daily digest';
+
+  @override
+  String get notifDigestDesc => 'A daily reminder to read at your chosen time';
+
+  @override
+  String get notifTimeLabel => 'Time';
+
+  @override
+  String get notifBody => 'Your daily digest is ready — time to read!';
+
+  @override
+  String get notifDenied => 'Notification permission denied';
+
+  @override
+  String get notifOff => 'Off';
+
+  @override
+  String get translateTooltip => 'Translate';
+
+  @override
+  String get chatTooltip => 'Chat about article';
+
+  @override
+  String get chatTitle => 'Chat about article';
+
+  @override
+  String get chatHint => 'Ask a question...';
+
+  @override
+  String get chatEmpty => 'Ask anything about this article';
+
+  @override
+  String get exportData => 'Export data';
+
+  @override
+  String get exportDataDesc => 'Subscriptions and saved (JSON + OPML)';
+
+  @override
+  String get exportFailed => 'Export failed';
+
+  @override
+  String get readerText => 'Text size';
+
+  @override
+  String get readerTextSample =>
+      'Sample text — pick a comfortable reading size.';
+
+  @override
+  String streakDays(int count) {
+    return '$count-day reading streak';
+  }
 }

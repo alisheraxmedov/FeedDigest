@@ -423,6 +423,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Blocked by the AI safety filter'**
   String get summaryBlocked;
+
+  /// No description provided for @summaryDepthBrief.
+  ///
+  /// In en, this message translates to:
+  /// **'Brief'**
+  String get summaryDepthBrief;
+
+  /// No description provided for @summaryDepthDetailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed'**
+  String get summaryDepthDetailed;
+
+  /// No description provided for @summaryAddKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Add key'**
+  String get summaryAddKey;
+
+  /// No description provided for @digestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s digest'**
+  String get digestTitle;
+
+  /// No description provided for @digestTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'AI daily digest'**
+  String get digestTooltip;
+
+  /// No description provided for @notifDigestLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily digest'**
+  String get notifDigestLabel;
+
+  /// No description provided for @notifDigestDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'A daily reminder to read at your chosen time'**
+  String get notifDigestDesc;
+
+  /// No description provided for @notifTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get notifTimeLabel;
+
+  /// No description provided for @notifBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your daily digest is ready — time to read!'**
+  String get notifBody;
+
+  /// No description provided for @notifDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification permission denied'**
+  String get notifDenied;
+
+  /// No description provided for @notifOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get notifOff;
+
+  /// No description provided for @translateTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Translate'**
+  String get translateTooltip;
+
+  /// No description provided for @chatTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat about article'**
+  String get chatTooltip;
+
+  /// No description provided for @chatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat about article'**
+  String get chatTitle;
+
+  /// No description provided for @chatHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a question...'**
+  String get chatHint;
+
+  /// No description provided for @chatEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask anything about this article'**
+  String get chatEmpty;
+
+  /// No description provided for @exportData.
+  ///
+  /// In en, this message translates to:
+  /// **'Export data'**
+  String get exportData;
+
+  /// No description provided for @exportDataDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions and saved (JSON + OPML)'**
+  String get exportDataDesc;
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed'**
+  String get exportFailed;
+
+  /// No description provided for @readerText.
+  ///
+  /// In en, this message translates to:
+  /// **'Text size'**
+  String get readerText;
+
+  /// No description provided for @readerTextSample.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample text — pick a comfortable reading size.'**
+  String get readerTextSample;
+
+  /// No description provided for @streakDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}-day reading streak'**
+  String streakDays(int count);
 }
 
 class _AppLocalizationsDelegate

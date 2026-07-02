@@ -7,6 +7,7 @@ import '../../../../core/widgets/neon_widgets.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../models/article.dart';
 import '../../../favorites/viewmodel/favorites_viewmodel.dart';
+import '../../viewmodel/read_state_viewmodel.dart';
 import '../article_detail_screen.dart';
 import 'post_image.dart';
 
@@ -33,95 +34,113 @@ class PostCard extends ConsumerWidget {
     // to the destination host so the card never renders an empty gap.
     final bodySnippet = Formatters.plainSnippet(article.body);
     final snippet = bodySnippet.isNotEmpty ? bodySnippet : article.linkHost;
+    // Reading-time badge only when there's enough body to estimate from.
+    final readMins = article.body.trim().length > 80
+        ? Formatters.readingMinutes(article.body)
+        : null;
+    final isRead = ref.watch(
+      readStateProvider.select((ids) => ids.contains(article.id)),
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: NeonCard(
-        padding: EdgeInsets.zero,
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => ArticleDetailScreen(article: article),
+      child: AnimatedOpacity(
+        opacity: isRead ? 0.6 : 1,
+        duration: const Duration(milliseconds: 200),
+        child: NeonCard(
+          padding: EdgeInsets.zero,
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ArticleDetailScreen(article: article),
+            ),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header + title above the cover.
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _AuthorRow(article: article),
-                  const SizedBox(height: 12),
-                  Text(
-                    article.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontSize: 19,
-                      height: 1.25,
-                      fontWeight: FontWeight.w600,
-                      color: scheme.onSurface,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Full-bleed cover between the title and the body snippet.
-            PostCover(article: article, borderRadius: BorderRadius.zero),
-            // Snippet + engagement metrics below the cover.
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (snippet.isNotEmpty) ...[
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header + title above the cover.
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _AuthorRow(article: article),
+                    const SizedBox(height: 12),
                     Text(
-                      snippet,
-                      maxLines: 3,
+                      article.title,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 14,
-                        height: 1.4,
-                        color: palette.textDim,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 19,
+                        height: 1.25,
+                        fontWeight: FontWeight.w600,
+                        color: scheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 14),
                   ],
-                  Row(
-                    children: [
-                      _Metric(
-                        icon: _isHackerNews
-                            ? Icons.arrow_upward
-                            : Icons.favorite_border,
-                        value: Formatters.compactScore(article.score),
-                      ),
-                      const SizedBox(width: 16),
-                      _Metric(
-                        icon: Icons.chat_bubble_outline,
-                        value: Formatters.compactScore(article.commentCount),
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        visualDensity: VisualDensity.compact,
-                        tooltip: l.navSaved,
-                        icon: Icon(
-                          isFav ? Icons.bookmark : Icons.bookmark_border,
-                          size: 22,
-                          color: isFav
-                              ? palette.accent
-                              : scheme.onSurfaceVariant,
-                        ),
-                        onPressed: () => ref
-                            .read(favoritesViewModelProvider.notifier)
-                            .toggle(article),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+              // Full-bleed cover between the title and the body snippet.
+              PostCover(article: article, borderRadius: BorderRadius.zero),
+              // Snippet + engagement metrics below the cover.
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (snippet.isNotEmpty) ...[
+                      Text(
+                        snippet,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.4,
+                          color: palette.textDim,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                    ],
+                    Row(
+                      children: [
+                        _Metric(
+                          icon: _isHackerNews
+                              ? Icons.arrow_upward
+                              : Icons.favorite_border,
+                          value: Formatters.compactScore(article.score),
+                        ),
+                        const SizedBox(width: 16),
+                        _Metric(
+                          icon: Icons.chat_bubble_outline,
+                          value: Formatters.compactScore(article.commentCount),
+                        ),
+                        if (readMins != null) ...[
+                          const SizedBox(width: 16),
+                          _Metric(
+                            icon: Icons.schedule,
+                            value: l.readingTime(readMins),
+                          ),
+                        ],
+                        const Spacer(),
+                        IconButton(
+                          visualDensity: VisualDensity.compact,
+                          tooltip: l.navSaved,
+                          icon: Icon(
+                            isFav ? Icons.bookmark : Icons.bookmark_border,
+                            size: 22,
+                            color: isFav
+                                ? palette.accent
+                                : scheme.onSurfaceVariant,
+                          ),
+                          onPressed: () => ref
+                              .read(favoritesViewModelProvider.notifier)
+                              .toggle(article),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -189,7 +208,11 @@ class _Avatar extends StatelessWidget {
     final palette = AppPalette.of(context);
     const size = 40.0;
     final px = (size * MediaQuery.devicePixelRatioOf(context)).round();
-    final fallback = Icon(Icons.person_outline, size: 20, color: palette.accentText);
+    final fallback = Icon(
+      Icons.person_outline,
+      size: 20,
+      color: palette.accentText,
+    );
     return Container(
       width: size,
       height: size,

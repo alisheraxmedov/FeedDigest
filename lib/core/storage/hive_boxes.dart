@@ -5,6 +5,8 @@ class HiveBoxes {
   static const String summaries = 'summaries';
   static const String subscriptions = 'subscriptions';
   static const String meta = 'meta';
+  static const String read = 'read';
+  static const String bodies = 'bodies';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -13,6 +15,8 @@ class HiveBoxes {
       Hive.openBox<dynamic>(summaries),
       Hive.openBox<dynamic>(subscriptions),
       Hive.openBox<dynamic>(meta),
+      Hive.openBox<dynamic>(read),
+      Hive.openBox<dynamic>(bodies),
     ]);
   }
 }

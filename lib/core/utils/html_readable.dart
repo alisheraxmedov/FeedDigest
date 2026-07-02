@@ -17,8 +17,19 @@ class HtmlReadable {
 
   /// Boilerplate containers removed before extracting text.
   static const List<String> _dropTags = [
-    'script', 'style', 'noscript', 'template', 'nav', 'header', 'footer',
-    'aside', 'form', 'svg', 'iframe', 'button', 'figure',
+    'script',
+    'style',
+    'noscript',
+    'template',
+    'nav',
+    'header',
+    'footer',
+    'aside',
+    'form',
+    'svg',
+    'iframe',
+    'button',
+    'figure',
   ];
 
   /// Block elements whose text makes up the readable body, in document order.
@@ -33,9 +44,8 @@ class HtmlReadable {
     } catch (_) {
       return '';
     }
-    final root = doc.querySelector('article') ??
-        doc.querySelector('main') ??
-        doc.body;
+    final root =
+        doc.querySelector('article') ?? doc.querySelector('main') ?? doc.body;
     if (root == null) return '';
 
     for (final tag in _dropTags) {
@@ -65,8 +75,7 @@ class HtmlReadable {
     return blocks.map((b) => '<p>${_escape(_truncate(b))}</p>').join();
   }
 
-  static String _collapse(String s) =>
-      s.replaceAll(RegExp(r'\s+'), ' ').trim();
+  static String _collapse(String s) => s.replaceAll(RegExp(r'\s+'), ' ').trim();
 
   static String _truncate(String s) =>
       s.length <= _maxChars ? s : s.substring(0, _maxChars);

@@ -4,6 +4,126 @@ All notable changes to this project, newest first. Dates are ISO (UTC).
 
 ---
 
+## 2026-07-02
+
+Feature work from the FEATURES.md roadmap: Sprint 1 (BYO-key hardening + summary
+controls), Sprint 2 (AI daily digest + reminder), Sprint 3 (AI reading tools),
+Sprint 4 (reading state, offline, data export), Sprint 5 (reading comfort), and
+Sprint 6 (engagement + read-aloud).
+
+### Engagement & read-aloud (Sprint 6)
+
+- **Reading streak** — consecutive days on which you opened an article, tracked
+  locally (no account); a flame chip in the feed app bar shows the current
+  streak.
+- **Reading-time badge** — feed cards with enough body text show an estimated
+  minutes-to-read badge for faster triage.
+- **Read-aloud (TTS)** — AI summaries and the daily digest can be played aloud.
+  Voice availability is checked per language and the control hides itself when no
+  voice exists for the target locale (Uzbek TTS is absent on most devices), and
+  Markdown is stripped before speaking.
+
+Deferred: **§16 share-as-image-card** (off-screen RepaintBoundary capture +
+native share, better validated on a device) and the full **§17 AI-scripted audio
+digest** (the read-aloud above already narrates the digest text).
+
+### UI polish
+
+- Read articles dim in the search results too (consistent with the feed).
+- Whole `lib/` reformatted for consistent style.
+
+> Visual fine-tuning (spacing, motion, screenshot-driven refinement) was not done
+> in this pass: it needs a device/emulator build, which was intentionally out of
+> scope here. All new UI reuses the existing design system (AppPalette, NeonCard,
+> shared sheet headers), so it is consistent with the current look.
+
+### Reading comfort (Sprint 5)
+
+- **Text size control** — the article detail screen has a text-size action that
+  opens a slider; the chosen scale is persisted and composed with the system
+  text scale (accessibility-friendly), so the whole article reflows live.
+
+Deferred from Sprint 5, with reasons: **§15 generic RSS** (the `FeedSource` enum
+is a single-select with an exhaustive switch; per-URL RSS needs an enum→registry
+refactor plus a topic/search/pagination shim that can't be safely validated
+without a device build), and **§11 highlights / §12 explain-a-term** (both need
+in-rendered-text selection UX that is impractical to verify without a device).
+
+### Reading state, offline & data ownership (Sprint 4)
+
+- **Read state** — opening an article marks it read (local Hive); read cards dim
+  in the feed so you can see what's new at a glance.
+- **Offline read** — a resolved article body is cached (FIFO-capped at 200); if a
+  later open fails with no network, the cached body is served, so previously
+  opened articles still read offline.
+- **Data export** — a Settings action exports subscriptions + saved articles as a
+  JSON backup and the topics as an OPML file, then opens the share sheet. No
+  backend or account: the user owns and can move their data.
+
+### AI reading tools — translation + chat (Sprint 3)
+
+- **Full-article translation** — the article detail screen can translate the
+  whole body into the user's language (Uzbek/Russian/English), not just the AI
+  summary. A translate action in the app bar toggles between the original and
+  the translation; the Gemini prompt preserves Markdown and leaves code blocks
+  and URLs untouched. Aimed at the underserved uz/ru dev audience reading
+  English-only Hacker News / dev.to content. Translated once, then cached in
+  state so toggling is free.
+- **Chat with the article** — a per-article chat sheet (app bar action) where the
+  reader asks follow-up questions ("explain this", "give a Python example") and
+  Gemini answers grounded in the article text, multi-turn, in the user's
+  language. Missing-key state routes to Settings.
+
+### Security — BYO-key hardening
+
+- Removed the bundled Gemini key fallback. The key now lives only in secure
+  storage, entered by the user; the `.env` asset, `flutter_dotenv` dependency,
+  and the dotenv bootstrap were removed so no key ships inside the APK/IPA.
+- The summary sheet's "no key" state now shows an **Add key** button that routes
+  to Settings instead of a dead retry.
+
+### AI summaries
+
+- **Summary depth toggle** — Brief (TL;DR) ↔ Detailed, persisted in Hive. The
+  Gemini prompt is chosen per depth and language; the cache key now includes the
+  depth so the two lengths don't collide.
+- **Multi-article daily digest** — a one-tap "today's top stories" digest built
+  from the feed's top 5 articles in a single Gemini call (titles + short snippets
+  only, to stay within context and spare the user's quota), rendered as Markdown
+  in a bottom sheet. Opened from an accent action in the feed app bar, shown only
+  when the feed has items. Cached by language + article-id set.
+
+### Notifications
+
+- **Daily digest reminder** — an opt-in, fixed-time local notification
+  (`flutter_local_notifications` + `timezone`) that reminds the user to open the
+  app and read the digest. Toggle and time picker live in Settings; enabling
+  requests OS permission first and re-arms the schedule with localized text. It
+  is a reminder, not push content: the fresh digest is generated on demand when
+  the user opens the app. Android boot receiver re-arms it after a restart.
+
+### UI
+
+- **Feed card redesigned (LinkedIn-style)** — full-width cover image, an author
+  header (domain avatar, author, source · time, topic tag), the title, then a
+  body snippet. Replaces the small side thumbnail.
+- Shared `TopicBadge` moved to `core/widgets` so the feed, search, and saved
+  cards render the tag identically.
+
+### Data / storage
+
+- Summary cache is capped at 200 entries with FIFO eviction so it can't grow
+  unbounded on disk.
+
+### Tooling
+
+- Added `flutter_local_notifications`, `timezone`, `flutter_timezone`; enabled
+  Android core-library desugaring (required by the notification plugin). Removed
+  `flutter_dotenv`.
+- `flutter analyze` clean; 40 tests pass; debug APK builds.
+
+---
+
 ## 2026-06-26
 
 ### Post-review hardening

@@ -94,3 +94,122 @@ class AiSummaryLangController extends Notifier<AppLanguage?> {
 final effectiveAiLangProvider = Provider<AppLanguage>(
   (ref) => ref.watch(aiSummaryLangProvider) ?? ref.watch(localeProvider),
 );
+
+/// How much detail the AI summary should carry. `brief` is a short TL;DR;
+/// `detailed` is the full section-by-section summary. Persisted in the meta box.
+enum SummaryDepth {
+  brief('brief'),
+  detailed('detailed');
+
+  const SummaryDepth(this.code);
+
+  final String code;
+
+  bool get isBrief => this == SummaryDepth.brief;
+
+  static SummaryDepth fromCode(String? code) => SummaryDepth.values.firstWhere(
+    (depth) => depth.code == code,
+    orElse: () => SummaryDepth.detailed,
+  );
+}
+
+final summaryDepthProvider =
+    NotifierProvider<SummaryDepthController, SummaryDepth>(
+      SummaryDepthController.new,
+    );
+
+class SummaryDepthController extends Notifier<SummaryDepth> {
+  static const String _key = 'summary_depth';
+
+  @override
+  SummaryDepth build() =>
+      SummaryDepth.fromCode(ref.read(metaBoxProvider).get(_key) as String?);
+
+  Future<void> select(SummaryDepth depth) async {
+    state = depth;
+    final box = ref.read(metaBoxProvider);
+    await box.put(_key, depth.code);
+    await box.flush();
+  }
+}
+
+/// Reading text scale for the article detail screen, persisted in the meta box.
+/// Composed with the system text scale rather than replacing it.
+final readerTextScaleProvider =
+    NotifierProvider<ReaderTextScaleController, double>(
+      ReaderTextScaleController.new,
+    );
+
+class ReaderTextScaleController extends Notifier<double> {
+  static const String _key = 'reader_text_scale';
+  static const double minScale = 0.85;
+  static const double maxScale = 1.6;
+
+  @override
+  double build() {
+    final value = ref.read(metaBoxProvider).get(_key);
+    return value is num ? value.toDouble().clamp(minScale, maxScale) : 1.0;
+  }
+
+  Future<void> set(double value) async {
+    final clamped = value.clamp(minScale, maxScale);
+    state = clamped;
+    final box = ref.read(metaBoxProvider);
+    await box.put(_key, clamped);
+    await box.flush();
+  }
+}
+
+/// Daily digest reminder settings, persisted in the meta box. The actual OS
+/// scheduling lives in NotificationService; this only holds the user's choice.
+class NotificationPrefs {
+  const NotificationPrefs({
+    required this.enabled,
+    required this.hour,
+    required this.minute,
+  });
+
+  final bool enabled;
+  final int hour;
+  final int minute;
+
+  String get hhmm =>
+      '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+
+  NotificationPrefs copyWith({bool? enabled, int? hour, int? minute}) =>
+      NotificationPrefs(
+        enabled: enabled ?? this.enabled,
+        hour: hour ?? this.hour,
+        minute: minute ?? this.minute,
+      );
+}
+
+final notificationPrefsProvider =
+    NotifierProvider<NotificationPrefsController, NotificationPrefs>(
+      NotificationPrefsController.new,
+    );
+
+class NotificationPrefsController extends Notifier<NotificationPrefs> {
+  static const String _kEnabled = 'digest_notif_enabled';
+  static const String _kHour = 'digest_notif_hour';
+  static const String _kMinute = 'digest_notif_minute';
+
+  @override
+  NotificationPrefs build() {
+    final box = ref.read(metaBoxProvider);
+    return NotificationPrefs(
+      enabled: box.get(_kEnabled) as bool? ?? false,
+      hour: box.get(_kHour) as int? ?? 9,
+      minute: box.get(_kMinute) as int? ?? 0,
+    );
+  }
+
+  Future<void> save(NotificationPrefs prefs) async {
+    state = prefs;
+    final box = ref.read(metaBoxProvider);
+    await box.put(_kEnabled, prefs.enabled);
+    await box.put(_kHour, prefs.hour);
+    await box.put(_kMinute, prefs.minute);
+    await box.flush();
+  }
+}
