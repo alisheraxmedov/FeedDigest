@@ -175,4 +175,13 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get summaryBlocked => 'AI xavfsizlik filtri tomonidan bloklandi';
+
+  @override
+  String get summaryDepthBrief => 'Qisqa';
+
+  @override
+  String get summaryDepthDetailed => 'Batafsil';
+
+  @override
+  String get summaryAddKey => 'Kalit qo\'shish';
 }

@@ -53,5 +53,8 @@
   "sortNewest": "Сначала новые",
   "sortPopular": "Популярные",
   "feedLoadError": "Не удалось загрузить статьи. Проверьте подключение и повторите.",
-  "summaryBlocked": "Заблокировано фильтром безопасности AI"
+  "summaryBlocked": "Заблокировано фильтром безопасности AI",
+  "summaryDepthBrief": "Кратко",
+  "summaryDepthDetailed": "Подробно",
+  "summaryAddKey": "Добавить ключ"
 }

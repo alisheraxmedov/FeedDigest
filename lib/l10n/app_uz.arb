@@ -53,5 +53,8 @@
   "sortNewest": "Eng yangi",
   "sortPopular": "Mashhur",
   "feedLoadError": "Maqolalarni yuklab bo'lmadi. Ulanishni tekshirib qayta urining.",
-  "summaryBlocked": "AI xavfsizlik filtri tomonidan bloklandi"
+  "summaryBlocked": "AI xavfsizlik filtri tomonidan bloklandi",
+  "summaryDepthBrief": "Qisqa",
+  "summaryDepthDetailed": "Batafsil",
+  "summaryAddKey": "Kalit qo'shish"
 }

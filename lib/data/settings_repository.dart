@@ -1,6 +1,8 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../core/storage/secure_store.dart';
 
+/// The Gemini key lives ONLY in secure storage, entered by the user (BYO-key).
+/// No bundled/developer fallback: shipping a key inside the app would leak it in
+/// the APK/IPA and let every user spend the developer's quota.
 class SettingsRepository {
   SettingsRepository(this._store);
 
@@ -10,15 +12,8 @@ class SettingsRepository {
 
   Future<String?> getGeminiKey() async {
     final stored = await _store.read(_geminiKey);
-    if (stored != null && stored.isNotEmpty) return stored;
-    return _envGeminiKey();
+    return (stored == null || stored.isEmpty) ? null : stored;
   }
 
   Future<void> setGeminiKey(String value) => _store.write(_geminiKey, value);
-
-  String? _envGeminiKey() {
-    if (!dotenv.isInitialized) return null;
-    final value = dotenv.maybeGet('GEMINI_API_KEY');
-    return (value == null || value.isEmpty) ? null : value;
-  }
 }

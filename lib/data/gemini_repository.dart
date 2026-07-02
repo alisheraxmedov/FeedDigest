@@ -25,7 +25,7 @@ class GeminiRepository {
   final Dio _dio;
   final SettingsRepository _settings;
 
-  static const Map<String, String> _instructions = {
+  static const Map<String, String> _detailed = {
     'uz':
         "Quyidagi maqolani o'zbek tilida batafsil xulosa qil. "
         "Maqoladagi har bir bo'lim, mavzu va muhim fikrni qamrab ol. "
@@ -55,12 +55,35 @@ class GeminiRepository {
         'Respond only in English.',
   };
 
-  Future<String> summarize(Article article, {required String langCode}) async {
+  static const Map<String, String> _brief = {
+    'uz':
+        "Quyidagi maqolani o'zbek tilida juda qisqa (TL;DR) xulosa qil. "
+        "Faqat 3-5 ta eng muhim fikrni bullet ro'yxati (-) ko'rinishida ber. "
+        "Har bir band bitta jumla bo'lsin, ortiqcha tafsilotsiz. "
+        "Javobni Markdown formatida qaytar. Faqat o'zbek tilida javob qaytar.",
+    'ru':
+        'Сделай очень краткое (TL;DR) резюме следующей статьи на русском языке. '
+        'Дай только 3-5 самых важных мыслей в виде маркированного списка (-). '
+        'Каждый пункт — одно предложение, без лишних деталей. '
+        'Верни ответ в формате Markdown. Отвечай только на русском языке.',
+    'en':
+        'Write a very short (TL;DR) summary of the following article in English. '
+        'Give only the 3-5 most important points as a bulleted list (-). '
+        'Each point is one sentence, no extra detail. '
+        'Return the response in Markdown format. Respond only in English.',
+  };
+
+  Future<String> summarize(
+    Article article, {
+    required String langCode,
+    bool brief = false,
+  }) async {
     final key = await _settings.getGeminiKey();
     if (key == null || key.isEmpty) {
       throw GeminiException('no_key');
     }
-    final instruction = _instructions[langCode] ?? _instructions['uz']!;
+    final set = brief ? _brief : _detailed;
+    final instruction = set[langCode] ?? set['uz']!;
     final text = article.contentText.replaceAll(RegExp(r'<[^>]+>'), ' ').trim();
     final prompt = '$instruction\n\nTitle: ${article.title}\n\nText: $text';
     try {

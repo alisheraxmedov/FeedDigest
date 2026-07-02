@@ -423,6 +423,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Blocked by the AI safety filter'**
   String get summaryBlocked;
+
+  /// No description provided for @summaryDepthBrief.
+  ///
+  /// In en, this message translates to:
+  /// **'Brief'**
+  String get summaryDepthBrief;
+
+  /// No description provided for @summaryDepthDetailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed'**
+  String get summaryDepthDetailed;
+
+  /// No description provided for @summaryAddKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Add key'**
+  String get summaryAddKey;
 }
 
 class _AppLocalizationsDelegate

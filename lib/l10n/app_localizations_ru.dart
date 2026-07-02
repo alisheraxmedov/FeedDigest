@@ -174,4 +174,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get summaryBlocked => 'Заблокировано фильтром безопасности AI';
+
+  @override
+  String get summaryDepthBrief => 'Кратко';
+
+  @override
+  String get summaryDepthDetailed => 'Подробно';
+
+  @override
+  String get summaryAddKey => 'Добавить ключ';
 }

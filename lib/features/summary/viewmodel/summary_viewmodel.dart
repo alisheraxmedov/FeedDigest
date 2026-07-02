@@ -16,7 +16,8 @@ class SummaryViewModel extends AsyncNotifier<String> {
   @override
   Future<String> build() async {
     final lang = ref.watch(effectiveAiLangProvider);
-    final cacheKey = '${article.id}-${lang.code}';
+    final depth = ref.watch(summaryDepthProvider);
+    final cacheKey = '${article.id}-${lang.code}-${depth.code}';
     final cache = ref.read(summaryCacheRepositoryProvider);
     final cached = cache.get(cacheKey);
     if (cached != null) return cached.summary;
@@ -30,7 +31,7 @@ class SummaryViewModel extends AsyncNotifier<String> {
         : article;
     final text = await ref
         .read(geminiRepositoryProvider)
-        .summarize(enriched, langCode: lang.code);
+        .summarize(enriched, langCode: lang.code, brief: depth.isBrief);
     await cache.put(AiSummary(postId: cacheKey, summary: text));
     return text;
   }

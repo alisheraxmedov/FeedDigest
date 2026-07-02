@@ -175,4 +175,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get summaryBlocked => 'Blocked by the AI safety filter';
+
+  @override
+  String get summaryDepthBrief => 'Brief';
+
+  @override
+  String get summaryDepthDetailed => 'Detailed';
+
+  @override
+  String get summaryAddKey => 'Add key';
 }

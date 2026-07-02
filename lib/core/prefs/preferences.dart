@@ -94,3 +94,41 @@ class AiSummaryLangController extends Notifier<AppLanguage?> {
 final effectiveAiLangProvider = Provider<AppLanguage>(
   (ref) => ref.watch(aiSummaryLangProvider) ?? ref.watch(localeProvider),
 );
+
+/// How much detail the AI summary should carry. `brief` is a short TL;DR;
+/// `detailed` is the full section-by-section summary. Persisted in the meta box.
+enum SummaryDepth {
+  brief('brief'),
+  detailed('detailed');
+
+  const SummaryDepth(this.code);
+
+  final String code;
+
+  bool get isBrief => this == SummaryDepth.brief;
+
+  static SummaryDepth fromCode(String? code) => SummaryDepth.values.firstWhere(
+    (depth) => depth.code == code,
+    orElse: () => SummaryDepth.detailed,
+  );
+}
+
+final summaryDepthProvider =
+    NotifierProvider<SummaryDepthController, SummaryDepth>(
+      SummaryDepthController.new,
+    );
+
+class SummaryDepthController extends Notifier<SummaryDepth> {
+  static const String _key = 'summary_depth';
+
+  @override
+  SummaryDepth build() =>
+      SummaryDepth.fromCode(ref.read(metaBoxProvider).get(_key) as String?);
+
+  Future<void> select(SummaryDepth depth) async {
+    state = depth;
+    final box = ref.read(metaBoxProvider);
+    await box.put(_key, depth.code);
+    await box.flush();
+  }
+}

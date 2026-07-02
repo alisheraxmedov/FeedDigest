@@ -63,5 +63,8 @@
   "sortNewest": "Newest",
   "sortPopular": "Popular",
   "feedLoadError": "Couldn't load articles. Check your connection and try again.",
-  "summaryBlocked": "Blocked by the AI safety filter"
+  "summaryBlocked": "Blocked by the AI safety filter",
+  "summaryDepthBrief": "Brief",
+  "summaryDepthDetailed": "Detailed",
+  "summaryAddKey": "Add key"
 }
