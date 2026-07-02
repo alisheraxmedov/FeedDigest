@@ -68,9 +68,9 @@ class SummarySheet extends ConsumerWidget {
           icon: Icons.key,
           onPressed: () {
             Navigator.of(context).pop();
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
           },
         ),
       ],
@@ -217,7 +217,13 @@ class _DepthToggle extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          _segment(ref, palette, l.summaryDepthBrief, SummaryDepth.brief, current),
+          _segment(
+            ref,
+            palette,
+            l.summaryDepthBrief,
+            SummaryDepth.brief,
+            current,
+          ),
           _segment(
             ref,
             palette,

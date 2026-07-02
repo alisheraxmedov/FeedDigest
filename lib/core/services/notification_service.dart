@@ -31,7 +31,9 @@ class NotificationService {
     if (_ready) return;
     tz_data.initializeTimeZones();
     try {
-      tz.setLocalLocation(tz.getLocation(await FlutterTimezone.getLocalTimezone()));
+      tz.setLocalLocation(
+        tz.getLocation(await FlutterTimezone.getLocalTimezone()),
+      );
     } catch (_) {
       // Fall back to the default (UTC) location if the platform lookup fails.
     }
@@ -63,7 +65,11 @@ class NotificationService {
           IOSFlutterLocalNotificationsPlugin
         >();
     if (ios != null) {
-      return await ios.requestPermissions(alert: true, badge: true, sound: true) ??
+      return await ios.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          ) ??
           false;
     }
     return true;

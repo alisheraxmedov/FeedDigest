@@ -36,9 +36,7 @@ class ChatState {
 }
 
 final articleChatProvider = NotifierProvider.autoDispose
-    .family<ArticleChatViewModel, ChatState, Article>(
-      ArticleChatViewModel.new,
-    );
+    .family<ArticleChatViewModel, ChatState, Article>(ArticleChatViewModel.new);
 
 class ArticleChatViewModel extends Notifier<ChatState> {
   ArticleChatViewModel(this.article);
@@ -53,7 +51,10 @@ class ArticleChatViewModel extends Notifier<ChatState> {
     if (q.isEmpty || state.sending) return;
     final history = state.messages;
     state = ChatState(
-      messages: [...history, ChatMessage(role: ChatRole.user, text: q)],
+      messages: [
+        ...history,
+        ChatMessage(role: ChatRole.user, text: q),
+      ],
       sending: true,
     );
     try {

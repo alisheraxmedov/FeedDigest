@@ -6,8 +6,9 @@ opens. Kept in memory as a Set so card rebuilds are cheap.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers.dart';
 
-final readStateProvider =
-    NotifierProvider<ReadStateViewModel, Set<String>>(ReadStateViewModel.new);
+final readStateProvider = NotifierProvider<ReadStateViewModel, Set<String>>(
+  ReadStateViewModel.new,
+);
 
 class ReadStateViewModel extends Notifier<Set<String>> {
   @override

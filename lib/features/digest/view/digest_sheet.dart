@@ -171,9 +171,9 @@ class DigestSheet extends ConsumerWidget {
           icon: Icons.key,
           onPressed: () {
             Navigator.of(context).pop();
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
           },
         ),
       ],

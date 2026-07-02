@@ -51,9 +51,9 @@ class _NotificationSettingsSheetState
       final granted = await NotificationService.instance.requestPermission();
       if (!granted) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l.notifDenied)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l.notifDenied)));
         }
         return;
       }

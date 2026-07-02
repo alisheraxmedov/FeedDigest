@@ -54,7 +54,10 @@ class ReaderSettingsSheet extends ConsumerWidget {
             const SizedBox(height: 12),
             Row(
               children: [
-                Text('A', style: TextStyle(fontSize: 14, color: palette.textDim)),
+                Text(
+                  'A',
+                  style: TextStyle(fontSize: 14, color: palette.textDim),
+                ),
                 Expanded(
                   child: Slider(
                     value: scale,
@@ -67,7 +70,10 @@ class ReaderSettingsSheet extends ConsumerWidget {
                         ref.read(readerTextScaleProvider.notifier).set(v),
                   ),
                 ),
-                Text('A', style: TextStyle(fontSize: 24, color: palette.textDim)),
+                Text(
+                  'A',
+                  style: TextStyle(fontSize: 24, color: palette.textDim),
+                ),
               ],
             ),
           ],

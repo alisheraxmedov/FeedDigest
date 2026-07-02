@@ -18,8 +18,9 @@ class StreakState {
   final int lastDay;
 }
 
-final streakProvider =
-    NotifierProvider<StreakController, StreakState>(StreakController.new);
+final streakProvider = NotifierProvider<StreakController, StreakState>(
+  StreakController.new,
+);
 
 class StreakController extends Notifier<StreakState> {
   static const String _kCurrent = 'streak_current';
@@ -44,11 +45,7 @@ class StreakController extends Notifier<StreakState> {
     final best = current > state.best ? current : state.best;
     state = StreakState(current: current, best: best, lastDay: dayIndex);
     final box = ref.read(metaBoxProvider);
-    await box.putAll({
-      _kCurrent: current,
-      _kBest: best,
-      _kLastDay: dayIndex,
-    });
+    await box.putAll({_kCurrent: current, _kBest: best, _kLastDay: dayIndex});
     await box.flush();
   }
 }

@@ -43,16 +43,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final subs = ref.read(subscriptionsViewModelProvider);
     final favs = ref.read(favoritesViewModelProvider);
     try {
-      await ref.read(exportServiceProvider).shareBackup(
-        subscriptions: subs,
-        favorites: favs,
-        nowMs: DateTime.now().millisecondsSinceEpoch,
-      );
+      await ref
+          .read(exportServiceProvider)
+          .shareBackup(
+            subscriptions: subs,
+            favorites: favs,
+            nowMs: DateTime.now().millisecondsSinceEpoch,
+          );
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.exportFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.exportFailed)));
     }
   }
 

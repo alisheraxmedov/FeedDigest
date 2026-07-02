@@ -178,10 +178,7 @@ class _ArticleChatSheetState extends ConsumerState<ArticleChatSheet> {
             ),
           ),
           const SizedBox(width: 10),
-          Text(
-            '…',
-            style: TextStyle(fontSize: 14, color: palette.textDim),
-          ),
+          Text('…', style: TextStyle(fontSize: 14, color: palette.textDim)),
         ],
       ),
     ),
@@ -267,7 +264,11 @@ class _ArticleChatSheetState extends ConsumerState<ArticleChatSheet> {
               onTap: sending ? null : _send,
               child: Padding(
                 padding: const EdgeInsets.all(12),
-                child: Icon(Icons.arrow_upward, color: palette.onAccent, size: 22),
+                child: Icon(
+                  Icons.arrow_upward,
+                  color: palette.onAccent,
+                  size: 22,
+                ),
               ),
             ),
           ),
@@ -299,13 +300,19 @@ class _Bubble extends StatelessWidget {
           color: isUser ? palette.accentSoft : palette.iconCircle,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isUser ? palette.accent.withValues(alpha: 0.3) : palette.mutedBorder,
+            color: isUser
+                ? palette.accent.withValues(alpha: 0.3)
+                : palette.mutedBorder,
           ),
         ),
         child: isUser
             ? Text(
                 message.text,
-                style: TextStyle(fontSize: 15, height: 1.4, color: scheme.onSurface),
+                style: TextStyle(
+                  fontSize: 15,
+                  height: 1.4,
+                  color: scheme.onSurface,
+                ),
               )
             : MarkdownBody(
                 data: message.text,

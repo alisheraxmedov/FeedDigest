@@ -27,6 +27,16 @@ Deferred: **§16 share-as-image-card** (off-screen RepaintBoundary capture +
 native share, better validated on a device) and the full **§17 AI-scripted audio
 digest** (the read-aloud above already narrates the digest text).
 
+### UI polish
+
+- Read articles dim in the search results too (consistent with the feed).
+- Whole `lib/` reformatted for consistent style.
+
+> Visual fine-tuning (spacing, motion, screenshot-driven refinement) was not done
+> in this pass: it needs a device/emulator build, which was intentionally out of
+> scope here. All new UI reuses the existing design system (AppPalette, NeonCard,
+> shared sheet headers), so it is consistent with the current look.
+
 ### Reading comfort (Sprint 5)
 
 - **Text size control** — the article detail screen has a text-size action that
