@@ -4,6 +4,61 @@ All notable changes to this project, newest first. Dates are ISO (UTC).
 
 ---
 
+## 2026-07-02
+
+Feature work from the FEATURES.md roadmap: Sprint 1 (BYO-key hardening + summary
+controls) and Sprint 2 (AI daily digest + reminder).
+
+### Security — BYO-key hardening
+
+- Removed the bundled Gemini key fallback. The key now lives only in secure
+  storage, entered by the user; the `.env` asset, `flutter_dotenv` dependency,
+  and the dotenv bootstrap were removed so no key ships inside the APK/IPA.
+- The summary sheet's "no key" state now shows an **Add key** button that routes
+  to Settings instead of a dead retry.
+
+### AI summaries
+
+- **Summary depth toggle** — Brief (TL;DR) ↔ Detailed, persisted in Hive. The
+  Gemini prompt is chosen per depth and language; the cache key now includes the
+  depth so the two lengths don't collide.
+- **Multi-article daily digest** — a one-tap "today's top stories" digest built
+  from the feed's top 5 articles in a single Gemini call (titles + short snippets
+  only, to stay within context and spare the user's quota), rendered as Markdown
+  in a bottom sheet. Opened from an accent action in the feed app bar, shown only
+  when the feed has items. Cached by language + article-id set.
+
+### Notifications
+
+- **Daily digest reminder** — an opt-in, fixed-time local notification
+  (`flutter_local_notifications` + `timezone`) that reminds the user to open the
+  app and read the digest. Toggle and time picker live in Settings; enabling
+  requests OS permission first and re-arms the schedule with localized text. It
+  is a reminder, not push content: the fresh digest is generated on demand when
+  the user opens the app. Android boot receiver re-arms it after a restart.
+
+### UI
+
+- **Feed card redesigned (LinkedIn-style)** — full-width cover image, an author
+  header (domain avatar, author, source · time, topic tag), the title, then a
+  body snippet. Replaces the small side thumbnail.
+- Shared `TopicBadge` moved to `core/widgets` so the feed, search, and saved
+  cards render the tag identically.
+
+### Data / storage
+
+- Summary cache is capped at 200 entries with FIFO eviction so it can't grow
+  unbounded on disk.
+
+### Tooling
+
+- Added `flutter_local_notifications`, `timezone`, `flutter_timezone`; enabled
+  Android core-library desugaring (required by the notification plugin). Removed
+  `flutter_dotenv`.
+- `flutter analyze` clean; 40 tests pass; debug APK builds.
+
+---
+
 ## 2026-06-26
 
 ### Post-review hardening
