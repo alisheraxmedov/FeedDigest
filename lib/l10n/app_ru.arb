@@ -58,5 +58,11 @@
   "summaryDepthDetailed": "Подробно",
   "summaryAddKey": "Добавить ключ",
   "digestTitle": "Дайджест дня",
-  "digestTooltip": "AI ежедневный дайджест"
+  "digestTooltip": "AI ежедневный дайджест",
+  "notifDigestLabel": "Дайджест дня",
+  "notifDigestDesc": "Ежедневное напоминание почитать в выбранное время",
+  "notifTimeLabel": "Время",
+  "notifBody": "Дайджест дня готов — время читать!",
+  "notifDenied": "Разрешение на уведомления не получено",
+  "notifOff": "Выключено"
 }

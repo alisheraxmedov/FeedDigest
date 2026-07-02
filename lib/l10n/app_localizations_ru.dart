@@ -189,4 +189,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get digestTooltip => 'AI ежедневный дайджест';
+
+  @override
+  String get notifDigestLabel => 'Дайджест дня';
+
+  @override
+  String get notifDigestDesc =>
+      'Ежедневное напоминание почитать в выбранное время';
+
+  @override
+  String get notifTimeLabel => 'Время';
+
+  @override
+  String get notifBody => 'Дайджест дня готов — время читать!';
+
+  @override
+  String get notifDenied => 'Разрешение на уведомления не получено';
+
+  @override
+  String get notifOff => 'Выключено';
 }

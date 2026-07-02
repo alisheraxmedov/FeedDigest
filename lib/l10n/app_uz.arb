@@ -58,5 +58,11 @@
   "summaryDepthDetailed": "Batafsil",
   "summaryAddKey": "Kalit qo'shish",
   "digestTitle": "Bugungi digest",
-  "digestTooltip": "AI kunlik digest"
+  "digestTooltip": "AI kunlik digest",
+  "notifDigestLabel": "Kunlik digest",
+  "notifDigestDesc": "Har kuni belgilangan vaqtda o'qish eslatmasi",
+  "notifTimeLabel": "Vaqt",
+  "notifBody": "Bugungi digest tayyor — o'qishga vaqt!",
+  "notifDenied": "Bildirishnomaga ruxsat berilmadi",
+  "notifOff": "O'chirilgan"
 }

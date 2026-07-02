@@ -190,4 +190,22 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get digestTooltip => 'AI kunlik digest';
+
+  @override
+  String get notifDigestLabel => 'Kunlik digest';
+
+  @override
+  String get notifDigestDesc => 'Har kuni belgilangan vaqtda o\'qish eslatmasi';
+
+  @override
+  String get notifTimeLabel => 'Vaqt';
+
+  @override
+  String get notifBody => 'Bugungi digest tayyor — o\'qishga vaqt!';
+
+  @override
+  String get notifDenied => 'Bildirishnomaga ruxsat berilmadi';
+
+  @override
+  String get notifOff => 'O\'chirilgan';
 }

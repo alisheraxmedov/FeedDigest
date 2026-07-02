@@ -7,6 +7,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../feed/view/widgets/source_switcher.dart';
 import '../../feed/viewmodel/feed_source_viewmodel.dart';
 import '../viewmodel/settings_viewmodel.dart';
+import 'widgets/notification_settings_sheet.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -111,6 +112,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final themeMode = ref.watch(themeModeProvider);
     final source = ref.watch(feedSourceProvider);
     final keyPresent = ref.watch(geminiKeyPresentProvider);
+    final notif = ref.watch(notificationPrefsProvider);
     return Scaffold(
       appBar: AppBar(
         leading: Center(child: Icon(Icons.hub, color: palette.accent)),
@@ -231,6 +233,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: l.aiSummaryLanguage,
             value: aiLang.nativeLabel,
             onTap: () => _pickAiLanguage(l),
+          ),
+          const SizedBox(height: 16),
+          SettingsTile(
+            icon: Icons.notifications_none,
+            title: l.notifDigestLabel,
+            value: notif.enabled ? notif.hhmm : l.notifOff,
+            onTap: () => showNotificationSettingsSheet(context),
           ),
           const SizedBox(height: 16),
           SettingsTile(

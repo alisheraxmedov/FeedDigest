@@ -68,5 +68,11 @@
   "summaryDepthDetailed": "Detailed",
   "summaryAddKey": "Add key",
   "digestTitle": "Today's digest",
-  "digestTooltip": "AI daily digest"
+  "digestTooltip": "AI daily digest",
+  "notifDigestLabel": "Daily digest",
+  "notifDigestDesc": "A daily reminder to read at your chosen time",
+  "notifTimeLabel": "Time",
+  "notifBody": "Your daily digest is ready — time to read!",
+  "notifDenied": "Notification permission denied",
+  "notifOff": "Off"
 }

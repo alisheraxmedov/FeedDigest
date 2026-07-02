@@ -453,6 +453,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'AI daily digest'**
   String get digestTooltip;
+
+  /// No description provided for @notifDigestLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily digest'**
+  String get notifDigestLabel;
+
+  /// No description provided for @notifDigestDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'A daily reminder to read at your chosen time'**
+  String get notifDigestDesc;
+
+  /// No description provided for @notifTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get notifTimeLabel;
+
+  /// No description provided for @notifBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your daily digest is ready — time to read!'**
+  String get notifBody;
+
+  /// No description provided for @notifDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification permission denied'**
+  String get notifDenied;
+
+  /// No description provided for @notifOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get notifOff;
 }
 
 class _AppLocalizationsDelegate

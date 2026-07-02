@@ -190,4 +190,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get digestTooltip => 'AI daily digest';
+
+  @override
+  String get notifDigestLabel => 'Daily digest';
+
+  @override
+  String get notifDigestDesc => 'A daily reminder to read at your chosen time';
+
+  @override
+  String get notifTimeLabel => 'Time';
+
+  @override
+  String get notifBody => 'Your daily digest is ready — time to read!';
+
+  @override
+  String get notifDenied => 'Notification permission denied';
+
+  @override
+  String get notifOff => 'Off';
 }

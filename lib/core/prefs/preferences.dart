@@ -132,3 +132,57 @@ class SummaryDepthController extends Notifier<SummaryDepth> {
     await box.flush();
   }
 }
+
+/// Daily digest reminder settings, persisted in the meta box. The actual OS
+/// scheduling lives in NotificationService; this only holds the user's choice.
+class NotificationPrefs {
+  const NotificationPrefs({
+    required this.enabled,
+    required this.hour,
+    required this.minute,
+  });
+
+  final bool enabled;
+  final int hour;
+  final int minute;
+
+  String get hhmm =>
+      '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+
+  NotificationPrefs copyWith({bool? enabled, int? hour, int? minute}) =>
+      NotificationPrefs(
+        enabled: enabled ?? this.enabled,
+        hour: hour ?? this.hour,
+        minute: minute ?? this.minute,
+      );
+}
+
+final notificationPrefsProvider =
+    NotifierProvider<NotificationPrefsController, NotificationPrefs>(
+      NotificationPrefsController.new,
+    );
+
+class NotificationPrefsController extends Notifier<NotificationPrefs> {
+  static const String _kEnabled = 'digest_notif_enabled';
+  static const String _kHour = 'digest_notif_hour';
+  static const String _kMinute = 'digest_notif_minute';
+
+  @override
+  NotificationPrefs build() {
+    final box = ref.read(metaBoxProvider);
+    return NotificationPrefs(
+      enabled: box.get(_kEnabled) as bool? ?? false,
+      hour: box.get(_kHour) as int? ?? 9,
+      minute: box.get(_kMinute) as int? ?? 0,
+    );
+  }
+
+  Future<void> save(NotificationPrefs prefs) async {
+    state = prefs;
+    final box = ref.read(metaBoxProvider);
+    await box.put(_kEnabled, prefs.enabled);
+    await box.put(_kHour, prefs.hour);
+    await box.put(_kMinute, prefs.minute);
+    await box.flush();
+  }
+}
