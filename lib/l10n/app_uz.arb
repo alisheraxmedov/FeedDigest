@@ -64,5 +64,10 @@
   "notifTimeLabel": "Vaqt",
   "notifBody": "Bugungi digest tayyor — o'qishga vaqt!",
   "notifDenied": "Bildirishnomaga ruxsat berilmadi",
-  "notifOff": "O'chirilgan"
+  "notifOff": "O'chirilgan",
+  "translateTooltip": "Tarjima qilish",
+  "chatTooltip": "Maqola bilan suhbat",
+  "chatTitle": "Maqola bilan suhbat",
+  "chatHint": "Savol bering...",
+  "chatEmpty": "Maqola haqida istalgan savolni bering"
 }

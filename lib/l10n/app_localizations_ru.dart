@@ -208,4 +208,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notifOff => 'Выключено';
+
+  @override
+  String get translateTooltip => 'Перевести';
+
+  @override
+  String get chatTooltip => 'Чат по статье';
+
+  @override
+  String get chatTitle => 'Чат по статье';
+
+  @override
+  String get chatHint => 'Задайте вопрос...';
+
+  @override
+  String get chatEmpty => 'Спросите что угодно об этой статье';
 }

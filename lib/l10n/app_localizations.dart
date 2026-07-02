@@ -489,6 +489,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Off'**
   String get notifOff;
+
+  /// No description provided for @translateTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Translate'**
+  String get translateTooltip;
+
+  /// No description provided for @chatTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat about article'**
+  String get chatTooltip;
+
+  /// No description provided for @chatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat about article'**
+  String get chatTitle;
+
+  /// No description provided for @chatHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a question...'**
+  String get chatHint;
+
+  /// No description provided for @chatEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask anything about this article'**
+  String get chatEmpty;
 }
 
 class _AppLocalizationsDelegate

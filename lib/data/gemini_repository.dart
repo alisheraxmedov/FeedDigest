@@ -7,6 +7,7 @@ GeminiException carrying a stable code the UI maps to a localized message.
 import 'package:dio/dio.dart';
 import '../core/config/app_config.dart';
 import '../models/article.dart';
+import '../models/chat_message.dart';
 import 'settings_repository.dart';
 
 class GeminiException implements Exception {
@@ -169,6 +170,129 @@ class GeminiRepository {
               ],
             },
           ],
+        },
+      );
+      return extractText(resp.data);
+    } on DioException catch (e) {
+      throw GeminiException('request', e.message ?? '');
+    }
+  }
+
+  static const Map<String, String> _translateInstr = {
+    'uz':
+        "Quyidagi maqolani to'liq o'zbek tiliga tarjima qil. Markdown "
+        "formatini saqlab qol; kod bloklari (```), inline kod va URL'larni "
+        "tarjima QILMA — o'zgartirmasdan qoldir. Faqat tarjimani qaytar, "
+        "boshqa hech qanday izohsiz.",
+    'ru':
+        'Переведи следующую статью полностью на русский язык. Сохрани '
+        'форматирование Markdown; НЕ переводи блоки кода (```), инлайн-код и '
+        'URL — оставь их без изменений. Верни только перевод, без пояснений.',
+    'en':
+        'Translate the following article fully into English. Preserve Markdown '
+        'formatting; do NOT translate code blocks (```), inline code, or URLs — '
+        'leave them unchanged. Return only the translation, no extra commentary.',
+  };
+
+  /// Translates an article body into [targetLangCode], preserving Markdown and
+  /// leaving code/URLs untouched. Aimed at the underserved uz/ru dev audience
+  /// reading English-only Hacker News / dev.to content.
+  Future<String> translate(
+    String text, {
+    required String targetLangCode,
+  }) async {
+    final key = await _settings.getGeminiKey();
+    if (key == null || key.isEmpty) {
+      throw GeminiException('no_key');
+    }
+    final instruction =
+        _translateInstr[targetLangCode] ?? _translateInstr['uz']!;
+    final prompt = '$instruction\n\n$text';
+    try {
+      final resp = await _dio.post<dynamic>(
+        '${AppConfig.geminiEndpoint}/${AppConfig.geminiModel}:generateContent',
+        options: Options(
+          receiveTimeout: const Duration(seconds: 90),
+          headers: {'x-goog-api-key': key, 'Content-Type': 'application/json'},
+        ),
+        data: {
+          'contents': [
+            {
+              'parts': [
+                {'text': prompt},
+              ],
+            },
+          ],
+        },
+      );
+      return extractText(resp.data);
+    } on DioException catch (e) {
+      throw GeminiException('request', e.message ?? '');
+    }
+  }
+
+  static const Map<String, String> _chatSystem = {
+    'uz':
+        "Sen foydalanuvchiga QUYIDA berilgan maqola bo'yicha yordam beradigan "
+        "yordamchisan. Faqat maqola mazmuniga tayangan holda o'zbek tilida "
+        "qisqa va aniq javob ber. Agar javob maqolada bo'lmasa, buni ochiq ayt.",
+    'ru':
+        'Ты ассистент, который помогает пользователю по статье, приведённой '
+        'НИЖЕ. Отвечай кратко и по делу на русском языке, опираясь только на '
+        'содержание статьи. Если ответа в статье нет — прямо скажи об этом.',
+    'en':
+        'You are an assistant helping the user with the article provided BELOW. '
+        'Answer concisely in English, grounded only in the article content. If '
+        'the answer is not in the article, say so plainly.',
+  };
+
+  /// Multi-turn Q&A grounded in a single article. The article text is passed as
+  /// a system instruction (truncated to bound context/quota); [history] carries
+  /// the prior turns and [question] is the new user message.
+  Future<String> chat({
+    required Article article,
+    required String articleBody,
+    required List<ChatMessage> history,
+    required String question,
+    required String langCode,
+  }) async {
+    final key = await _settings.getGeminiKey();
+    if (key == null || key.isEmpty) {
+      throw GeminiException('no_key');
+    }
+    final system = _chatSystem[langCode] ?? _chatSystem['uz']!;
+    final context = articleBody.length > 8000
+        ? articleBody.substring(0, 8000)
+        : articleBody;
+    final contents = <Map<String, dynamic>>[
+      for (final m in history)
+        {
+          'role': m.isUser ? 'user' : 'model',
+          'parts': [
+            {'text': m.text},
+          ],
+        },
+      {
+        'role': 'user',
+        'parts': [
+          {'text': question},
+        ],
+      },
+    ];
+    try {
+      final resp = await _dio.post<dynamic>(
+        '${AppConfig.geminiEndpoint}/${AppConfig.geminiModel}:generateContent',
+        options: Options(
+          receiveTimeout: const Duration(seconds: 60),
+          headers: {'x-goog-api-key': key, 'Content-Type': 'application/json'},
+        ),
+        data: {
+          'system_instruction': {
+            'parts': [
+              {'text': '$system\n\nTitle: ${article.title}\n\n$context'},
+            ],
+          },
+          'contents': contents,
         },
       );
       return extractText(resp.data);

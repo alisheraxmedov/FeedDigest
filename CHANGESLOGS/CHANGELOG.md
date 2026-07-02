@@ -7,7 +7,21 @@ All notable changes to this project, newest first. Dates are ISO (UTC).
 ## 2026-07-02
 
 Feature work from the FEATURES.md roadmap: Sprint 1 (BYO-key hardening + summary
-controls) and Sprint 2 (AI daily digest + reminder).
+controls), Sprint 2 (AI daily digest + reminder), and Sprint 3 (AI reading tools).
+
+### AI reading tools — translation + chat (Sprint 3)
+
+- **Full-article translation** — the article detail screen can translate the
+  whole body into the user's language (Uzbek/Russian/English), not just the AI
+  summary. A translate action in the app bar toggles between the original and
+  the translation; the Gemini prompt preserves Markdown and leaves code blocks
+  and URLs untouched. Aimed at the underserved uz/ru dev audience reading
+  English-only Hacker News / dev.to content. Translated once, then cached in
+  state so toggling is free.
+- **Chat with the article** — a per-article chat sheet (app bar action) where the
+  reader asks follow-up questions ("explain this", "give a Python example") and
+  Gemini answers grounded in the article text, multi-turn, in the user's
+  language. Missing-key state routes to Settings.
 
 ### Security — BYO-key hardening
 

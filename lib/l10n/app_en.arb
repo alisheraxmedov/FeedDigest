@@ -74,5 +74,10 @@
   "notifTimeLabel": "Time",
   "notifBody": "Your daily digest is ready — time to read!",
   "notifDenied": "Notification permission denied",
-  "notifOff": "Off"
+  "notifOff": "Off",
+  "translateTooltip": "Translate",
+  "chatTooltip": "Chat about article",
+  "chatTitle": "Chat about article",
+  "chatHint": "Ask a question...",
+  "chatEmpty": "Ask anything about this article"
 }

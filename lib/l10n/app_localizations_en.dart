@@ -208,4 +208,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifOff => 'Off';
+
+  @override
+  String get translateTooltip => 'Translate';
+
+  @override
+  String get chatTooltip => 'Chat about article';
+
+  @override
+  String get chatTitle => 'Chat about article';
+
+  @override
+  String get chatHint => 'Ask a question...';
+
+  @override
+  String get chatEmpty => 'Ask anything about this article';
 }

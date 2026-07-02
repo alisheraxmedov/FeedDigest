@@ -208,4 +208,19 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get notifOff => 'O\'chirilgan';
+
+  @override
+  String get translateTooltip => 'Tarjima qilish';
+
+  @override
+  String get chatTooltip => 'Maqola bilan suhbat';
+
+  @override
+  String get chatTitle => 'Maqola bilan suhbat';
+
+  @override
+  String get chatHint => 'Savol bering...';
+
+  @override
+  String get chatEmpty => 'Maqola haqida istalgan savolni bering';
 }

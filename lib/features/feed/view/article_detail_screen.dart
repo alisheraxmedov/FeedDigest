@@ -15,9 +15,11 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/neon_widgets.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/article.dart';
+import '../../chat/view/article_chat_sheet.dart';
 import '../../favorites/viewmodel/favorites_viewmodel.dart';
 import '../../summary/view/summary_sheet.dart';
 import '../viewmodel/article_body_viewmodel.dart';
+import '../viewmodel/article_translation_viewmodel.dart';
 
 class ArticleDetailScreen extends ConsumerWidget {
   const ArticleDetailScreen({super.key, required this.article});
@@ -26,6 +28,7 @@ class ArticleDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
     final isFav = ref.watch(
@@ -34,11 +37,48 @@ class ArticleDetailScreen extends ConsumerWidget {
       ),
     );
     final bodyAsync = ref.watch(articleBodyProvider(article));
+    final translation = ref.watch(articleTranslationProvider(article));
+    ref.listen(articleTranslationProvider(article), (prev, next) {
+      if (next.error && (prev == null || !prev.error)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l.summaryFailed)),
+        );
+      }
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text(article.source),
         actions: [
           IconButton(
+            tooltip: l.translateTooltip,
+            icon: translation.loading
+                ? SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: palette.accent,
+                    ),
+                  )
+                : Icon(
+                    Icons.translate,
+                    color: translation.showing
+                        ? palette.accent
+                        : scheme.onSurface,
+                  ),
+            onPressed: translation.loading
+                ? null
+                : () => ref
+                      .read(articleTranslationProvider(article).notifier)
+                      .toggle(),
+          ),
+          IconButton(
+            tooltip: l.chatTooltip,
+            icon: Icon(Icons.forum_outlined, color: scheme.onSurface),
+            onPressed: () => showArticleChatSheet(context, article),
+          ),
+          IconButton(
+            tooltip: l.navSaved,
             icon: Icon(
               isFav ? Icons.favorite : Icons.favorite_border,
               color: isFav ? palette.accent : scheme.onSurface,
@@ -72,16 +112,27 @@ class ArticleDetailScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
                 _AuthorRow(article: article),
-                bodyAsync.when(
-                  loading: () => _BodyContent(
+                if (translation.showing && translation.text != null)
+                  _BodyContent(
                     article: article,
-                    content: article.body,
-                    loading: true,
+                    content: translation.text!,
+                    forceMarkdown: true,
+                  )
+                else
+                  bodyAsync.when(
+                    loading: () => _BodyContent(
+                      article: article,
+                      content: article.body,
+                      loading: true,
+                    ),
+                    error: (_, _) =>
+                        _BodyContent(article: article, content: article.body),
+                    data: (full) => _BodyContent(
+                      article: article,
+                      content: full,
+                      loading: translation.loading,
+                    ),
                   ),
-                  error: (_, _) =>
-                      _BodyContent(article: article, content: article.body),
-                  data: (full) => _BodyContent(article: article, content: full),
-                ),
               ],
             ),
           ),
@@ -207,18 +258,23 @@ class _BodyContent extends StatelessWidget {
     required this.article,
     required this.content,
     this.loading = false,
+    this.forceMarkdown = false,
   });
 
   final Article article;
   final String content;
   final bool loading;
 
+  /// Translated bodies come back as Markdown regardless of the source format,
+  /// so the detail screen forces the Markdown viewer for them.
+  final bool forceMarkdown;
+
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
     final trimmed = content.trim();
     if (trimmed.isEmpty && !loading) return const SizedBox(height: 8);
-    final isMarkdown = article.id.startsWith('devto-');
+    final isMarkdown = forceMarkdown || article.id.startsWith('devto-');
     return Padding(
       padding: const EdgeInsets.only(top: 20),
       child: Column(
