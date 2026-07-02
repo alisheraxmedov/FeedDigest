@@ -12,6 +12,18 @@ import '../../../models/article.dart';
 import '../../../models/chat_message.dart';
 import '../../feed/viewmodel/article_body_viewmodel.dart';
 
+/// Strips trailing user turns that never received a model reply (e.g. a failed
+/// send). Gemini's multi-turn format must not contain two consecutive user
+/// roles — which is exactly what happens if an orphaned user turn stays in the
+/// history and a new question is appended after it.
+List<ChatMessage> sanitizeChatHistory(List<ChatMessage> messages) {
+  var end = messages.length;
+  while (end > 0 && messages[end - 1].isUser) {
+    end--;
+  }
+  return messages.sublist(0, end);
+}
+
 @immutable
 class ChatState {
   const ChatState({
@@ -49,16 +61,19 @@ class ArticleChatViewModel extends Notifier<ChatState> {
   Future<void> send(String question) async {
     final q = question.trim();
     if (q.isEmpty || state.sending) return;
-    final history = state.messages;
+    // History for the request drops any orphaned trailing user turn; the new
+    // question is sent separately so the payload alternates user/model roles.
+    final history = sanitizeChatHistory(state.messages);
     state = ChatState(
       messages: [
-        ...history,
+        ...state.messages,
         ChatMessage(role: ChatRole.user, text: q),
       ],
       sending: true,
     );
     try {
       final body = await ref.read(articleBodyProvider(article).future);
+      if (!ref.mounted) return;
       final lang = ref.read(effectiveAiLangProvider);
       final answer = await ref
           .read(geminiRepositoryProvider)
@@ -69,6 +84,7 @@ class ArticleChatViewModel extends Notifier<ChatState> {
             question: q,
             langCode: lang.code,
           );
+      if (!ref.mounted) return;
       state = ChatState(
         messages: [
           ...state.messages,
@@ -76,11 +92,13 @@ class ArticleChatViewModel extends Notifier<ChatState> {
         ],
       );
     } on GeminiException catch (e) {
+      if (!ref.mounted) return;
       state = state.copyWith(
         sending: false,
         errorCode: e.code == 'no_key' ? 'no_key' : 'error',
       );
     } catch (_) {
+      if (!ref.mounted) return;
       state = state.copyWith(sending: false, errorCode: 'error');
     }
   }
