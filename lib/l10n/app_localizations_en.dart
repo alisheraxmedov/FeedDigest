@@ -223,4 +223,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatEmpty => 'Ask anything about this article';
+
+  @override
+  String get exportData => 'Export data';
+
+  @override
+  String get exportDataDesc => 'Subscriptions and saved (JSON + OPML)';
+
+  @override
+  String get exportFailed => 'Export failed';
 }

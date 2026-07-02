@@ -223,4 +223,13 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get chatEmpty => 'Maqola haqida istalgan savolni bering';
+
+  @override
+  String get exportData => 'Ma\'lumotlarni eksport qilish';
+
+  @override
+  String get exportDataDesc => 'Obunalar va saqlanganlar (JSON + OPML)';
+
+  @override
+  String get exportFailed => 'Eksport qilishda xatolik';
 }

@@ -223,4 +223,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get chatEmpty => 'Спросите что угодно об этой статье';
+
+  @override
+  String get exportData => 'Экспорт данных';
+
+  @override
+  String get exportDataDesc => 'Подписки и сохранённое (JSON + OPML)';
+
+  @override
+  String get exportFailed => 'Ошибка экспорта';
 }

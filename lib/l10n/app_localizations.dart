@@ -519,6 +519,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ask anything about this article'**
   String get chatEmpty;
+
+  /// No description provided for @exportData.
+  ///
+  /// In en, this message translates to:
+  /// **'Export data'**
+  String get exportData;
+
+  /// No description provided for @exportDataDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions and saved (JSON + OPML)'**
+  String get exportDataDesc;
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed'**
+  String get exportFailed;
 }
 
 class _AppLocalizationsDelegate

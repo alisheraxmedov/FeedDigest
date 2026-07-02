@@ -7,7 +7,19 @@ All notable changes to this project, newest first. Dates are ISO (UTC).
 ## 2026-07-02
 
 Feature work from the FEATURES.md roadmap: Sprint 1 (BYO-key hardening + summary
-controls), Sprint 2 (AI daily digest + reminder), and Sprint 3 (AI reading tools).
+controls), Sprint 2 (AI daily digest + reminder), Sprint 3 (AI reading tools),
+and Sprint 4 (reading state, offline, data export).
+
+### Reading state, offline & data ownership (Sprint 4)
+
+- **Read state** — opening an article marks it read (local Hive); read cards dim
+  in the feed so you can see what's new at a glance.
+- **Offline read** — a resolved article body is cached (FIFO-capped at 200); if a
+  later open fails with no network, the cached body is served, so previously
+  opened articles still read offline.
+- **Data export** — a Settings action exports subscriptions + saved articles as a
+  JSON backup and the topics as an OPML file, then opens the share sheet. No
+  backend or account: the user owns and can move their data.
 
 ### AI reading tools — translation + chat (Sprint 3)
 

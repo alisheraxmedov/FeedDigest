@@ -69,5 +69,8 @@
   "chatTooltip": "Maqola bilan suhbat",
   "chatTitle": "Maqola bilan suhbat",
   "chatHint": "Savol bering...",
-  "chatEmpty": "Maqola haqida istalgan savolni bering"
+  "chatEmpty": "Maqola haqida istalgan savolni bering",
+  "exportData": "Ma'lumotlarni eksport qilish",
+  "exportDataDesc": "Obunalar va saqlanganlar (JSON + OPML)",
+  "exportFailed": "Eksport qilishda xatolik"
 }

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/prefs/preferences.dart';
+import '../../../core/providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/neon_widgets.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../favorites/viewmodel/favorites_viewmodel.dart';
 import '../../feed/view/widgets/source_switcher.dart';
 import '../../feed/viewmodel/feed_source_viewmodel.dart';
+import '../../subscriptions/viewmodel/subscriptions_viewmodel.dart';
 import '../viewmodel/settings_viewmodel.dart';
 import 'widgets/notification_settings_sheet.dart';
 
@@ -33,6 +36,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(AppLocalizations.of(context).keySaved)),
     );
+  }
+
+  Future<void> _exportData() async {
+    final l = AppLocalizations.of(context);
+    final subs = ref.read(subscriptionsViewModelProvider);
+    final favs = ref.read(favoritesViewModelProvider);
+    try {
+      await ref.read(exportServiceProvider).shareBackup(
+        subscriptions: subs,
+        favorites: favs,
+        nowMs: DateTime.now().millisecondsSinceEpoch,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.exportFailed)),
+      );
+    }
   }
 
   String _themeLabel(AppLocalizations l, ThemeMode mode) => switch (mode) {
@@ -240,6 +261,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: l.notifDigestLabel,
             value: notif.enabled ? notif.hhmm : l.notifOff,
             onTap: () => showNotificationSettingsSheet(context),
+          ),
+          const SizedBox(height: 16),
+          SettingsTile(
+            icon: Icons.ios_share,
+            title: l.exportData,
+            value: l.exportDataDesc,
+            onTap: _exportData,
           ),
           const SizedBox(height: 16),
           SettingsTile(

@@ -20,14 +20,36 @@ import '../../favorites/viewmodel/favorites_viewmodel.dart';
 import '../../summary/view/summary_sheet.dart';
 import '../viewmodel/article_body_viewmodel.dart';
 import '../viewmodel/article_translation_viewmodel.dart';
+import '../viewmodel/read_state_viewmodel.dart';
 
-class ArticleDetailScreen extends ConsumerWidget {
+class ArticleDetailScreen extends ConsumerStatefulWidget {
   const ArticleDetailScreen({super.key, required this.article});
 
   final Article article;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ArticleDetailScreen> createState() =>
+      _ArticleDetailScreenState();
+}
+
+class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Mark the article read once the first frame is up (avoids mutating a
+    // provider mid-build).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(readStateProvider.notifier).markRead(
+        widget.article.id,
+        nowMs: DateTime.now().millisecondsSinceEpoch,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final article = widget.article;
     final l = AppLocalizations.of(context);
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
