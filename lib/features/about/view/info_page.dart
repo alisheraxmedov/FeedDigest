@@ -44,17 +44,29 @@ void openAbout(BuildContext context) {
 
 void openPrivacyPolicy(BuildContext context) {
   final l = AppLocalizations.of(context);
-  _push(context, l.privacyPolicy, const _ComingSoonBody(icon: Icons.privacy_tip_outlined));
+  _push(
+    context,
+    l.privacyPolicy,
+    const _ComingSoonBody(icon: Icons.privacy_tip_outlined),
+  );
 }
 
 void openTermsOfService(BuildContext context) {
   final l = AppLocalizations.of(context);
-  _push(context, l.termsOfService, const _ComingSoonBody(icon: Icons.description_outlined));
+  _push(
+    context,
+    l.termsOfService,
+    const _ComingSoonBody(icon: Icons.description_outlined),
+  );
 }
 
 void openSupport(BuildContext context) {
   final l = AppLocalizations.of(context);
-  _push(context, l.support, const _ComingSoonBody(icon: Icons.support_agent_outlined));
+  _push(
+    context,
+    l.support,
+    const _ComingSoonBody(icon: Icons.support_agent_outlined),
+  );
 }
 
 void _push(BuildContext context, String title, Widget body) {
