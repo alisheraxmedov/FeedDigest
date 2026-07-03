@@ -4,6 +4,37 @@ All notable changes to this project, newest first. Dates are ISO (UTC).
 
 ---
 
+## 2026-07-03 (sources)
+
+### Feed sources — Lobsters, Habr, VC.ru
+
+- **Three new article sources** behind the existing `ArticleSource` interface,
+  raising the feed from Hacker News + dev.to to five sources. Selectable from the
+  Settings "Manbalar" picker; the choice persists in Hive.
+- **Lobsters** (`lobste.rs` open JSON API, no auth) — `LobstersSource` uses the
+  `/t/<tag>.json` feed for real tags (rust, go, ai, security, …) and the
+  `/hottest`|`/newest` feed otherwise. Link posts fetch their readable body on
+  demand (like Hacker News).
+- **Habr** and **VC.ru** (Russian IT / IT-business) via a new **generic RSS 2.0
+  adapter** `RssSource` — one reusable class driven by a per-request feed-URL
+  builder. Parses title/link/`content:encoded`/`dc:creator`/`enclosure` images and
+  both ISO-8601 and RFC-822 dates. The full `content:encoded` HTML is cached per
+  item so the reader/summary avoid a second fetch. Adds the `xml` package.
+- **Topic filtering honors each source's real capability** (not a blanket
+  client-side filter): Habr queries its full-text **search RSS** per topic
+  (`order=date` newest / `relevance` popular); Lobsters uses the tag feed for real
+  tags and a keyword filter for the rest; VC.ru (no per-topic RSS exists) keyword-
+  filters its general feed. No fallback to unrelated items — a topic a source
+  doesn't cover (e.g. Flutter on Lobsters/VC.ru) returns nothing rather than
+  misleading general news.
+- `FeedSource` gained `lobsters` / `habr` / `vcru`; the `activeSourceProvider` and
+  `sourceIcon` switches handle every case. No Hive migration — `FeedSource.fromId`
+  already falls back for unknown ids.
+- Tests: parse coverage for `LobstersSource` and `RssSource` (ids, author forms,
+  RFC-822 → UTC, content sink, malformed XML). `flutter analyze` clean.
+
+---
+
 ## 2026-07-03 (later)
 
 ### Assets
