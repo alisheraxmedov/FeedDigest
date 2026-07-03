@@ -1,8 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/ai/ai_provider.dart';
 import '../../../core/providers.dart';
 
-final geminiKeyPresentProvider = FutureProvider<bool>((ref) async {
-  final key = await ref.watch(settingsRepositoryProvider).getGeminiKey();
+/// Whether a key is stored for [provider]; drives the status pill per chip.
+final aiKeyPresentProvider = FutureProvider.family<bool, AiProvider>((
+  ref,
+  provider,
+) async {
+  final key = await ref.watch(settingsRepositoryProvider).getKey(provider);
   return key != null && key.isNotEmpty;
 });
 
@@ -14,8 +19,8 @@ class SettingsActions {
   SettingsActions(this._ref);
   final Ref _ref;
 
-  Future<void> saveKey(String value) async {
-    await _ref.read(settingsRepositoryProvider).setGeminiKey(value.trim());
-    _ref.invalidate(geminiKeyPresentProvider);
+  Future<void> saveKey(AiProvider provider, String value) async {
+    await _ref.read(settingsRepositoryProvider).setKey(provider, value.trim());
+    _ref.invalidate(aiKeyPresentProvider(provider));
   }
 }
