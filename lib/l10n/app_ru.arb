@@ -111,5 +111,9 @@
   "voiceProcessing": "Распознаю…",
   "voiceEmpty": "Не расслышал — попробуйте снова",
   "voiceNoPermission": "Нужен доступ к микрофону",
-  "voiceFailed": "Голосовой поиск не удался"
+  "voiceFailed": "Голосовой поиск не удался",
+  "interestsTitle": "Выберите интересы",
+  "interestsSubtitle": "Выберите несколько тем для ленты. Изменить можно в настройках в любое время.",
+  "interestsContinue": "Продолжить",
+  "interestsSkip": "Пропустить"
 }

@@ -358,4 +358,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get voiceFailed => 'Голосовой поиск не удался';
+
+  @override
+  String get interestsTitle => 'Выберите интересы';
+
+  @override
+  String get interestsSubtitle =>
+      'Выберите несколько тем для ленты. Изменить можно в настройках в любое время.';
+
+  @override
+  String get interestsContinue => 'Продолжить';
+
+  @override
+  String get interestsSkip => 'Пропустить';
 }

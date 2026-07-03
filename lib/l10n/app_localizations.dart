@@ -771,6 +771,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Voice search failed'**
   String get voiceFailed;
+
+  /// No description provided for @interestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your interests'**
+  String get interestsTitle;
+
+  /// No description provided for @interestsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a few topics to fill your feed. You can change these anytime in Settings.'**
+  String get interestsSubtitle;
+
+  /// No description provided for @interestsContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get interestsContinue;
+
+  /// No description provided for @interestsSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get interestsSkip;
 }
 
 class _AppLocalizationsDelegate

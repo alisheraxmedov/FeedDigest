@@ -358,4 +358,17 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get voiceFailed => 'Ovozli qidiruv ishlamadi';
+
+  @override
+  String get interestsTitle => 'Qiziqishlaringizni tanlang';
+
+  @override
+  String get interestsSubtitle =>
+      'Lentangiz uchun bir nechta mavzu tanlang. Keyin sozlamalarda istalgan vaqt o\'zgartirasiz.';
+
+  @override
+  String get interestsContinue => 'Davom etish';
+
+  @override
+  String get interestsSkip => 'Hozircha o\'tkazib yuborish';
 }

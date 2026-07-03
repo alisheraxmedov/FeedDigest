@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/prefs/preferences.dart';
+import 'core/providers.dart';
 import 'core/theme/app_theme.dart';
 import 'core/widgets/connectivity_banner.dart';
+import 'features/interests/view/interests_screen.dart';
 import 'features/onboarding/view/onboarding_screen.dart';
 import 'features/onboarding/viewmodel/onboarding_viewmodel.dart';
 import 'features/shell/view/home_shell.dart';
@@ -48,10 +50,15 @@ class _RootGateState extends ConsumerState<_RootGate> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      if (ref.read(onboardingSeenProvider)) return;
+      final onboardingSeen = ref.read(onboardingSeenProvider);
+      final seeded = ref.read(subscriptionRepositoryProvider).isSeeded;
+      if (onboardingSeen && seeded) return; // returning user → straight to home
+      // First run: onboarding first, then the interests picker; if onboarding
+      // was already seen but interests weren't chosen, resume at the picker.
       Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (_) => const OnboardingScreen(),
+          builder: (_) =>
+              onboardingSeen ? const InterestsScreen() : const OnboardingScreen(),
           fullscreenDialog: true,
         ),
       );

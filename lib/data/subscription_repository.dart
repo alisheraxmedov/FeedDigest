@@ -40,4 +40,15 @@ class SubscriptionRepository {
     }
     await _meta.put(_seededKey, true);
   }
+
+  /// Whether the first-run subscriptions have been chosen/seeded. Drives the
+  /// first-run interests gate.
+  bool get isSeeded => _meta.get(_seededKey) == true;
+
+  /// Marks subscriptions as seeded (used after the interests picker commits its
+  /// selection) so the first-run picker doesn't appear again.
+  Future<void> markSeeded() => _meta.put(_seededKey, true);
+
+  /// Clears the seeded flag so the first-run flow can be replayed (debug only).
+  Future<void> clearSeeded() => _meta.delete(_seededKey);
 }

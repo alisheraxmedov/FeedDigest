@@ -358,4 +358,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get voiceFailed => 'Voice search failed';
+
+  @override
+  String get interestsTitle => 'Choose your interests';
+
+  @override
+  String get interestsSubtitle =>
+      'Pick a few topics to fill your feed. You can change these anytime in Settings.';
+
+  @override
+  String get interestsContinue => 'Continue';
+
+  @override
+  String get interestsSkip => 'Skip for now';
 }

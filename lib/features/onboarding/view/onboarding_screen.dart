@@ -7,9 +7,11 @@ onboarding seen. No feature logic lives here.
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/neon_widgets.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../interests/view/interests_screen.dart';
 import '../../settings/view/settings_screen.dart';
 import '../viewmodel/onboarding_viewmodel.dart';
 
@@ -23,8 +25,19 @@ class OnboardingScreen extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
 
     void finish() {
+      final navigator = Navigator.of(context);
       unawaited(ref.read(onboardingSeenProvider.notifier).markSeen());
-      Navigator.of(context).pop();
+      navigator.pop();
+      // First run continues into the interests picker; returning users (already
+      // seeded) just land on the home shell.
+      if (!ref.read(subscriptionRepositoryProvider).isSeeded) {
+        navigator.push(
+          MaterialPageRoute<void>(
+            builder: (_) => const InterestsScreen(),
+            fullscreenDialog: true,
+          ),
+        );
+      }
     }
 
     void openSettings() {

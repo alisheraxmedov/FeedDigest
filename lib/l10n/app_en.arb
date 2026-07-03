@@ -131,5 +131,9 @@
   "voiceProcessing": "Understanding…",
   "voiceEmpty": "Didn't catch that — try again",
   "voiceNoPermission": "Microphone permission is needed",
-  "voiceFailed": "Voice search failed"
+  "voiceFailed": "Voice search failed",
+  "interestsTitle": "Choose your interests",
+  "interestsSubtitle": "Pick a few topics to fill your feed. You can change these anytime in Settings.",
+  "interestsContinue": "Continue",
+  "interestsSkip": "Skip for now"
 }

@@ -111,5 +111,9 @@
   "voiceProcessing": "Tushunyapman…",
   "voiceEmpty": "Tushunolmadim — qayta urinib ko'ring",
   "voiceNoPermission": "Mikrofon uchun ruxsat kerak",
-  "voiceFailed": "Ovozli qidiruv ishlamadi"
+  "voiceFailed": "Ovozli qidiruv ishlamadi",
+  "interestsTitle": "Qiziqishlaringizni tanlang",
+  "interestsSubtitle": "Lentangiz uchun bir nechta mavzu tanlang. Keyin sozlamalarda istalgan vaqt o'zgartirasiz.",
+  "interestsContinue": "Davom etish",
+  "interestsSkip": "Hozircha o'tkazib yuborish"
 }
