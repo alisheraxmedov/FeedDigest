@@ -302,4 +302,60 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sectionComingSoon => 'Этот раздел скоро появится.';
+
+  @override
+  String get onboardingTagline =>
+      'Статьи Hacker News и dev.to — кратко от AI за секунды.';
+
+  @override
+  String get onboardingFeatureAiTitle => 'AI-резюме на вашем языке';
+
+  @override
+  String get onboardingFeatureAiSub => 'Узбекский · Русский · Английский';
+
+  @override
+  String get onboardingFeatureSourcesTitle => 'Два источника, одна лента';
+
+  @override
+  String get onboardingFeatureSourcesSub => 'Объединено и без дублей';
+
+  @override
+  String get onboardingFeatureSaveTitle => 'Сохранить и прочитать позже';
+
+  @override
+  String get onboardingFeatureSaveSub => 'Закладки с фильтром по темам';
+
+  @override
+  String get onboardingGetStarted => 'Начать';
+
+  @override
+  String get onboardingKeyHint =>
+      'Добавьте ключ Gemini API в настройках для AI-функций.';
+
+  @override
+  String get onboardingOpenSettings => 'Открыть настройки';
+
+  @override
+  String get netOffline => 'Нет подключения к интернету';
+
+  @override
+  String get netOnline => 'Соединение восстановлено';
+
+  @override
+  String get voiceHoldHint => 'Удерживайте, чтобы говорить';
+
+  @override
+  String get voiceListening => 'Слушаю…';
+
+  @override
+  String get voiceProcessing => 'Распознаю…';
+
+  @override
+  String get voiceEmpty => 'Не расслышал — попробуйте снова';
+
+  @override
+  String get voiceNoPermission => 'Нужен доступ к микрофону';
+
+  @override
+  String get voiceFailed => 'Голосовой поиск не удался';
 }

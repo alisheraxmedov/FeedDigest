@@ -663,6 +663,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This section will be available soon.'**
   String get sectionComingSoon;
+
+  /// No description provided for @onboardingTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Hacker News & dev.to stories, summarized by AI in seconds.'**
+  String get onboardingTagline;
+
+  /// No description provided for @onboardingFeatureAiTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AI summaries, your language'**
+  String get onboardingFeatureAiTitle;
+
+  /// No description provided for @onboardingFeatureAiSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Uzbek · Russian · English'**
+  String get onboardingFeatureAiSub;
+
+  /// No description provided for @onboardingFeatureSourcesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Two sources, one feed'**
+  String get onboardingFeatureSourcesTitle;
+
+  /// No description provided for @onboardingFeatureSourcesSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged & de-duplicated'**
+  String get onboardingFeatureSourcesSub;
+
+  /// No description provided for @onboardingFeatureSaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & read later'**
+  String get onboardingFeatureSaveTitle;
+
+  /// No description provided for @onboardingFeatureSaveSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarks, filtered by topic'**
+  String get onboardingFeatureSaveSub;
+
+  /// No description provided for @onboardingGetStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get onboardingGetStarted;
+
+  /// No description provided for @onboardingKeyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your Gemini API key in Settings to unlock AI features.'**
+  String get onboardingKeyHint;
+
+  /// No description provided for @onboardingOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get onboardingOpenSettings;
+
+  /// No description provided for @netOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get netOffline;
+
+  /// No description provided for @netOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Back online'**
+  String get netOnline;
+
+  /// No description provided for @voiceHoldHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold to speak'**
+  String get voiceHoldHint;
+
+  /// No description provided for @voiceListening.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening…'**
+  String get voiceListening;
+
+  /// No description provided for @voiceProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Understanding…'**
+  String get voiceProcessing;
+
+  /// No description provided for @voiceEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t catch that — try again'**
+  String get voiceEmpty;
+
+  /// No description provided for @voiceNoPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone permission is needed'**
+  String get voiceNoPermission;
+
+  /// No description provided for @voiceFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice search failed'**
+  String get voiceFailed;
 }
 
 class _AppLocalizationsDelegate

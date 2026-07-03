@@ -302,4 +302,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sectionComingSoon => 'This section will be available soon.';
+
+  @override
+  String get onboardingTagline =>
+      'Hacker News & dev.to stories, summarized by AI in seconds.';
+
+  @override
+  String get onboardingFeatureAiTitle => 'AI summaries, your language';
+
+  @override
+  String get onboardingFeatureAiSub => 'Uzbek · Russian · English';
+
+  @override
+  String get onboardingFeatureSourcesTitle => 'Two sources, one feed';
+
+  @override
+  String get onboardingFeatureSourcesSub => 'Merged & de-duplicated';
+
+  @override
+  String get onboardingFeatureSaveTitle => 'Save & read later';
+
+  @override
+  String get onboardingFeatureSaveSub => 'Bookmarks, filtered by topic';
+
+  @override
+  String get onboardingGetStarted => 'Get started';
+
+  @override
+  String get onboardingKeyHint =>
+      'Add your Gemini API key in Settings to unlock AI features.';
+
+  @override
+  String get onboardingOpenSettings => 'Open Settings';
+
+  @override
+  String get netOffline => 'No internet connection';
+
+  @override
+  String get netOnline => 'Back online';
+
+  @override
+  String get voiceHoldHint => 'Hold to speak';
+
+  @override
+  String get voiceListening => 'Listening…';
+
+  @override
+  String get voiceProcessing => 'Understanding…';
+
+  @override
+  String get voiceEmpty => 'Didn\'t catch that — try again';
+
+  @override
+  String get voiceNoPermission => 'Microphone permission is needed';
+
+  @override
+  String get voiceFailed => 'Voice search failed';
 }

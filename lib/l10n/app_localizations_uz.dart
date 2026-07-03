@@ -302,4 +302,60 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get sectionComingSoon => 'Bu bo\'lim tez orada mavjud bo\'ladi.';
+
+  @override
+  String get onboardingTagline =>
+      'Hacker News va dev.to maqolalari — soniyalarda AI qisqartirib beradi.';
+
+  @override
+  String get onboardingFeatureAiTitle => 'AI qisqacha, o\'z tilingizda';
+
+  @override
+  String get onboardingFeatureAiSub => 'O\'zbekcha · Ruscha · Inglizcha';
+
+  @override
+  String get onboardingFeatureSourcesTitle => 'Ikki manba, bitta lenta';
+
+  @override
+  String get onboardingFeatureSourcesSub => 'Birlashtirilgan va takrorsiz';
+
+  @override
+  String get onboardingFeatureSaveTitle => 'Saqlab, keyin o\'qing';
+
+  @override
+  String get onboardingFeatureSaveSub => 'Xatcho\'plar, mavzu bo\'yicha filtr';
+
+  @override
+  String get onboardingGetStarted => 'Boshlash';
+
+  @override
+  String get onboardingKeyHint =>
+      'AI xususiyatlari uchun Sozlamalarda Gemini API kalitini qo\'shing.';
+
+  @override
+  String get onboardingOpenSettings => 'Sozlamalarni ochish';
+
+  @override
+  String get netOffline => 'Internet aloqasi yo\'q';
+
+  @override
+  String get netOnline => 'Internet tiklandi';
+
+  @override
+  String get voiceHoldHint => 'Gapirish uchun bosib turing';
+
+  @override
+  String get voiceListening => 'Tinglayapman…';
+
+  @override
+  String get voiceProcessing => 'Tushunyapman…';
+
+  @override
+  String get voiceEmpty => 'Tushunolmadim — qayta urinib ko\'ring';
+
+  @override
+  String get voiceNoPermission => 'Mikrofon uchun ruxsat kerak';
+
+  @override
+  String get voiceFailed => 'Ovozli qidiruv ishlamadi';
 }
