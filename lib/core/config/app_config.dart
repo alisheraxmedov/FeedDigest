@@ -3,6 +3,15 @@ class AppConfig {
       'https://generativelanguage.googleapis.com/v1beta/models';
   static const String geminiModel = 'gemini-2.5-flash';
 
+  // OpenAI-compatible chat/completions hosts (OpenAI, DeepSeek, xAI share the
+  // same request/response shape, so one client serves all three) plus the
+  // native Anthropic Messages endpoint.
+  static const String openAiBaseUrl = 'https://api.openai.com/v1';
+  static const String deepSeekBaseUrl = 'https://api.deepseek.com';
+  static const String xaiBaseUrl = 'https://api.x.ai/v1';
+  static const String anthropicEndpoint =
+      'https://api.anthropic.com/v1/messages';
+
   static const String hackerNewsHost = 'hn.algolia.com';
   static const String devtoHost = 'dev.to';
   static const int devtoTopDays = 7;
