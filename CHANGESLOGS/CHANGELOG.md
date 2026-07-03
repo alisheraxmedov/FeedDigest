@@ -4,6 +4,34 @@ All notable changes to this project, newest first. Dates are ISO (UTC).
 
 ---
 
+## 2026-07-03 (multi-provider AI)
+
+### Multi-provider AI — OpenAI, Claude, DeepSeek, Grok alongside Gemini
+
+- **Five AI providers**: every text AI feature (summary, digest, translation,
+  article chat) now runs through the provider selected in Settings — Gemini
+  (`gemini-2.5-flash`), OpenAI (`gpt-4.1-mini`), Claude (`claude-haiku-4-5`),
+  DeepSeek (`deepseek-v4-flash`), or Grok (`grok-4-1-fast-non-reasoning`).
+  Models are fixed per provider: stable, small, cheap enough for summaries.
+- **Architecture**: one `AiClient` contract with three transports — native
+  Gemini, native Anthropic Messages API, and a single OpenAI-compatible client
+  that serves OpenAI, DeepSeek, and xAI (same `chat/completions` dialect). All
+  prompts live once in `AiRepository`, which replaced `GeminiRepository`.
+- **Per-provider API keys** in secure storage; Gemini keeps its legacy key so
+  existing users don't re-enter anything. Active provider persists in the meta
+  box and defaults to Gemini.
+- **Settings**: the Gemini card became an AI Provider card — five provider
+  chips, per-provider status pill, model caption, and a key field whose hint
+  follows the selected provider.
+- **Voice search stays Gemini-only** (no other provider accepts inline audio):
+  the hold-to-talk button now appears only when Gemini is active, and a new
+  "AI Voice Search" tile in Settings opens a sheet explaining that — with a
+  one-tap "Switch to Gemini" when another provider is selected.
+- **Better error messages**: invalid keys (HTTP 401/403) and rate limits (429)
+  now surface as their own localized errors instead of a generic failure.
+
+---
+
 ## 2026-07-03 (interests fix)
 
 ### Fix — Riverpod crash on committing the picker
