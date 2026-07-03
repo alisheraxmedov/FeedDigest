@@ -13,7 +13,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/neon_widgets.dart';
 import '../../../core/widgets/read_aloud_button.dart';
 import '../../../core/widgets/state_views.dart';
-import '../../../data/gemini_repository.dart';
+import '../../../core/ai/ai_client.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../settings/view/settings_screen.dart';
 import '../viewmodel/digest_viewmodel.dart';
@@ -143,14 +143,20 @@ class DigestSheet extends ConsumerWidget {
     AppLocalizations l,
     Object error,
   ) {
-    if (error is GeminiException && error.code == 'empty') {
+    if (error is AiException && error.code == 'empty') {
       return EmptyView(message: l.feedEmpty, animationSize: 120);
     }
-    final noKey = error is GeminiException && error.code == 'no_key';
+    final noKey = error is AiException && error.code == 'no_key';
     if (!noKey) {
+      final message = switch (error) {
+        AiException(code: 'auth') => l.aiKeyInvalid,
+        AiException(code: 'rate_limit') => l.aiRateLimited,
+        AiException(code: 'blocked') => l.summaryBlocked,
+        _ => l.summaryFailed,
+      };
       return ErrorView(
         compact: true,
-        message: l.summaryFailed,
+        message: message,
         onRetry: () => ref.invalidate(digestViewModelProvider),
       );
     }

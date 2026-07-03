@@ -6,7 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/neon_widgets.dart';
 import '../../../core/widgets/read_aloud_button.dart';
 import '../../../core/widgets/state_views.dart';
-import '../../../data/gemini_repository.dart';
+import '../../../core/ai/ai_client.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/article.dart';
 import '../../settings/view/settings_screen.dart';
@@ -33,9 +33,11 @@ class SummarySheet extends ConsumerWidget {
   final Article article;
 
   String _errorText(Object error, AppLocalizations l) {
-    if (error is GeminiException) {
+    if (error is AiException) {
       if (error.code == 'no_key') return l.summaryNoKey;
       if (error.code == 'blocked') return l.summaryBlocked;
+      if (error.code == 'auth') return l.aiKeyInvalid;
+      if (error.code == 'rate_limit') return l.aiRateLimited;
     }
     return l.summaryFailed;
   }
@@ -48,7 +50,7 @@ class SummarySheet extends ConsumerWidget {
     AppLocalizations l,
     Object error,
   ) {
-    final noKey = error is GeminiException && error.code == 'no_key';
+    final noKey = error is AiException && error.code == 'no_key';
     if (!noKey) {
       return ErrorView(
         compact: true,

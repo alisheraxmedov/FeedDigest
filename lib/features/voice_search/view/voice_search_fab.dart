@@ -6,6 +6,8 @@ cleanup lives in VoiceSearchController.
 */
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/ai/ai_provider.dart';
+import '../../../core/prefs/preferences.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../shell/viewmodel/home_tab_viewmodel.dart';
@@ -68,6 +70,11 @@ class _VoiceSearchFabState extends ConsumerState<VoiceSearchFab>
 
   @override
   Widget build(BuildContext context) {
+    // Voice search understands audio through Gemini only — hide the button
+    // entirely when another provider is active (Settings explains why).
+    if (ref.watch(aiProviderProvider) != AiProvider.gemini) {
+      return const SizedBox.shrink();
+    }
     final l = AppLocalizations.of(context);
     final palette = AppPalette.of(context);
     final state = ref.watch(voiceSearchProvider);

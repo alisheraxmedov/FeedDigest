@@ -38,7 +38,7 @@ class AnthropicClient implements AiClient {
         data: {
           'model': AiProvider.claude.model,
           'max_tokens': _maxTokens,
-          if (system != null) 'system': system,
+          'system': ?system,
           'messages': [
             for (final m in messages)
               {'role': m.isUser ? 'user' : 'assistant', 'content': m.text},
