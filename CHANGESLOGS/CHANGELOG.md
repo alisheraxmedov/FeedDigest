@@ -4,6 +4,18 @@ All notable changes to this project, newest first. Dates are ISO (UTC).
 
 ---
 
+## 2026-07-03 (later)
+
+### Assets
+
+- Force-tracked the in-app logo `assets/icons/feeddigest-1b-monogram-f.png`. The
+  `assets/icons/` folder stays gitignored, but the monogram is loaded by the feed,
+  settings, and onboarding screens and registered in `pubspec.yaml`, so a fresh
+  clone or CI build previously failed with "asset does not exist". Tracking just
+  the used file fixes the build without un-ignoring the whole folder.
+
+---
+
 ## 2026-07-03
 
 A full visual redesign to match the app icon, plus three new capabilities —
