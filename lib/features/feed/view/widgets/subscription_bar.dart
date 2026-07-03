@@ -45,13 +45,14 @@ class _AddTopicButton extends StatelessWidget {
     return Tooltip(
       message: tooltip,
       child: InkWell(
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(11),
         onTap: onTap,
         child: Container(
           width: 34,
           height: 34,
+          alignment: Alignment.center,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            borderRadius: BorderRadius.circular(11),
             border: Border.all(color: palette.mutedBorder),
           ),
           child: Icon(Icons.add, size: 18, color: palette.textDim),

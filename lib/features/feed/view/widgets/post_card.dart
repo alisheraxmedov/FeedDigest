@@ -1,18 +1,20 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/neon_widgets.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../models/article.dart';
 import '../../../favorites/viewmodel/favorites_viewmodel.dart';
+import '../../../summary/view/summary_sheet.dart';
 import '../../viewmodel/read_state_viewmodel.dart';
 import '../article_detail_screen.dart';
 import 'post_image.dart';
 
-/// The feed card, LinkedIn-style: a full-width cover, an author + time header,
-/// the title, a body snippet, then the topic tag and engagement metrics.
+/// The feed card: a source-identified header, the title, an optional dev.to
+/// cover (link posts show their host instead), then metrics, an AI-summary pill
+/// and the bookmark toggle.
 class PostCard extends ConsumerWidget {
   const PostCard({super.key, required this.article});
 
@@ -30,10 +32,6 @@ class PostCard extends ConsumerWidget {
         (favs) => favs.any((a) => a.id == article.id),
       ),
     );
-    // Link posts (e.g. most Hacker News stories) carry no body text; fall back
-    // to the destination host so the card never renders an empty gap.
-    final bodySnippet = Formatters.plainSnippet(article.body);
-    final snippet = bodySnippet.isNotEmpty ? bodySnippet : article.linkHost;
     // Reading-time badge only when there's enough body to estimate from.
     final readMins = article.body.trim().length > 80
         ? Formatters.readingMinutes(article.body)
@@ -48,6 +46,7 @@ class PostCard extends ConsumerWidget {
         duration: const Duration(milliseconds: 200),
         child: NeonCard(
           padding: EdgeInsets.zero,
+          radius: 22,
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
               builder: (_) => ArticleDetailScreen(article: article),
@@ -56,9 +55,8 @@ class PostCard extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header + title above the cover.
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+                padding: EdgeInsets.fromLTRB(14, 14, 14, article.hasImage ? 12 : 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -69,72 +67,63 @@ class PostCard extends ConsumerWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontSize: 19,
-                        height: 1.25,
+                        fontSize: 16,
+                        height: 1.3,
                         fontWeight: FontWeight.w600,
                         color: scheme.onSurface,
                       ),
                     ),
+                    if (!article.hasImage) ...[
+                      const SizedBox(height: 10),
+                      _LinkHostRow(host: article.linkHost),
+                    ],
                   ],
                 ),
               ),
-              // Full-bleed cover between the title and the body snippet.
-              PostCover(article: article, borderRadius: BorderRadius.zero),
-              // Snippet + engagement metrics below the cover.
+              if (article.hasImage)
+                PostCover(
+                  article: article,
+                  height: 132,
+                  borderRadius: BorderRadius.zero,
+                ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.fromLTRB(14, 12, 12, 10),
+                child: Row(
                   children: [
-                    if (snippet.isNotEmpty) ...[
-                      Text(
-                        snippet,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14,
-                          height: 1.4,
-                          color: palette.textDim,
-                        ),
+                    _Metric(
+                      icon: _isHackerNews
+                          ? Icons.arrow_upward
+                          : Icons.favorite_border,
+                      value: Formatters.compactScore(article.score),
+                    ),
+                    const SizedBox(width: 14),
+                    _Metric(
+                      icon: Icons.chat_bubble_outline,
+                      value: Formatters.compactScore(article.commentCount),
+                    ),
+                    if (readMins != null) ...[
+                      const SizedBox(width: 14),
+                      _Metric(
+                        icon: Icons.schedule,
+                        value: l.readingTime(readMins),
                       ),
-                      const SizedBox(height: 14),
                     ],
-                    Row(
-                      children: [
-                        _Metric(
-                          icon: _isHackerNews
-                              ? Icons.arrow_upward
-                              : Icons.favorite_border,
-                          value: Formatters.compactScore(article.score),
-                        ),
-                        const SizedBox(width: 16),
-                        _Metric(
-                          icon: Icons.chat_bubble_outline,
-                          value: Formatters.compactScore(article.commentCount),
-                        ),
-                        if (readMins != null) ...[
-                          const SizedBox(width: 16),
-                          _Metric(
-                            icon: Icons.schedule,
-                            value: l.readingTime(readMins),
-                          ),
-                        ],
-                        const Spacer(),
-                        IconButton(
-                          visualDensity: VisualDensity.compact,
-                          tooltip: l.navSaved,
-                          icon: Icon(
-                            isFav ? Icons.bookmark : Icons.bookmark_border,
-                            size: 22,
-                            color: isFav
-                                ? palette.accent
-                                : scheme.onSurfaceVariant,
-                          ),
-                          onPressed: () => ref
-                              .read(favoritesViewModelProvider.notifier)
-                              .toggle(article),
-                        ),
-                      ],
+                    const Spacer(),
+                    AiPill(
+                      label: 'AI',
+                      onTap: () => showSummarySheet(context, article),
+                    ),
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      tooltip: l.navSaved,
+                      icon: Icon(
+                        isFav ? Icons.bookmark : Icons.bookmark_border,
+                        size: 22,
+                        color: isFav ? palette.accent : scheme.onSurfaceVariant,
+                      ),
+                      onPressed: () => ref
+                          .read(favoritesViewModelProvider.notifier)
+                          .toggle(article),
                     ),
                   ],
                 ),
@@ -147,7 +136,8 @@ class PostCard extends ConsumerWidget {
   }
 }
 
-/// LinkedIn-style header: domain avatar, who posted it and when, topic tag.
+/// Header row: a source-tinted avatar tile, the poster + `source · time`, and
+/// the topic tag on the right.
 class _AuthorRow extends StatelessWidget {
   const _AuthorRow({required this.article});
 
@@ -163,7 +153,7 @@ class _AuthorRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _Avatar(article: article),
+        _Avatar(article: article, name: name),
         const SizedBox(width: 10),
         Expanded(
           child: Column(
@@ -175,7 +165,7 @@ class _AuthorRow extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 13.5,
                   fontWeight: FontWeight.w600,
                   color: scheme.onSurface,
                 ),
@@ -185,7 +175,7 @@ class _AuthorRow extends StatelessWidget {
                 '${article.source} · $when',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 12, color: palette.textDim),
+                style: TextStyle(fontSize: 11.5, color: palette.textDim),
               ),
             ],
           ),
@@ -197,43 +187,78 @@ class _AuthorRow extends StatelessWidget {
   }
 }
 
-/// Circular domain favicon shown next to the author name.
+/// 38px rounded-11 avatar tile. dev.to posts show the author monogram on the
+/// purple brand gradient; Hacker News shows its orange tile.
 class _Avatar extends StatelessWidget {
-  const _Avatar({required this.article});
+  const _Avatar({required this.article, required this.name});
 
   final Article article;
+  final String name;
+
+  bool get _isHackerNews => article.source.toLowerCase().contains('hacker');
+
+  String get _monogram {
+    final trimmed = name.trim();
+    return trimmed.isEmpty ? '#' : trimmed.substring(0, 1).toUpperCase();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const size = 38.0;
+    final decoration = _isHackerNews
+        ? const BoxDecoration(
+            color: AppColors.hackerNewsOrange,
+            borderRadius: BorderRadius.all(Radius.circular(11)),
+          )
+        : const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.devtoAvatarStart, AppColors.devtoAvatarEnd],
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(11)),
+          );
+    return Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: decoration,
+      child: Text(
+        _isHackerNews ? 'Y' : _monogram,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+
+/// Compact host line shown on link posts (Hacker News) in place of a cover.
+class _LinkHostRow extends StatelessWidget {
+  const _LinkHostRow({required this.host});
+
+  final String host;
 
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
-    const size = 40.0;
-    final px = (size * MediaQuery.devicePixelRatioOf(context)).round();
-    final fallback = Icon(
-      Icons.person_outline,
-      size: 20,
-      color: palette.accentText,
-    );
-    return Container(
-      width: size,
-      height: size,
-      clipBehavior: Clip.antiAlias,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: palette.iconCircle,
-        shape: BoxShape.circle,
-        border: Border.all(color: palette.mutedBorder),
-      ),
-      child: article.faviconUrl.isEmpty
-          ? fallback
-          : CachedNetworkImage(
-              imageUrl: article.faviconUrl,
-              width: 22,
-              height: 22,
-              fit: BoxFit.contain,
-              memCacheWidth: px,
-              memCacheHeight: px,
-              errorWidget: (_, _, _) => fallback,
-            ),
+    if (host.isEmpty) return const SizedBox.shrink();
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.link, size: 14, color: palette.textDim),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Text(
+            host,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 12.5, color: palette.textDim),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -246,16 +271,13 @@ class _Metric extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final palette = AppPalette.of(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 19, color: scheme.onSurfaceVariant),
-        const SizedBox(width: 6),
-        Text(
-          value,
-          style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
-        ),
+        Icon(icon, size: 17, color: palette.textDim),
+        const SizedBox(width: 5),
+        Text(value, style: TextStyle(fontSize: 12.5, color: palette.textDim)),
       ],
     );
   }

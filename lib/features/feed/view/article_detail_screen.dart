@@ -4,6 +4,7 @@ shows a hero image (dev.to cover) or a favicon banner (Hacker News), the source
 and topic, the title, author and engagement metadata, the article body, and two
 actions: open the original article and request an AI summary.
 */
+import 'dart:ui' show ImageFilter;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -80,49 +81,36 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
     });
     return Scaffold(
       appBar: AppBar(
-        title: Text(article.source),
+        leadingWidth: 60,
+        leading: Center(
+          child: _SquareIconButton(
+            icon: Icons.arrow_back,
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            onTap: () => Navigator.of(context).maybePop(),
+          ),
+        ),
+        title: Text(
+          article.source,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: scheme.onSurface,
+          ),
+        ),
         actions: [
-          IconButton(
-            tooltip: l.readerText,
-            icon: Icon(Icons.text_fields, color: scheme.onSurface),
-            onPressed: () => showReaderSettingsSheet(context),
-          ),
-          IconButton(
-            tooltip: l.translateTooltip,
-            icon: translation.loading
-                ? SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: palette.accent,
-                    ),
-                  )
-                : Icon(
-                    Icons.translate,
-                    color: translation.showing
-                        ? palette.accent
-                        : scheme.onSurface,
-                  ),
-            onPressed: translation.loading
-                ? null
-                : () => ref
-                      .read(articleTranslationProvider(article).notifier)
-                      .toggle(),
-          ),
-          IconButton(
-            tooltip: l.chatTooltip,
-            icon: Icon(Icons.forum_outlined, color: scheme.onSurface),
-            onPressed: () => showArticleChatSheet(context, article),
-          ),
-          IconButton(
-            tooltip: l.navSaved,
-            icon: Icon(
-              isFav ? Icons.favorite : Icons.favorite_border,
-              color: isFav ? palette.accent : scheme.onSurface,
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              tooltip: l.navSaved,
+              icon: Icon(
+                isFav ? Icons.bookmark : Icons.bookmark_border,
+                color: isFav ? palette.accent : scheme.onSurface,
+              ),
+              onPressed: () =>
+                  ref.read(favoritesViewModelProvider.notifier).toggle(article),
             ),
-            onPressed: () =>
-                ref.read(favoritesViewModelProvider.notifier).toggle(article),
           ),
         ],
       ),
@@ -143,15 +131,29 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
                   Text(
                     article.title,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontSize: 21,
-                      height: 1.25,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: -0.2,
+                      fontSize: 23,
+                      height: 1.24,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.4,
                       color: scheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 16),
                   _AuthorRow(article: article),
+                  const SizedBox(height: 16),
+                  _ReaderToolbar(
+                    onText: () => showReaderSettingsSheet(context),
+                    translateActive: translation.showing,
+                    translateBusy: translation.loading,
+                    onTranslate: translation.loading
+                        ? null
+                        : () => ref
+                              .read(
+                                articleTranslationProvider(article).notifier,
+                              )
+                              .toggle(),
+                    onAskAi: () => showArticleChatSheet(context, article),
+                  ),
                   if (translation.showing && translation.text != null)
                     _BodyContent(
                       article: article,
@@ -195,34 +197,216 @@ class _BottomActions extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
-    return Container(
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        border: Border(top: BorderSide(color: palette.mutedBorder)),
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: palette.navBar,
+            border: Border(top: BorderSide(color: palette.mutedBorder)),
+          ),
+          child: SafeArea(
+            top: false,
+            minimum: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 8,
+                  child: NeonButton(
+                    label: l.aiSummary,
+                    icon: Icons.auto_awesome,
+                    onPressed: () => showSummarySheet(context, article),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 5,
+                  child: SizedBox(
+                    height: 52,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _openLink(article.link),
+                      icon: const Icon(Icons.open_in_new, size: 18),
+                      label: Text(
+                        l.articleShort,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: scheme.onSurface,
+                        side: BorderSide(color: palette.mutedBorder),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
-      child: SafeArea(
-        top: false,
-        minimum: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-        child: Row(
-          children: [
-            Expanded(
-              child: NeonButton(
-                label: l.articleShort,
-                uppercase: true,
-                icon: Icons.open_in_new,
-                onPressed: () => _openLink(article.link),
-              ),
+    );
+  }
+}
+
+/// A 38px rounded-12 bordered icon button — the decluttered AppBar's back tile.
+class _SquareIconButton extends StatelessWidget {
+  const _SquareIconButton({
+    required this.icon,
+    required this.onTap,
+    this.tooltip,
+  });
+
+  final IconData icon;
+  final VoidCallback onTap;
+  final String? tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final button = Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          width: 38,
+          height: 38,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: palette.mutedBorder),
+          ),
+          child: Icon(icon, size: 20, color: scheme.onSurface),
+        ),
+      ),
+    );
+    return tooltip == null ? button : Tooltip(message: tooltip!, child: button);
+  }
+}
+
+/// Inline reader toolbar under the meta row: three equal pills that reuse the
+/// former AppBar actions (text size, translate, ask-AI) in their new placement.
+class _ReaderToolbar extends StatelessWidget {
+  const _ReaderToolbar({
+    required this.onText,
+    required this.onTranslate,
+    required this.translateActive,
+    required this.translateBusy,
+    required this.onAskAi,
+  });
+
+  final VoidCallback onText;
+  final VoidCallback? onTranslate;
+  final bool translateActive;
+  final bool translateBusy;
+  final VoidCallback onAskAi;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: _ToolPill(
+            icon: Icons.text_fields,
+            label: l.readerText,
+            onTap: onText,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _ToolPill(
+            icon: Icons.translate,
+            label: l.translateTooltip,
+            onTap: onTranslate,
+            active: translateActive,
+            busy: translateBusy,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _ToolPill(
+            icon: Icons.forum_outlined,
+            label: l.chatTooltip,
+            onTap: onAskAi,
+            accent: true,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ToolPill extends StatelessWidget {
+  const _ToolPill({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.accent = false,
+    this.active = false,
+    this.busy = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+  final bool accent;
+  final bool active;
+  final bool busy;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final highlighted = accent || active;
+    final fg = highlighted ? palette.accentText : scheme.onSurfaceVariant;
+    return Material(
+      color: highlighted ? palette.accentSoft : Colors.transparent,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          height: 42,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: highlighted ? palette.accent : palette.mutedBorder,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: NeonGhostButton(
-                label: l.aiShort,
-                uppercase: true,
-                icon: Icons.auto_awesome,
-                onPressed: () => showSummarySheet(context, article),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              busy
+                  ? SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: palette.accent,
+                      ),
+                    )
+                  : Icon(icon, size: 18, color: fg),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: fg,
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -240,18 +424,18 @@ class _Banner extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         child: article.hasImage
             ? Container(
                 width: double.infinity,
-                height: 200,
+                height: 172,
                 alignment: Alignment.center,
                 child: CachedNetworkImage(
                   imageUrl: article.imageUrl,
                   width: double.infinity,
-                  height: 200,
+                  height: 172,
                   fit: BoxFit.contain,
-                  memCacheHeight: (200 * MediaQuery.devicePixelRatioOf(context))
+                  memCacheHeight: (172 * MediaQuery.devicePixelRatioOf(context))
                       .round(),
                   errorWidget: (_, _, _) => _faviconBanner(palette),
                 ),
@@ -264,11 +448,11 @@ class _Banner extends StatelessWidget {
   Widget _faviconBanner(AppPalette palette) {
     return Container(
       width: double.infinity,
-      height: 160,
+      height: 150,
       decoration: BoxDecoration(
         color: palette.iconCircle,
         border: Border.all(color: palette.mutedBorder),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
       ),
       alignment: Alignment.center,
       child: article.faviconUrl.isEmpty

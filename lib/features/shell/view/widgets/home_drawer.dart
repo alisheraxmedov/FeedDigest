@@ -30,6 +30,7 @@ class HomeDrawer extends ConsumerWidget {
     final sortLabel = sort == FeedSort.newest ? l.sortNewest : l.sortPopular;
     return Drawer(
       child: SafeArea(
+        top: false,
         bottom: false,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -171,33 +172,15 @@ class _DrawerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final palette = AppPalette.of(context);
-    final scheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const IconCircle(icon: Icons.hub, accent: true, size: 52),
-          const SizedBox(height: 14),
-          Text(
-            l.appTitle,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: scheme.onSurface,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            l.aboutDescription,
-            style: TextStyle(
-              fontSize: 12.5,
-              height: 1.4,
-              color: palette.textDim,
-            ),
-          ),
-        ],
+    final topInset = MediaQuery.of(context).padding.top;
+    return Container(
+      color: const Color(0xFF0A0E13),
+      padding: EdgeInsets.only(top: topInset),
+      child: Image.asset(
+        'assets/images/poster.png',
+        width: double.infinity,
+        fit: BoxFit.fitWidth,
+        semanticLabel: l.appTitle,
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/prefs/preferences.dart';
@@ -14,10 +13,16 @@ import '../../settings/view/settings_screen.dart';
 import '../viewmodel/summary_viewmodel.dart';
 
 Future<void> showSummarySheet(BuildContext context, Article article) {
+  final palette = AppPalette.of(context);
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
+    barrierColor: palette.scrim,
+    backgroundColor: palette.cardColor,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+    ),
     builder: (_) => SummarySheet(article: article),
   );
 }
@@ -93,9 +98,9 @@ class SummarySheet extends ConsumerWidget {
           children: [
             Center(
               child: Container(
-                width: 36,
+                width: 40,
                 height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
+                margin: const EdgeInsets.only(bottom: 18),
                 decoration: BoxDecoration(
                   color: palette.mutedBorder,
                   borderRadius: BorderRadius.circular(999),
@@ -104,22 +109,21 @@ class SummarySheet extends ConsumerWidget {
             ),
             Row(
               children: [
-                HugeIcon(
-                  icon: HugeIcons.strokeRoundedAiMagic,
-                  color: palette.accent,
-                  size: 18,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  l.aiSummary.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.8,
-                    color: palette.accentText,
+                const GradientSparkTile(icon: Icons.auto_awesome),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    l.aiSummary,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontSize: 18,
+                      height: 1.1,
+                      fontWeight: FontWeight.w700,
+                      color: scheme.onSurface,
+                    ),
                   ),
                 ),
-                const Spacer(),
                 if (summary.value != null && summary.value!.isNotEmpty)
                   ReadAloudButton(
                     text: summary.value!,
@@ -127,14 +131,16 @@ class SummarySheet extends ConsumerWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Text(
               article.title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontSize: 19,
-                height: 1.25,
-                fontWeight: FontWeight.w600,
-                color: scheme.onSurface,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12.5,
+                height: 1.35,
+                fontWeight: FontWeight.w500,
+                color: palette.textDim,
               ),
             ),
             const SizedBox(height: 14),
@@ -144,7 +150,7 @@ class SummarySheet extends ConsumerWidget {
               child: Container(
                 width: double.infinity,
                 constraints: const BoxConstraints(minHeight: 96),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: summary.when(
                   loading: () => const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
@@ -188,6 +194,7 @@ class SummarySheet extends ConsumerWidget {
             const SizedBox(height: 20),
             NeonButton(
               label: l.close,
+              icon: Icons.close_rounded,
               onPressed: () => Navigator.of(context).pop(),
             ),
           ],
@@ -211,8 +218,8 @@ class _DepthToggle extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: palette.iconCircle,
-        borderRadius: BorderRadius.circular(12),
+        color: palette.inputFill,
+        borderRadius: BorderRadius.circular(13),
         border: Border.all(color: palette.mutedBorder),
       ),
       child: Row(
@@ -250,19 +257,20 @@ class _DepthToggle extends ConsumerWidget {
             ? null
             : () => ref.read(summaryDepthProvider.notifier).select(value),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
           alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 9),
           decoration: BoxDecoration(
-            color: selected ? palette.accentSoft : Colors.transparent,
-            borderRadius: BorderRadius.circular(9),
+            gradient: selected ? palette.brandGradient : null,
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
             label,
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: selected ? palette.accentText : palette.textDim,
+              color: selected ? palette.onAccent : palette.textDim,
             ),
           ),
         ),
