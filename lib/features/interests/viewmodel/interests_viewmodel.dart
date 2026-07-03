@@ -6,7 +6,6 @@ state (a Set of topics); commit/skip are the only side-effecting actions.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/interests.dart';
 import '../../../core/providers.dart';
-import '../../subscriptions/viewmodel/subscriptions_viewmodel.dart';
 
 final interestsSelectionProvider =
     NotifierProvider<InterestsSelectionController, Set<String>>(
@@ -26,7 +25,9 @@ class InterestsSelectionController extends Notifier<Set<String>> {
   }
 
   /// Subscribes to every selected interest and marks the app seeded so the
-  /// first-run picker doesn't show again, then refreshes the subscription list.
+  /// first-run picker doesn't show again. Writes to the repository only — the
+  /// caller refreshes the subscriptions notifier after the picker is popped, so
+  /// the home feed is never notified while it's paused under the modal route.
   Future<void> commit() async {
     final repo = ref.read(subscriptionRepositoryProvider);
     for (final group in InterestCatalog.groups) {
@@ -37,12 +38,11 @@ class InterestsSelectionController extends Notifier<Set<String>> {
       }
     }
     await repo.markSeeded();
-    ref.invalidate(subscriptionsViewModelProvider);
   }
 
-  /// Skips the picker: seeds the default topics instead.
+  /// Skips the picker: seeds the default topics instead (repository write only;
+  /// see [commit] for why the notifier isn't refreshed here).
   Future<void> skipWithDefaults() async {
     await ref.read(subscriptionRepositoryProvider).seedDefaultsIfNeeded();
-    ref.invalidate(subscriptionsViewModelProvider);
   }
 }

@@ -10,6 +10,7 @@ import '../../../core/constants/interests.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/neon_widgets.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../subscriptions/viewmodel/subscriptions_viewmodel.dart';
 import '../viewmodel/interests_viewmodel.dart';
 
 class InterestsScreen extends ConsumerWidget {
@@ -22,16 +23,24 @@ class InterestsScreen extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
     final selected = ref.watch(interestsSelectionProvider);
 
+    // Pop first, then refresh the subscriptions after the frame settles: the
+    // home feed watches the subscriptions notifier and is paused under this
+    // modal route, so notifying it before the pop corrupts Riverpod's paused
+    // subscription bookkeeping.
     Future<void> onContinue() async {
       final navigator = Navigator.of(context);
+      final subs = ref.read(subscriptionsViewModelProvider.notifier);
       await ref.read(interestsSelectionProvider.notifier).commit();
       navigator.pop();
+      WidgetsBinding.instance.addPostFrameCallback((_) => subs.refresh());
     }
 
     Future<void> onSkip() async {
       final navigator = Navigator.of(context);
+      final subs = ref.read(subscriptionsViewModelProvider.notifier);
       await ref.read(interestsSelectionProvider.notifier).skipWithDefaults();
       navigator.pop();
+      WidgetsBinding.instance.addPostFrameCallback((_) => subs.refresh());
     }
 
     return PopScope(
