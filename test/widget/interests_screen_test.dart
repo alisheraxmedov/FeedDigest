@@ -18,15 +18,16 @@ void main() {
   testWidgets('renders interest chips and title', (tester) async {
     await tester.pumpWidget(_harness());
     expect(find.text('Choose your interests'), findsOneWidget);
-    expect(find.text('Flutter'), findsOneWidget);
-    expect(find.text('DevOps'), findsOneWidget);
+    expect(find.text('Python'), findsOneWidget);
+    expect(find.text('Claude'), findsOneWidget);
   });
 
   testWidgets('tapping a chip marks it selected (shows a check)', (tester) async {
     await tester.pumpWidget(_harness());
     expect(find.byIcon(Icons.check), findsNothing);
 
-    await tester.tap(find.text('Flutter'));
+    // Python is in the first group, so it's on-screen and hittable.
+    await tester.tap(find.text('Python'));
     await tester.pumpAndSettle();
 
     expect(find.byIcon(Icons.check), findsOneWidget);
