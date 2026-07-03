@@ -4,6 +4,7 @@ from the AppPalette theme extension so they render correctly in both the dark an
 light themes. Callers pass already-localized strings; these widgets hold no text.
 */
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 
 const double kCardRadius = 20;
@@ -93,11 +94,16 @@ class IconCircle extends StatelessWidget {
     required this.icon,
     this.accent = false,
     this.size = 40,
+    this.radius,
   });
 
   final IconData icon;
   final bool accent;
   final double size;
+
+  /// When null the tile is a circle (legacy). Pass a value for the redesign's
+  /// rounded-square icon tiles (10–13px).
+  final double? radius;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +113,8 @@ class IconCircle extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         color: accent ? palette.accentSoft : palette.iconCircle,
-        shape: BoxShape.circle,
+        shape: radius == null ? BoxShape.circle : BoxShape.rectangle,
+        borderRadius: radius == null ? null : BorderRadius.circular(radius!),
       ),
       child: Icon(
         icon,
@@ -165,7 +172,7 @@ class CategoryChip extends StatelessWidget {
         alignment: width == null ? null : Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? palette.accentSoft : scheme.surface,
+          color: selected ? palette.accentSoft : Colors.transparent,
           borderRadius: BorderRadius.circular(radius),
           border: Border.all(
             color: selected ? palette.accent : palette.mutedBorder,
@@ -320,35 +327,64 @@ class NeonButton extends StatelessWidget {
     required this.onPressed,
     this.icon,
     this.uppercase = false,
+    this.height = 52,
+    this.radius = 14,
   });
 
   final String label;
   final VoidCallback? onPressed;
   final IconData? icon;
   final bool uppercase;
+  final double height;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
-    return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(18)),
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        height: 52,
-        child: FilledButton(
-          onPressed: onPressed,
-          style: FilledButton.styleFrom(
-            backgroundColor: palette.accent,
-            foregroundColor: palette.onAccent,
-            disabledBackgroundColor: palette.accent.withValues(alpha: 0.4),
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final enabled = onPressed != null;
+    return Opacity(
+      opacity: enabled ? 1 : 0.5,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: palette.brandGradient,
+          borderRadius: BorderRadius.circular(radius),
+          boxShadow: enabled
+              ? [
+                  BoxShadow(
+                    color: palette.accent.withValues(
+                      alpha: isDark ? 0.5 : 0.28,
+                    ),
+                    blurRadius: 26,
+                    spreadRadius: -8,
+                    offset: const Offset(0, 10),
+                  ),
+                ]
+              : null,
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(radius),
+            child: SizedBox(
+              width: double.infinity,
+              height: height,
+              child: IconTheme(
+                data: IconThemeData(color: palette.onAccent),
+                child: DefaultTextStyle.merge(
+                  style: TextStyle(color: palette.onAccent),
+                  child: Center(
+                    child: _ButtonLabel(
+                      label: label,
+                      icon: icon,
+                      uppercase: uppercase,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
-          child: _ButtonLabel(label: label, icon: icon, uppercase: uppercase),
         ),
       ),
     );
@@ -559,6 +595,201 @@ class _OptionTile<T> extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// The FeedDigest wordmark — "Feed" in onSurface, "Digest" filled with the
+/// brand gradient via a `ShaderMask`. Outfit 800, negative tracking.
+class Wordmark extends StatelessWidget {
+  const Wordmark({super.key, this.fontSize = 21});
+
+  final double fontSize;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final palette = AppPalette.of(context);
+    final style = GoogleFonts.outfit(
+      fontSize: fontSize,
+      fontWeight: FontWeight.w800,
+      letterSpacing: fontSize >= 28 ? -1 : -0.6,
+      height: 1,
+    );
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text('Feed', style: style.copyWith(color: scheme.onSurface)),
+        ShaderMask(
+          blendMode: BlendMode.srcIn,
+          shaderCallback: (bounds) => palette.brandGradient.createShader(bounds),
+          child: Text('Digest', style: style.copyWith(color: Colors.white)),
+        ),
+      ],
+    );
+  }
+}
+
+/// Rounded-square tile filled with the brand gradient, holding a single glyph
+/// in `onAccent`. Used for the AI "spark" tiles (summary header, settings key
+/// card, empty-state badge).
+class GradientSparkTile extends StatelessWidget {
+  const GradientSparkTile({
+    super.key,
+    required this.icon,
+    this.size = 40,
+    this.radius = 12,
+  });
+
+  final IconData icon;
+  final double size;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    return Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        gradient: palette.brandGradient,
+        borderRadius: BorderRadius.circular(radius),
+      ),
+      child: Icon(icon, size: size * 0.5, color: palette.onAccent),
+    );
+  }
+}
+
+/// Small gradient pill (`✦ AI`) used in the feed card footer and elsewhere to
+/// open the AI summary. Purely presentational — the caller wires `onTap`.
+class AiPill extends StatelessWidget {
+  const AiPill({
+    super.key,
+    required this.label,
+    this.onTap,
+    this.icon = Icons.auto_awesome,
+  });
+
+  final String label;
+  final VoidCallback? onTap;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    final pill = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        gradient: palette.brandGradient,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: palette.onAccent),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: palette.onAccent,
+            ),
+          ),
+        ],
+      ),
+    );
+    if (onTap == null) return pill;
+    return GestureDetector(onTap: onTap, child: pill);
+  }
+}
+
+class SegmentOption<T> {
+  const SegmentOption({required this.value, required this.label, this.icon});
+
+  final T value;
+  final String label;
+  final IconData? icon;
+}
+
+/// Pill-track segmented control. Active segment = brand-gradient fill +
+/// `onAccent` label; inactive = `textDim`. Used for the search source filter
+/// and the settings appearance (System / Light / Dark) toggle.
+class BrandSegmented<T> extends StatelessWidget {
+  const BrandSegmented({
+    super.key,
+    required this.options,
+    required this.selected,
+    required this.onChanged,
+  });
+
+  final List<SegmentOption<T>> options;
+  final T selected;
+  final ValueChanged<T> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: palette.inputFill,
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(color: palette.mutedBorder),
+      ),
+      child: Row(
+        children: [
+          for (final option in options)
+            Expanded(
+              child: GestureDetector(
+                onTap: () => onChanged(option.value),
+                behavior: HitTestBehavior.opaque,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  curve: Curves.easeOutCubic,
+                  height: 38,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    gradient: option.value == selected
+                        ? palette.brandGradient
+                        : null,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (option.icon != null) ...[
+                        Icon(
+                          option.icon,
+                          size: 16,
+                          color: option.value == selected
+                              ? palette.onAccent
+                              : palette.textDim,
+                        ),
+                        const SizedBox(width: 6),
+                      ],
+                      Flexible(
+                        child: Text(
+                          option.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w600,
+                            color: option.value == selected
+                                ? palette.onAccent
+                                : palette.textDim,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

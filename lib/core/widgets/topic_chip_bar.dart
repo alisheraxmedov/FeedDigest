@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'neon_widgets.dart';
 
 const double kTopicChipWidth = 104;
-const double kTopicChipRadius = 10;
+const double kTopicChipRadius = 11;
 
 class TopicChipItem {
   const TopicChipItem({required this.label, required this.value});

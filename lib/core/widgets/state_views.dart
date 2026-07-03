@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import '../../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import 'neon_widgets.dart';
 
 /// Lottie illustration assets bundled under `assets/lottie/`. Centralised here so
 /// every state view and caller references the same paths.
@@ -104,46 +106,68 @@ class ErrorView extends StatelessWidget {
   }
 }
 
-/// Empty state: a Lottie illustration with an Outfit title and an optional
-/// muted subtitle. Callers pass the matching [asset] (feed / search / saved).
+/// Empty state: by default an accentSoft icon circle with an overlapping spark
+/// badge, an Outfit title, an optional muted subtitle and an optional gradient
+/// CTA. Callers that pass a Lottie [asset] keep the illustrated treatment.
 class EmptyView extends StatelessWidget {
   const EmptyView({
     super.key,
     required this.message,
     this.subtitle,
-    this.asset = AppAnim.feedEmpty,
+    this.icon = Icons.inbox_outlined,
+    this.asset,
     this.animationSize = 160,
+    this.onAction,
+    this.actionLabel,
   });
 
   final String message;
   final String? subtitle;
-  final String asset;
+
+  /// Line icon shown inside the accentSoft circle when no [asset] is supplied.
+  /// Callers pass e.g. a bookmark (Saved) or a magnifier (Search).
+  final IconData icon;
+
+  /// Optional Lottie illustration. When null the circular-icon treatment (the
+  /// redesign default) is shown instead.
+  final String? asset;
   final double animationSize;
+
+  /// Optional gradient call-to-action, rendered only when both are provided.
+  final VoidCallback? onAction;
+  final String? actionLabel;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final palette = AppPalette.of(context);
+    final asset = this.asset;
+    final actionLabel = this.actionLabel;
+    final visual = asset != null
+        ? Lottie.asset(
+            asset,
+            width: animationSize,
+            height: animationSize,
+            repeat: true,
+            errorBuilder: (_, _, _) => _IconBadge(icon: icon),
+          )
+        : _IconBadge(icon: icon);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Lottie.asset(
-              asset,
-              width: animationSize,
-              height: animationSize,
-              repeat: true,
-              errorBuilder: (_, _, _) => const SizedBox.shrink(),
-            ),
-            const SizedBox(height: 16),
+            visual,
+            const SizedBox(height: 22),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              style: GoogleFonts.outfit(
+                fontSize: 19,
+                height: 1.3,
+                fontWeight: FontWeight.w700,
                 color: scheme.onSurface,
-                fontWeight: FontWeight.w600,
               ),
             ),
             if (subtitle != null) ...[
@@ -152,15 +176,67 @@ class EmptyView extends StatelessWidget {
                 subtitle!,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 14,
-                  height: 1.4,
+                  fontSize: 13.5,
+                  height: 1.45,
                   color: palette.textDim,
                 ),
+              ),
+            ],
+            if (onAction != null && actionLabel != null) ...[
+              const SizedBox(height: 24),
+              SizedBox(
+                width: 200,
+                child: NeonButton(label: actionLabel, onPressed: onAction),
               ),
             ],
           ],
         ),
       ),
+    );
+  }
+}
+
+/// A 96px accentSoft circle holding a line [icon], with a small brand-gradient
+/// spark tile overlapping its top-right corner.
+class _IconBadge extends StatelessWidget {
+  const _IconBadge({required this.icon});
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: 96,
+          height: 96,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: palette.accentSoft,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 40, color: palette.accentText),
+        ),
+        Positioned(
+          top: -4,
+          right: -4,
+          child: Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: scheme.surface,
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: const GradientSparkTile(
+              icon: Icons.auto_awesome,
+              size: 30,
+              radius: 10,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
