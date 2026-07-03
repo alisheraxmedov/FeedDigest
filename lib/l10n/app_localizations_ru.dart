@@ -60,19 +60,35 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsSubtitle => 'Управление параметрами приложения и сервиса';
 
   @override
-  String get geminiTitle => 'Ключ Gemini API';
+  String get aiProviderTitle => 'AI-провайдер';
 
   @override
-  String get geminiSubtitle => 'Подключённый ключ для основных AI-сервисов';
+  String get aiKeySet => 'Ключ сохранён';
 
   @override
-  String get geminiKeySet => 'Ключ установлен';
+  String get aiKeyNotSet => 'Ключ не задан';
 
   @override
-  String get geminiKeyNotSet => 'Ключ не установлен';
+  String get aiModelLabel => 'Модель';
 
   @override
-  String get geminiHint => 'Введите API-ключ...';
+  String get aiKeyInvalid => 'Неверный API-ключ';
+
+  @override
+  String get aiRateLimited => 'Лимит исчерпан — попробуйте позже';
+
+  @override
+  String get voiceInfoTitle => 'Голосовой AI-поиск';
+
+  @override
+  String get voiceInfoSubtitle => 'Работает с Gemini';
+
+  @override
+  String get voiceInfoBody =>
+      'Удерживайте кнопку микрофона на главном экране и скажите, о чём хотите почитать — AI превратит вашу речь в поисковый запрос.\n\nЭта функция понимает аудио только через Google Gemini, поэтому она доступна, когда Gemini выбран AI-провайдером и его ключ сохранён.';
+
+  @override
+  String get switchToGemini => 'Переключиться на Gemini';
 
   @override
   String get save => 'Сохранить';
@@ -160,7 +176,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tooltipUnsubscribe => 'Отписаться от темы';
 
   @override
-  String get summaryNoKey => 'Ключ Gemini API не установлен';
+  String get summaryNoKey => 'API-ключ AI не задан';
 
   @override
   String get summaryFailed => 'Не удалось получить резюме';

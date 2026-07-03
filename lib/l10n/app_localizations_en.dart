@@ -61,19 +61,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsSubtitle => 'Manage app and service parameters';
 
   @override
-  String get geminiTitle => 'Gemini API key';
+  String get aiProviderTitle => 'AI Provider';
 
   @override
-  String get geminiSubtitle => 'Connected key for core AI services';
+  String get aiKeySet => 'Key set';
 
   @override
-  String get geminiKeySet => 'Key set';
+  String get aiKeyNotSet => 'Key not set';
 
   @override
-  String get geminiKeyNotSet => 'Key not set';
+  String get aiModelLabel => 'Model';
 
   @override
-  String get geminiHint => 'Enter API key...';
+  String get aiKeyInvalid => 'API key is invalid';
+
+  @override
+  String get aiRateLimited => 'Rate limit reached — try again later';
+
+  @override
+  String get voiceInfoTitle => 'AI Voice Search';
+
+  @override
+  String get voiceInfoSubtitle => 'Works with Gemini';
+
+  @override
+  String get voiceInfoBody =>
+      'Hold the microphone button on the Home screen and say what you want to read about — the AI turns your speech into a search.\n\nThis feature understands audio with Google Gemini only, so it appears when Gemini is the selected AI provider and its API key is set.';
+
+  @override
+  String get switchToGemini => 'Switch to Gemini';
 
   @override
   String get save => 'Save';
@@ -161,7 +177,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tooltipUnsubscribe => 'Unfollow topic';
 
   @override
-  String get summaryNoKey => 'Gemini API key not set';
+  String get summaryNoKey => 'AI API key not set';
 
   @override
   String get summaryFailed => 'Failed to get summary';

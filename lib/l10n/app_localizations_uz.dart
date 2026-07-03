@@ -61,19 +61,35 @@ class AppLocalizationsUz extends AppLocalizations {
   String get settingsSubtitle => 'Dastur va xizmat parametrlarini boshqarish';
 
   @override
-  String get geminiTitle => 'Gemini API kaliti';
+  String get aiProviderTitle => 'AI provayder';
 
   @override
-  String get geminiSubtitle => 'Asosiy AI xizmatlari uchun ulangan kalit';
+  String get aiKeySet => 'Kalit saqlangan';
 
   @override
-  String get geminiKeySet => 'Kalit o\'rnatilgan';
+  String get aiKeyNotSet => 'Kalit kiritilmagan';
 
   @override
-  String get geminiKeyNotSet => 'Kalit kiritilmagan';
+  String get aiModelLabel => 'Model';
 
   @override
-  String get geminiHint => 'API kalitni kiriting...';
+  String get aiKeyInvalid => 'API kalit noto\'g\'ri';
+
+  @override
+  String get aiRateLimited => 'Limit tugadi — keyinroq urinib ko\'ring';
+
+  @override
+  String get voiceInfoTitle => 'AI ovozli qidiruv';
+
+  @override
+  String get voiceInfoSubtitle => 'Gemini bilan ishlaydi';
+
+  @override
+  String get voiceInfoBody =>
+      'Bosh sahifadagi mikrofon tugmasini bosib turib nimani o\'qimoqchi ekaningizni ayting — AI nutqingizni qidiruvga aylantiradi.\n\nBu funksiya audioni faqat Google Gemini orqali tushunadi, shuning uchun u Gemini AI provayder sifatida tanlangan va kaliti kiritilgan bo\'lsa ko\'rinadi.';
+
+  @override
+  String get switchToGemini => 'Gemini\'ga o\'tish';
 
   @override
   String get save => 'Saqlash';
@@ -161,7 +177,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get tooltipUnsubscribe => 'Mavzudan chiqish';
 
   @override
-  String get summaryNoKey => 'Gemini API kaliti kiritilmagan';
+  String get summaryNoKey => 'AI API kaliti kiritilmagan';
 
   @override
   String get summaryFailed => 'Xulosani olishda xatolik';

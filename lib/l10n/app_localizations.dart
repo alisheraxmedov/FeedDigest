@@ -202,35 +202,65 @@ abstract class AppLocalizations {
   /// **'Manage app and service parameters'**
   String get settingsSubtitle;
 
-  /// No description provided for @geminiTitle.
+  /// No description provided for @aiProviderTitle.
   ///
   /// In en, this message translates to:
-  /// **'Gemini API key'**
-  String get geminiTitle;
+  /// **'AI Provider'**
+  String get aiProviderTitle;
 
-  /// No description provided for @geminiSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Connected key for core AI services'**
-  String get geminiSubtitle;
-
-  /// No description provided for @geminiKeySet.
+  /// No description provided for @aiKeySet.
   ///
   /// In en, this message translates to:
   /// **'Key set'**
-  String get geminiKeySet;
+  String get aiKeySet;
 
-  /// No description provided for @geminiKeyNotSet.
+  /// No description provided for @aiKeyNotSet.
   ///
   /// In en, this message translates to:
   /// **'Key not set'**
-  String get geminiKeyNotSet;
+  String get aiKeyNotSet;
 
-  /// No description provided for @geminiHint.
+  /// No description provided for @aiModelLabel.
   ///
   /// In en, this message translates to:
-  /// **'Enter API key...'**
-  String get geminiHint;
+  /// **'Model'**
+  String get aiModelLabel;
+
+  /// No description provided for @aiKeyInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'API key is invalid'**
+  String get aiKeyInvalid;
+
+  /// No description provided for @aiRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate limit reached — try again later'**
+  String get aiRateLimited;
+
+  /// No description provided for @voiceInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Voice Search'**
+  String get voiceInfoTitle;
+
+  /// No description provided for @voiceInfoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Works with Gemini'**
+  String get voiceInfoSubtitle;
+
+  /// No description provided for @voiceInfoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the microphone button on the Home screen and say what you want to read about — the AI turns your speech into a search.\n\nThis feature understands audio with Google Gemini only, so it appears when Gemini is the selected AI provider and its API key is set.'**
+  String get voiceInfoBody;
+
+  /// No description provided for @switchToGemini.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Gemini'**
+  String get switchToGemini;
 
   /// No description provided for @save.
   ///
@@ -397,7 +427,7 @@ abstract class AppLocalizations {
   /// No description provided for @summaryNoKey.
   ///
   /// In en, this message translates to:
-  /// **'Gemini API key not set'**
+  /// **'AI API key not set'**
   String get summaryNoKey;
 
   /// No description provided for @summaryFailed.
