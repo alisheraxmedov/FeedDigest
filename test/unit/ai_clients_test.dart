@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:feeddigest/core/ai/ai_client.dart';
+import 'package:feeddigest/core/ai/clients/anthropic_client.dart';
 import 'package:feeddigest/core/ai/clients/openai_compat_client.dart';
 
 /// Hand-rolled adapter: captures the request and returns a canned JSON body,
@@ -146,6 +147,74 @@ void main() {
           throwsA(isA<AiException>().having((e) => e.code, 'code', code)),
         );
       }
+    });
+  });
+
+  group('AnthropicClient.extractText', () {
+    test('joins text blocks', () {
+      final data = {
+        'stop_reason': 'end_turn',
+        'content': [
+          {'type': 'text', 'text': 'Bir. '},
+          {'type': 'text', 'text': 'Ikki.'},
+        ],
+      };
+      expect(AnthropicClient.extractText(data), 'Bir. Ikki.');
+    });
+
+    test('maps refusal stop_reason to blocked', () {
+      final data = {'stop_reason': 'refusal', 'content': <dynamic>[]};
+      expect(
+        () => AnthropicClient.extractText(data),
+        throwsA(isA<AiException>().having((e) => e.code, 'code', 'blocked')),
+      );
+    });
+
+    test('throws parse on bad shape and empty on no text', () {
+      expect(
+        () => AnthropicClient.extractText('nonsense'),
+        throwsA(isA<AiException>().having((e) => e.code, 'code', 'parse')),
+      );
+      expect(
+        () => AnthropicClient.extractText({
+          'stop_reason': 'end_turn',
+          'content': <dynamic>[],
+        }),
+        throwsA(isA<AiException>().having((e) => e.code, 'code', 'empty')),
+      );
+    });
+  });
+
+  group('AnthropicClient.complete', () {
+    test('sends x-api-key, version header, system and messages', () async {
+      final adapter = CapturingAdapter(
+        200,
+        jsonEncode({
+          'stop_reason': 'end_turn',
+          'content': [
+            {'type': 'text', 'text': 'ok'},
+          ],
+        }),
+      );
+      final client = AnthropicClient(dioWith(adapter));
+      final out = await client.complete(
+        apiKey: 'sk-ant-1',
+        system: 'sys',
+        messages: const [AiMessage.user('savol')],
+      );
+      expect(out, 'ok');
+      final req = adapter.lastRequest!;
+      expect(req.uri.toString(), 'https://api.anthropic.com/v1/messages');
+      expect(req.headers['x-api-key'], 'sk-ant-1');
+      expect(req.headers['anthropic-version'], '2023-06-01');
+      final body = req.data as Map<String, dynamic>;
+      expect(body['model'], 'claude-haiku-4-5');
+      expect(body['system'], 'sys');
+      expect(body['max_tokens'], isPositive);
+      expect((body['messages'] as List).single, {
+        'role': 'user',
+        'content': 'savol',
+      });
     });
   });
 }
