@@ -47,11 +47,8 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
       ref
           .read(readStateProvider.notifier)
           .markRead(widget.article.id, nowMs: now.millisecondsSinceEpoch);
-      // Local day index (days since epoch at local midnight) for the streak.
-      final dayIndex =
-          DateTime(now.year, now.month, now.day).millisecondsSinceEpoch ~/
-          Duration.millisecondsPerDay;
-      ref.read(streakProvider.notifier).recordActivity(dayIndex);
+      // DST-stable local calendar day index for the streak (see streak_viewmodel).
+      ref.read(streakProvider.notifier).recordActivity(localDayIndex(now));
     });
   }
 
@@ -213,10 +210,7 @@ class _BottomActions extends StatelessWidget {
                 label: l.articleShort,
                 uppercase: true,
                 icon: Icons.open_in_new,
-                onPressed: () => launchUrl(
-                  Uri.parse(article.link),
-                  mode: LaunchMode.externalApplication,
-                ),
+                onPressed: () => _openLink(article.link),
               ),
             ),
             const SizedBox(width: 12),

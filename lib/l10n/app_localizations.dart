@@ -244,6 +244,18 @@ abstract class AppLocalizations {
   /// **'Key saved'**
   String get keySaved;
 
+  /// No description provided for @keySaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the key'**
+  String get keySaveFailed;
+
+  /// No description provided for @notifScheduleFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t set the reminder'**
+  String get notifScheduleFailed;
+
   /// No description provided for @appLanguage.
   ///
   /// In en, this message translates to:
@@ -555,6 +567,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count}-day reading streak'**
   String streakDays(int count);
+
+  /// No description provided for @menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
+
+  /// No description provided for @sortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get sortLabel;
+
+  /// No description provided for @streakTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading streak'**
+  String get streakTitle;
+
+  /// No description provided for @streakNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No streak yet'**
+  String get streakNone;
+
+  /// No description provided for @sectionMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get sectionMore;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @aboutDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Hacker News + dev.to reader with Gemini AI summaries.'**
+  String get aboutDescription;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String version(String version);
+
+  /// No description provided for @shareApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Share app'**
+  String get shareApp;
+
+  /// No description provided for @shareAppText.
+  ///
+  /// In en, this message translates to:
+  /// **'Check out FeedDigest — a Hacker News + dev.to reader with AI summaries.'**
+  String get shareAppText;
+
+  /// No description provided for @rateApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate the app'**
+  String get rateApp;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get termsOfService;
+
+  /// No description provided for @support.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get support;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoon;
+
+  /// No description provided for @sectionComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'This section will be available soon.'**
+  String get sectionComingSoon;
 }
 
 class _AppLocalizationsDelegate

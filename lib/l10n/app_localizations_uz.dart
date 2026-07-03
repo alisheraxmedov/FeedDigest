@@ -82,6 +82,12 @@ class AppLocalizationsUz extends AppLocalizations {
   String get keySaved => 'Kalit saqlandi';
 
   @override
+  String get keySaveFailed => 'Kalitni saqlab bo\'lmadi';
+
+  @override
+  String get notifScheduleFailed => 'Eslatmani o\'rnatib bo\'lmadi';
+
+  @override
   String get appLanguage => 'Ilova tili';
 
   @override
@@ -244,4 +250,56 @@ class AppLocalizationsUz extends AppLocalizations {
   String streakDays(int count) {
     return '$count kun ketma-ket o\'qildi';
   }
+
+  @override
+  String get menu => 'Menyu';
+
+  @override
+  String get sortLabel => 'Saralash';
+
+  @override
+  String get streakTitle => 'O\'qish seriyasi';
+
+  @override
+  String get streakNone => 'Hali seriya yo\'q';
+
+  @override
+  String get sectionMore => 'Boshqa';
+
+  @override
+  String get about => 'Ilova haqida';
+
+  @override
+  String get aboutDescription =>
+      'Hacker News + dev.to o\'qish ilovasi, Gemini AI xulosalari bilan.';
+
+  @override
+  String version(String version) {
+    return 'Versiya $version';
+  }
+
+  @override
+  String get shareApp => 'Ilovani ulashish';
+
+  @override
+  String get shareAppText =>
+      'FeedDigest\'ni sinab ko\'ring — Hacker News + dev.to o\'qish ilovasi, AI xulosalari bilan.';
+
+  @override
+  String get rateApp => 'Ilovani baholash';
+
+  @override
+  String get privacyPolicy => 'Maxfiylik siyosati';
+
+  @override
+  String get termsOfService => 'Foydalanish shartlari';
+
+  @override
+  String get support => 'Yordam';
+
+  @override
+  String get comingSoon => 'Tez orada';
+
+  @override
+  String get sectionComingSoon => 'Bu bo\'lim tez orada mavjud bo\'ladi.';
 }

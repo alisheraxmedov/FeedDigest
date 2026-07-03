@@ -66,12 +66,15 @@ class ArticleTranslationViewModel extends Notifier<TranslationState> {
     state = const TranslationState(showing: true, loading: true);
     try {
       final body = await ref.read(articleBodyProvider(article).future);
+      if (!ref.mounted) return;
       final lang = ref.read(effectiveAiLangProvider);
       final translated = await ref
           .read(geminiRepositoryProvider)
           .translate(body, targetLangCode: lang.code);
+      if (!ref.mounted) return;
       state = TranslationState(showing: true, text: translated);
     } catch (_) {
+      if (!ref.mounted) return;
       state = const TranslationState(showing: true, error: true);
     }
   }

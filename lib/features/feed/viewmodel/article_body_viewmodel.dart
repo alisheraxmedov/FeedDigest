@@ -24,7 +24,13 @@ final articleBodyProvider = FutureProvider.autoDispose.family<String, Article>((
   try {
     final full = await source.fullBody(article);
     final body = full.isNotEmpty ? full : article.body;
-    await cache.put(article.id, body);
+    // Caching is best-effort: a write failure must not turn a successfully
+    // fetched body into an error for the reader.
+    try {
+      await cache.put(article.id, body);
+    } catch (_) {
+      // ignore — the cache write is non-critical.
+    }
     return body;
   } catch (_) {
     final cached = cache.get(article.id);

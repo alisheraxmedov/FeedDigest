@@ -55,15 +55,15 @@ void main() {
     final box = await Hive.openBox<dynamic>('subscriptions');
     final meta = await Hive.openBox<dynamic>('meta');
     final repo = SubscriptionRepository(box, meta);
-    repo.seedDefaultsIfNeeded();
+    await repo.seedDefaultsIfNeeded();
     expect(repo.all(), isNotEmpty);
-    repo.seedDefaultsIfNeeded();
+    await repo.seedDefaultsIfNeeded();
     final afterSecond = repo.all().length;
     expect(afterSecond, repo.all().length);
     for (final s in repo.all()) {
       await repo.unsubscribe(s.id);
     }
-    repo.seedDefaultsIfNeeded();
+    await repo.seedDefaultsIfNeeded();
     expect(repo.all(), isEmpty);
   });
 }

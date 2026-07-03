@@ -10,7 +10,7 @@ Future<void> main() async {
   await HiveBoxes.init();
   // Seed default topics once, before the first build reads them (keeps the
   // subscriptions notifier's build() pure).
-  SubscriptionRepository(
+  await SubscriptionRepository(
     Hive.box<dynamic>(HiveBoxes.subscriptions),
     Hive.box<dynamic>(HiveBoxes.meta),
   ).seedDefaultsIfNeeded();

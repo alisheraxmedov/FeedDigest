@@ -7,6 +7,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers.dart';
 
+/// Days since the Unix epoch for [year]/[month]/[day], anchored to UTC midnight
+/// so the value is stable across DST transitions — local midnights aren't always
+/// 24h apart, but UTC midnights always are, keeping the "consecutive day = +1"
+/// streak invariant intact in every timezone.
+int dayIndexForDate(int year, int month, int day) =>
+    DateTime.utc(year, month, day).millisecondsSinceEpoch ~/
+    Duration.millisecondsPerDay;
+
+/// Streak day index for [now]; depends only on its local calendar date.
+int localDayIndex(DateTime now) =>
+    dayIndexForDate(now.year, now.month, now.day);
+
 @immutable
 class StreakState {
   const StreakState({this.current = 0, this.best = 0, this.lastDay = -1});

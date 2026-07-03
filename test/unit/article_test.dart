@@ -50,8 +50,9 @@ void main() {
       'example.com',
     );
     expect(
-      Article.fromJson(const {'commentsUrl': 'https://news.ycombinator.com/x'})
-          .linkHost,
+      Article.fromJson(const {
+        'commentsUrl': 'https://news.ycombinator.com/x',
+      }).linkHost,
       'news.ycombinator.com',
     );
     expect(Article.fromJson(const {}).linkHost, '');

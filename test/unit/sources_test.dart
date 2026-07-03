@@ -30,27 +30,30 @@ void main() {
     expect(a.commentsUrl, 'https://news.ycombinator.com/item?id=111');
   });
 
-  test('HackerNewsSource.parse maps story_text into body, empty when absent', () {
-    final data = {
-      'hits': [
-        {
-          'objectID': '10',
-          'title': 'Ask HN: text post',
-          'story_text': '<p>Hello there</p>',
-          'points': 3,
-        },
-        {
-          'objectID': '11',
-          'title': 'A link post',
-          'url': 'https://example.com/a',
-          'points': 9,
-        },
-      ],
-    };
-    final articles = HackerNewsSource.parse(data, 'hn');
-    expect(articles[0].body, '<p>Hello there</p>');
-    expect(articles[1].body, '');
-  });
+  test(
+    'HackerNewsSource.parse maps story_text into body, empty when absent',
+    () {
+      final data = {
+        'hits': [
+          {
+            'objectID': '10',
+            'title': 'Ask HN: text post',
+            'story_text': '<p>Hello there</p>',
+            'points': 3,
+          },
+          {
+            'objectID': '11',
+            'title': 'A link post',
+            'url': 'https://example.com/a',
+            'points': 9,
+          },
+        ],
+      };
+      final articles = HackerNewsSource.parse(data, 'hn');
+      expect(articles[0].body, '<p>Hello there</p>');
+      expect(articles[1].body, '');
+    },
+  );
 
   test('HackerNewsSource.parse uses comments url when story has no url', () {
     final data = {

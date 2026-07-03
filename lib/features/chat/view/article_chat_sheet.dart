@@ -46,6 +46,9 @@ class _ArticleChatSheetState extends ConsumerState<ArticleChatSheet> {
   void _send() {
     final text = _input.text;
     if (text.trim().isEmpty) return;
+    // Ignore submits while a send is in flight — otherwise the field clears and
+    // the view model's `sending` guard silently drops the typed question.
+    if (ref.read(articleChatProvider(widget.article)).sending) return;
     _input.clear();
     ref.read(articleChatProvider(widget.article).notifier).send(text);
     WidgetsBinding.instance.addPostFrameCallback((_) {

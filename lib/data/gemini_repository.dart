@@ -301,6 +301,16 @@ class GeminiRepository {
     }
   }
 
+  /// Candidate `finishReason` values that mean the model refused to answer
+  /// (an output-side block) rather than finishing normally.
+  static const Set<String> _blockedFinishReasons = {
+    'SAFETY',
+    'RECITATION',
+    'PROHIBITED_CONTENT',
+    'BLOCKLIST',
+    'SPII',
+  };
+
   static String extractText(dynamic data) {
     try {
       if (data is Map) {
@@ -311,6 +321,16 @@ class GeminiRepository {
         final candidates = data['candidates'];
         if (candidates is List && candidates.isEmpty) {
           throw GeminiException('blocked');
+        }
+        // Output-side block: the candidate stopped for a safety/recitation
+        // reason and carries no usable content. Without this it would fall
+        // through to the parts access below and be misreported as 'parse'.
+        if (candidates is List && candidates.isNotEmpty) {
+          final first = candidates.first;
+          final finish = first is Map ? first['finishReason'] : null;
+          if (finish is String && _blockedFinishReasons.contains(finish)) {
+            throw GeminiException('blocked', finish);
+          }
         }
       }
       final text = data['candidates'][0]['content']['parts'][0]['text'];

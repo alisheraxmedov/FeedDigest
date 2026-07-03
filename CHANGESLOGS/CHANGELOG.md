@@ -11,6 +11,63 @@ controls), Sprint 2 (AI daily digest + reminder), Sprint 3 (AI reading tools),
 Sprint 4 (reading state, offline, data export), Sprint 5 (reading comfort), and
 Sprint 6 (engagement + read-aloud).
 
+### Post-review hardening (round 2)
+
+A second full multi-agent review of the branch, fixing defects the analyzer and
+the existing tests didn't catch. `flutter analyze` clean; **52 tests** (40 → +12
+regression); `dart format` applied.
+
+**Correctness (blocking)**
+
+- **Cache eviction was not FIFO.** Both the summary and article-body caches
+  derived eviction from `Box.keys`, which hive_ce sorts lexicographically rather
+  than by insertion order — so the "oldest" evicted was really the
+  alphabetically smallest key, and a newly written entry could be dropped the
+  instant it was cached (e.g. a `devto-` key while the box was full of `hn-`
+  keys), permanently defeating the cache and burning the user's Gemini quota.
+  Each value now carries a `cachedAt` stamp and eviction removes the genuinely
+  oldest entry; legacy plain-string body values are still read.
+- **Uncaught async errors on disposed notifiers.** The chat and translation view
+  models wrote `state` after an `await` with no `ref.mounted` guard, and the
+  `catch` re-threw the same error — surfacing an uncaught async error whenever
+  the sheet or detail screen was closed mid-request. Every post-await state write
+  is now guarded.
+
+**Correctness (should-fix)**
+
+- **Chat could get permanently stuck.** A failed send left an unanswered user
+  turn in the history, so the next request carried two consecutive `user` roles
+  (a malformed multi-turn payload) and every following question failed too.
+  Trailing unanswered user turns are stripped before the request is built.
+- **Reading streak broke around DST.** The day index divided a local-midnight
+  epoch by ms-per-day; across a DST transition consecutive local midnights aren't
+  24h apart, so the streak wrongly reset or skipped a day twice a year. It is now
+  computed from a UTC-anchored calendar date.
+- **Gemini output-side blocks were mislabeled.** A response blocked by the safety
+  filter *after* generation (candidate `finishReason` SAFETY/RECITATION) was
+  reported as a generic `parse` error; it now maps to `blocked`.
+- **Silent async failures are surfaced.** Saving the API key and
+  enabling/scheduling the daily reminder could throw with no feedback; failures
+  now show a SnackBar, and the notification preference is persisted only once the
+  OS (re)schedule succeeds, so the switch can't show "on" while nothing is
+  actually scheduled.
+
+**Robustness / hygiene**
+
+- The chat composer ignores submits while a send is in flight, so the input no
+  longer clears and silently drops the typed question.
+- `seedDefaultsIfNeeded` awaits its writes instead of firing them unawaited.
+- The article-body cache write is best-effort — a Hive write failure no longer
+  turns a successfully fetched body into an error for the reader.
+- The detail "open article" button routes through the safe link helper
+  (`Uri.tryParse`) instead of an unguarded `Uri.parse`.
+
+**Tests**
+
+- New regression tests: cache overflow eviction (summary + body, including legacy
+  migration), Gemini `finishReason` mapping, DST-stable streak day index, and
+  chat-history sanitization. Suite: **52 tests**, `flutter analyze` clean.
+
 ### Engagement & read-aloud (Sprint 6)
 
 - **Reading streak** — consecutive days on which you opened an article, tracked
