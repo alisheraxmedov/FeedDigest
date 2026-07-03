@@ -1,19 +1,20 @@
+import '../core/ai/ai_provider.dart';
 import '../core/storage/secure_store.dart';
 
-/// The Gemini key lives ONLY in secure storage, entered by the user (BYO-key).
-/// No bundled/developer fallback: shipping a key inside the app would leak it in
-/// the APK/IPA and let every user spend the developer's quota.
+/// API keys live ONLY in secure storage, entered by the user (BYO-key).
+/// No bundled/developer fallback: shipping a key inside the app would leak it
+/// in the APK/IPA and let every user spend the developer's quota.
+/// One key per provider; Gemini keeps its legacy storage name.
 class SettingsRepository {
   SettingsRepository(this._store);
 
   final SecureStore _store;
 
-  static const String _geminiKey = 'gemini_api_key';
-
-  Future<String?> getGeminiKey() async {
-    final stored = await _store.read(_geminiKey);
+  Future<String?> getKey(AiProvider provider) async {
+    final stored = await _store.read(provider.storageKey);
     return (stored == null || stored.isEmpty) ? null : stored;
   }
 
-  Future<void> setGeminiKey(String value) => _store.write(_geminiKey, value);
+  Future<void> setKey(AiProvider provider, String value) =>
+      _store.write(provider.storageKey, value);
 }

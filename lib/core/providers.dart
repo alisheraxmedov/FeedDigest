@@ -2,14 +2,20 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 
+import '../data/ai_repository.dart';
 import '../data/article_body_cache_repository.dart';
 import '../data/favorites_repository.dart';
-import '../data/gemini_repository.dart';
 import '../data/read_state_repository.dart';
 import '../data/settings_repository.dart';
 import '../data/subscription_repository.dart';
 import '../data/summary_cache_repository.dart';
+import 'ai/ai_client.dart';
+import 'ai/ai_provider.dart';
+import 'ai/clients/anthropic_client.dart';
+import 'ai/clients/gemini_client.dart';
+import 'ai/clients/openai_compat_client.dart';
 import 'config/app_config.dart';
+import 'prefs/preferences.dart';
 import 'services/export_service.dart';
 import 'sources/article_source.dart';
 import 'sources/devto_source.dart';
@@ -81,12 +87,55 @@ final settingsRepositoryProvider = Provider<SettingsRepository>(
   (ref) => SettingsRepository(ref.watch(secureStoreProvider)),
 );
 
-final geminiRepositoryProvider = Provider<GeminiRepository>(
-  (ref) => GeminiRepository(
-    ref.watch(dioProvider),
-    ref.watch(settingsRepositoryProvider),
-  ),
+final geminiClientProvider = Provider<GeminiClient>(
+  (ref) => GeminiClient(ref.watch(dioProvider)),
 );
+
+final anthropicClientProvider = Provider<AnthropicClient>(
+  (ref) => AnthropicClient(ref.watch(dioProvider)),
+);
+
+/// OpenAI, DeepSeek, and Grok all speak the same chat/completions dialect —
+/// one client class, three configurations.
+final openAiCompatClientProvider =
+    Provider.family<OpenAiCompatClient, AiProvider>((ref, provider) {
+      final (baseUrl, model) = switch (provider) {
+        AiProvider.openai => (
+          AppConfig.openAiBaseUrl,
+          AiProvider.openai.model,
+        ),
+        AiProvider.deepseek => (
+          AppConfig.deepSeekBaseUrl,
+          AiProvider.deepseek.model,
+        ),
+        AiProvider.grok => (AppConfig.xaiBaseUrl, AiProvider.grok.model),
+        _ => throw ArgumentError(
+          'not an OpenAI-compatible provider: $provider',
+        ),
+      };
+      return OpenAiCompatClient(
+        ref.watch(dioProvider),
+        baseUrl: baseUrl,
+        model: model,
+      );
+    });
+
+/// Rebuilds whenever the user switches providers, so every AI feature picks
+/// up the new backend on its next call.
+final aiRepositoryProvider = Provider<AiRepository>((ref) {
+  final provider = ref.watch(aiProviderProvider);
+  final AiClient client = switch (provider) {
+    AiProvider.gemini => ref.watch(geminiClientProvider),
+    AiProvider.claude => ref.watch(anthropicClientProvider),
+    _ => ref.watch(openAiCompatClientProvider(provider)),
+  };
+  return AiRepository(
+    ref.watch(settingsRepositoryProvider),
+    provider: provider,
+    client: client,
+    geminiClient: ref.watch(geminiClientProvider),
+  );
+});
 
 final favoritesRepositoryProvider = Provider<FavoritesRepository>(
   (ref) => FavoritesRepository(Hive.box<dynamic>(HiveBoxes.favorites)),

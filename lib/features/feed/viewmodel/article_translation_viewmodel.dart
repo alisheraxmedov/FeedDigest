@@ -69,7 +69,7 @@ class ArticleTranslationViewModel extends Notifier<TranslationState> {
       if (!ref.mounted) return;
       final lang = ref.read(effectiveAiLangProvider);
       final translated = await ref
-          .read(geminiRepositoryProvider)
+          .read(aiRepositoryProvider)
           .translate(body, targetLangCode: lang.code);
       if (!ref.mounted) return;
       state = TranslationState(showing: true, text: translated);

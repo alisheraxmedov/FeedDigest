@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import '../../../core/providers.dart';
-import '../../../data/gemini_repository.dart';
+import '../../../core/ai/ai_client.dart';
 import '../../search/viewmodel/pending_search_provider.dart';
 import '../../shell/viewmodel/home_tab_viewmodel.dart';
 
@@ -126,7 +126,7 @@ class VoiceSearchController extends Notifier<VoiceSearchState> {
         return;
       }
       final query = (await ref
-              .read(geminiRepositoryProvider)
+              .read(aiRepositoryProvider)
               .voiceQuery(bytes, mimeType: 'audio/wav'))
           .trim();
       if (!ref.mounted) return;
@@ -139,7 +139,7 @@ class VoiceSearchController extends Notifier<VoiceSearchState> {
       ref.read(pendingSearchProvider.notifier).submit(query);
       ref.read(homeTabProvider.notifier).select(HomeTabController.search);
       state = const VoiceSearchState();
-    } on GeminiException catch (e) {
+    } on AiException catch (e) {
       if (!ref.mounted) return;
       state = VoiceSearchState(errorCode: e.code);
     } catch (_) {

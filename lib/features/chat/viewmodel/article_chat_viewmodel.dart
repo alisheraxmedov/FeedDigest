@@ -5,9 +5,9 @@ Errors surface as an errorCode the view localizes (no localized text lives here)
 */
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/ai/ai_client.dart';
 import '../../../core/prefs/preferences.dart';
 import '../../../core/providers.dart';
-import '../../../data/gemini_repository.dart';
 import '../../../models/article.dart';
 import '../../../models/chat_message.dart';
 import '../../feed/viewmodel/article_body_viewmodel.dart';
@@ -76,7 +76,7 @@ class ArticleChatViewModel extends Notifier<ChatState> {
       if (!ref.mounted) return;
       final lang = ref.read(effectiveAiLangProvider);
       final answer = await ref
-          .read(geminiRepositoryProvider)
+          .read(aiRepositoryProvider)
           .chat(
             article: article,
             articleBody: body,
@@ -91,7 +91,7 @@ class ArticleChatViewModel extends Notifier<ChatState> {
           ChatMessage(role: ChatRole.model, text: answer),
         ],
       );
-    } on GeminiException catch (e) {
+    } on AiException catch (e) {
       if (!ref.mounted) return;
       state = state.copyWith(
         sending: false,

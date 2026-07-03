@@ -6,6 +6,7 @@ fallback for the Gemini layer.
 */
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../ai/ai_provider.dart';
 import '../providers.dart';
 
 enum AppLanguage {
@@ -67,6 +68,27 @@ class ThemeModeController extends Notifier<ThemeMode> {
     'system' => ThemeMode.system,
     _ => ThemeMode.dark,
   };
+}
+
+/// Which AI backend runs the text features. Voice search stays Gemini-only,
+/// so the voice FAB is hidden whenever this isn't gemini.
+final aiProviderProvider = NotifierProvider<AiProviderController, AiProvider>(
+  AiProviderController.new,
+);
+
+class AiProviderController extends Notifier<AiProvider> {
+  static const String _key = 'ai_provider';
+
+  @override
+  AiProvider build() =>
+      AiProvider.fromId(ref.read(metaBoxProvider).get(_key) as String?);
+
+  Future<void> select(AiProvider provider) async {
+    state = provider;
+    final box = ref.read(metaBoxProvider);
+    await box.put(_key, provider.id);
+    await box.flush();
+  }
 }
 
 final aiSummaryLangProvider =

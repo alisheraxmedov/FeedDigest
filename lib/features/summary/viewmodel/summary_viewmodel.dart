@@ -30,7 +30,7 @@ class SummaryViewModel extends AsyncNotifier<String> {
         ? article.copyWith(body: fullBody)
         : article;
     final text = await ref
-        .read(geminiRepositoryProvider)
+        .read(aiRepositoryProvider)
         .summarize(enriched, langCode: lang.code, brief: depth.isBrief);
     await cache.put(AiSummary(postId: cacheKey, summary: text));
     return text;

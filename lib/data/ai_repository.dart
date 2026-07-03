@@ -1,31 +1,37 @@
 /*
-GeminiRepository summarizes an article with the Gemini API in the language the
-user picked for AI summaries (langCode: 'uz' | 'ru' | 'en'). The instruction is
-built per language so the model answers in that language. Failures throw a
-GeminiException carrying a stable code the UI maps to a localized message.
+AiRepository runs every text AI feature (summary, digest, translate, chat)
+through the user's selected provider, and voice queries through Gemini only.
+It owns all prompts (written once, provider-independent), the per-provider
+API-key lookup, and the no_key check. Failures throw AiException carrying a
+stable code the UI maps to a localized message.
 */
-import 'dart:convert';
-import 'package:dio/dio.dart';
-import '../core/config/app_config.dart';
+import '../core/ai/ai_client.dart';
+import '../core/ai/ai_provider.dart';
+import '../core/ai/clients/gemini_client.dart';
 import '../models/article.dart';
 import '../models/chat_message.dart';
 import 'settings_repository.dart';
 
-class GeminiException implements Exception {
-  GeminiException(this.code, [this.message = '']);
+class AiRepository {
+  AiRepository(
+    this._settings, {
+    required AiProvider provider,
+    required AiClient client,
+    required GeminiClient geminiClient,
+  }) : _provider = provider,
+       _client = client,
+       _gemini = geminiClient;
 
-  final String code;
-  final String message;
-
-  @override
-  String toString() => 'GeminiException($code): $message';
-}
-
-class GeminiRepository {
-  GeminiRepository(this._dio, this._settings);
-
-  final Dio _dio;
   final SettingsRepository _settings;
+  final AiProvider _provider;
+  final AiClient _client;
+  final GeminiClient _gemini;
+
+  Future<String> _keyFor(AiProvider provider) async {
+    final key = await _settings.getKey(provider);
+    if (key == null || key.isEmpty) throw AiException('no_key');
+    return key;
+  }
 
   static const Map<String, String> _detailed = {
     'uz':
@@ -80,35 +86,18 @@ class GeminiRepository {
     required String langCode,
     bool brief = false,
   }) async {
-    final key = await _settings.getGeminiKey();
-    if (key == null || key.isEmpty) {
-      throw GeminiException('no_key');
-    }
+    final key = await _keyFor(_provider);
     final set = brief ? _brief : _detailed;
     final instruction = set[langCode] ?? set['uz']!;
     final text = article.contentText.replaceAll(RegExp(r'<[^>]+>'), ' ').trim();
-    final prompt = '$instruction\n\nTitle: ${article.title}\n\nText: $text';
-    try {
-      final resp = await _dio.post<dynamic>(
-        '${AppConfig.geminiEndpoint}/${AppConfig.geminiModel}:generateContent',
-        options: Options(
-          receiveTimeout: const Duration(seconds: 60),
-          headers: {'x-goog-api-key': key, 'Content-Type': 'application/json'},
+    return _client.complete(
+      apiKey: key,
+      messages: [
+        AiMessage.user(
+          '$instruction\n\nTitle: ${article.title}\n\nText: $text',
         ),
-        data: {
-          'contents': [
-            {
-              'parts': [
-                {'text': prompt},
-              ],
-            },
-          ],
-        },
-      );
-      return extractText(resp.data);
-    } on DioException catch (e) {
-      throw GeminiException('request', e.message ?? '');
-    }
+      ],
+    );
   }
 
   static const Map<String, String> _digestIntro = {
@@ -142,10 +131,7 @@ class GeminiRepository {
     List<Article> articles, {
     required String langCode,
   }) async {
-    final key = await _settings.getGeminiKey();
-    if (key == null || key.isEmpty) {
-      throw GeminiException('no_key');
-    }
+    final key = await _keyFor(_provider);
     final intro = _digestIntro[langCode] ?? _digestIntro['uz']!;
     final buf = StringBuffer();
     for (var i = 0; i < articles.length; i++) {
@@ -155,28 +141,10 @@ class GeminiRepository {
       buf.writeln('${i + 1}. [${a.source}] ${a.title}');
       if (short.isNotEmpty) buf.writeln('   $short');
     }
-    final prompt = '$intro\n\n$buf';
-    try {
-      final resp = await _dio.post<dynamic>(
-        '${AppConfig.geminiEndpoint}/${AppConfig.geminiModel}:generateContent',
-        options: Options(
-          receiveTimeout: const Duration(seconds: 60),
-          headers: {'x-goog-api-key': key, 'Content-Type': 'application/json'},
-        ),
-        data: {
-          'contents': [
-            {
-              'parts': [
-                {'text': prompt},
-              ],
-            },
-          ],
-        },
-      );
-      return extractText(resp.data);
-    } on DioException catch (e) {
-      throw GeminiException('request', e.message ?? '');
-    }
+    return _client.complete(
+      apiKey: key,
+      messages: [AiMessage.user('$intro\n\n$buf')],
+    );
   }
 
   static const Map<String, String> _translateInstr = {
@@ -202,34 +170,14 @@ class GeminiRepository {
     String text, {
     required String targetLangCode,
   }) async {
-    final key = await _settings.getGeminiKey();
-    if (key == null || key.isEmpty) {
-      throw GeminiException('no_key');
-    }
+    final key = await _keyFor(_provider);
     final instruction =
         _translateInstr[targetLangCode] ?? _translateInstr['uz']!;
-    final prompt = '$instruction\n\n$text';
-    try {
-      final resp = await _dio.post<dynamic>(
-        '${AppConfig.geminiEndpoint}/${AppConfig.geminiModel}:generateContent',
-        options: Options(
-          receiveTimeout: const Duration(seconds: 90),
-          headers: {'x-goog-api-key': key, 'Content-Type': 'application/json'},
-        ),
-        data: {
-          'contents': [
-            {
-              'parts': [
-                {'text': prompt},
-              ],
-            },
-          ],
-        },
-      );
-      return extractText(resp.data);
-    } on DioException catch (e) {
-      throw GeminiException('request', e.message ?? '');
-    }
+    return _client.complete(
+      apiKey: key,
+      messages: [AiMessage.user('$instruction\n\n$text')],
+      timeout: const Duration(seconds: 90),
+    );
   }
 
   static const Map<String, String> _chatSystem = {
@@ -247,9 +195,9 @@ class GeminiRepository {
         'the answer is not in the article, say so plainly.',
   };
 
-  /// Multi-turn Q&A grounded in a single article. The article text is passed as
-  /// a system instruction (truncated to bound context/quota); [history] carries
-  /// the prior turns and [question] is the new user message.
+  /// Multi-turn Q&A grounded in a single article. The article text is passed
+  /// as the system prompt (truncated to bound context/quota); [history]
+  /// carries the prior turns and [question] is the new user message.
   Future<String> chat({
     required Article article,
     required String articleBody,
@@ -257,138 +205,29 @@ class GeminiRepository {
     required String question,
     required String langCode,
   }) async {
-    final key = await _settings.getGeminiKey();
-    if (key == null || key.isEmpty) {
-      throw GeminiException('no_key');
-    }
+    final key = await _keyFor(_provider);
     final system = _chatSystem[langCode] ?? _chatSystem['uz']!;
     final context = articleBody.length > 8000
         ? articleBody.substring(0, 8000)
         : articleBody;
-    final contents = <Map<String, dynamic>>[
-      for (final m in history)
-        {
-          'role': m.isUser ? 'user' : 'model',
-          'parts': [
-            {'text': m.text},
-          ],
-        },
-      {
-        'role': 'user',
-        'parts': [
-          {'text': question},
-        ],
-      },
-    ];
-    try {
-      final resp = await _dio.post<dynamic>(
-        '${AppConfig.geminiEndpoint}/${AppConfig.geminiModel}:generateContent',
-        options: Options(
-          receiveTimeout: const Duration(seconds: 60),
-          headers: {'x-goog-api-key': key, 'Content-Type': 'application/json'},
-        ),
-        data: {
-          'system_instruction': {
-            'parts': [
-              {'text': '$system\n\nTitle: ${article.title}\n\n$context'},
-            ],
-          },
-          'contents': contents,
-        },
-      );
-      return extractText(resp.data);
-    } on DioException catch (e) {
-      throw GeminiException('request', e.message ?? '');
-    }
+    return _client.complete(
+      apiKey: key,
+      system: '$system\n\nTitle: ${article.title}\n\n$context',
+      messages: [
+        for (final m in history)
+          m.isUser ? AiMessage.user(m.text) : AiMessage.model(m.text),
+        AiMessage.user(question),
+      ],
+    );
   }
 
-  static const String _voiceQueryPrompt =
-      'You are a search-query extractor for a tech-news reader (Hacker News + '
-      'dev.to). The user recorded a short spoken request (in Uzbek, Russian, or '
-      'English) asking for articles about some topic. Understand the audio and '
-      'output ONLY a concise search query in English — the topic keywords they '
-      'want (1-4 words), lowercase, no punctuation, no quotes, no extra text. '
-      'If the audio is unclear or silent, output nothing.';
-
-  /// Turns a short spoken request (inline audio) into a concise English search
-  /// query the article sources can use. The audio never leaves this call — only
-  /// the resulting query text is returned.
+  /// Voice → search query. Always Gemini (inline audio), regardless of the
+  /// active provider; callers gate visibility on the gemini provider.
   Future<String> voiceQuery(
     List<int> audioBytes, {
     required String mimeType,
   }) async {
-    final key = await _settings.getGeminiKey();
-    if (key == null || key.isEmpty) {
-      throw GeminiException('no_key');
-    }
-    try {
-      final resp = await _dio.post<dynamic>(
-        '${AppConfig.geminiEndpoint}/${AppConfig.geminiModel}:generateContent',
-        options: Options(
-          receiveTimeout: const Duration(seconds: 45),
-          headers: {'x-goog-api-key': key, 'Content-Type': 'application/json'},
-        ),
-        data: {
-          'contents': [
-            {
-              'parts': [
-                {'text': _voiceQueryPrompt},
-                {
-                  'inline_data': {
-                    'mime_type': mimeType,
-                    'data': base64Encode(audioBytes),
-                  },
-                },
-              ],
-            },
-          ],
-        },
-      );
-      return extractText(resp.data);
-    } on DioException catch (e) {
-      throw GeminiException('request', e.message ?? '');
-    }
-  }
-
-  /// Candidate `finishReason` values that mean the model refused to answer
-  /// (an output-side block) rather than finishing normally.
-  static const Set<String> _blockedFinishReasons = {
-    'SAFETY',
-    'RECITATION',
-    'PROHIBITED_CONTENT',
-    'BLOCKLIST',
-    'SPII',
-  };
-
-  static String extractText(dynamic data) {
-    try {
-      if (data is Map) {
-        final blockReason = data['promptFeedback']?['blockReason'];
-        if (blockReason != null) {
-          throw GeminiException('blocked', '$blockReason');
-        }
-        final candidates = data['candidates'];
-        if (candidates is List && candidates.isEmpty) {
-          throw GeminiException('blocked');
-        }
-        // Output-side block: the candidate stopped for a safety/recitation
-        // reason and carries no usable content. Without this it would fall
-        // through to the parts access below and be misreported as 'parse'.
-        if (candidates is List && candidates.isNotEmpty) {
-          final first = candidates.first;
-          final finish = first is Map ? first['finishReason'] : null;
-          if (finish is String && _blockedFinishReasons.contains(finish)) {
-            throw GeminiException('blocked', finish);
-          }
-        }
-      }
-      final text = data['candidates'][0]['content']['parts'][0]['text'];
-      if (text is String && text.trim().isNotEmpty) return text.trim();
-    } on GeminiException {
-      rethrow;
-    } catch (_) {
-      throw GeminiException('parse');
-    }
-    throw GeminiException('empty');
+    final key = await _keyFor(AiProvider.gemini);
+    return _gemini.voiceQuery(audioBytes, apiKey: key, mimeType: mimeType);
   }
 }
