@@ -9,6 +9,8 @@ import '../../../models/article.dart';
 import '../../feed/view/article_detail_screen.dart';
 import '../../feed/view/widgets/post_image.dart';
 import '../../feed/viewmodel/read_state_viewmodel.dart';
+import '../../voice_search/view/voice_search_fab.dart';
+import '../viewmodel/pending_search_provider.dart';
 import '../viewmodel/search_viewmodel.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
@@ -20,10 +22,21 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _controller = TextEditingController();
+  final _focusNode = FocusNode();
   String _query = '';
 
   @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChanged);
+  }
+
+  void _onFocusChanged() => setState(() {});
+
+  @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChanged);
+    _focusNode.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -45,33 +58,80 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final palette = AppPalette.of(context);
     final scheme = Theme.of(context).colorScheme;
     final results = ref.watch(searchViewModelProvider);
+    // A voice search (or any external caller) pushes a query here: fill the
+    // field, run it, then clear the pending value so it isn't re-applied.
+    ref.listen<String?>(pendingSearchProvider, (previous, next) {
+      if (next == null || next.isEmpty) return;
+      _controller.text = next;
+      _submit(next);
+      ref.read(pendingSearchProvider.notifier).consume();
+    });
     return Scaffold(
+      floatingActionButton: const VoiceSearchFab(),
       body: SafeArea(
         bottom: false,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              child: Text(
+                l.navSearch,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontSize: 27,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
+                  color: scheme.onSurface,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
               child: TextField(
                 controller: _controller,
+                focusNode: _focusNode,
                 textInputAction: TextInputAction.search,
                 onChanged: (_) => setState(() {}),
                 onSubmitted: _submit,
+                style: TextStyle(fontSize: 15, color: scheme.onSurface),
                 decoration: InputDecoration(
                   hintText: l.searchHint,
+                  filled: true,
+                  fillColor: palette.inputFill,
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 13,
+                  ),
                   prefixIcon: Icon(
                     Icons.search,
-                    color: scheme.onSurfaceVariant,
+                    size: 20,
+                    color: _focusNode.hasFocus || _controller.text.isNotEmpty
+                        ? palette.accentText
+                        : scheme.onSurfaceVariant,
                   ),
                   suffixIcon: _controller.text.isEmpty
                       ? null
                       : IconButton(
                           icon: Icon(
                             Icons.close,
+                            size: 18,
                             color: scheme.onSurfaceVariant,
                           ),
                           onPressed: _clear,
                         ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: palette.mutedBorder),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: palette.accent, width: 1.5),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: palette.mutedBorder),
+                  ),
                 ),
               ),
             ),

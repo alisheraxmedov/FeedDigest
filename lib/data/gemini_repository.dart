@@ -4,6 +4,7 @@ user picked for AI summaries (langCode: 'uz' | 'ru' | 'en'). The instruction is
 built per language so the model answers in that language. Failures throw a
 GeminiException carrying a stable code the UI maps to a localized message.
 */
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../core/config/app_config.dart';
 import '../models/article.dart';
@@ -293,6 +294,54 @@ class GeminiRepository {
             ],
           },
           'contents': contents,
+        },
+      );
+      return extractText(resp.data);
+    } on DioException catch (e) {
+      throw GeminiException('request', e.message ?? '');
+    }
+  }
+
+  static const String _voiceQueryPrompt =
+      'You are a search-query extractor for a tech-news reader (Hacker News + '
+      'dev.to). The user recorded a short spoken request (in Uzbek, Russian, or '
+      'English) asking for articles about some topic. Understand the audio and '
+      'output ONLY a concise search query in English — the topic keywords they '
+      'want (1-4 words), lowercase, no punctuation, no quotes, no extra text. '
+      'If the audio is unclear or silent, output nothing.';
+
+  /// Turns a short spoken request (inline audio) into a concise English search
+  /// query the article sources can use. The audio never leaves this call — only
+  /// the resulting query text is returned.
+  Future<String> voiceQuery(
+    List<int> audioBytes, {
+    required String mimeType,
+  }) async {
+    final key = await _settings.getGeminiKey();
+    if (key == null || key.isEmpty) {
+      throw GeminiException('no_key');
+    }
+    try {
+      final resp = await _dio.post<dynamic>(
+        '${AppConfig.geminiEndpoint}/${AppConfig.geminiModel}:generateContent',
+        options: Options(
+          receiveTimeout: const Duration(seconds: 45),
+          headers: {'x-goog-api-key': key, 'Content-Type': 'application/json'},
+        ),
+        data: {
+          'contents': [
+            {
+              'parts': [
+                {'text': _voiceQueryPrompt},
+                {
+                  'inline_data': {
+                    'mime_type': mimeType,
+                    'data': base64Encode(audioBytes),
+                  },
+                },
+              ],
+            },
+          ],
         },
       );
       return extractText(resp.data);

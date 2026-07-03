@@ -6,6 +6,7 @@ the bar so feed content scrolls under the blur.
 */
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
@@ -13,16 +14,10 @@ import '../../favorites/view/favorites_screen.dart';
 import '../../feed/view/feed_screen.dart';
 import '../../search/view/search_screen.dart';
 import '../../settings/view/settings_screen.dart';
+import '../viewmodel/home_tab_viewmodel.dart';
 
-class HomeShell extends StatefulWidget {
+class HomeShell extends ConsumerWidget {
   const HomeShell({super.key});
-
-  @override
-  State<HomeShell> createState() => _HomeShellState();
-}
-
-class _HomeShellState extends State<HomeShell> {
-  int _index = 0;
 
   static const _screens = [
     FeedScreen(),
@@ -32,13 +27,14 @@ class _HomeShellState extends State<HomeShell> {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final index = ref.watch(homeTabProvider);
     return Scaffold(
       extendBody: true,
-      body: IndexedStack(index: _index, children: _screens),
+      body: IndexedStack(index: index, children: _screens),
       bottomNavigationBar: _FrostedNav(
-        index: _index,
-        onTap: (i) => setState(() => _index = i),
+        index: index,
+        onTap: (i) => ref.read(homeTabProvider.notifier).select(i),
       ),
     );
   }
@@ -60,7 +56,6 @@ class _FrostedNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final palette = AppPalette.of(context);
-    final scheme = Theme.of(context).colorScheme;
     final items = <_NavItem>[
       _NavItem(HugeIcons.strokeRoundedHome01, l.navFeed),
       _NavItem(HugeIcons.strokeRoundedSearch01, l.navSearch),
@@ -73,7 +68,7 @@ class _FrostedNav extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
           decoration: BoxDecoration(
-            color: scheme.surface.withValues(alpha: 0.82),
+            color: palette.navBar,
             border: Border(top: BorderSide(color: palette.mutedBorder)),
           ),
           child: SafeArea(
@@ -113,8 +108,7 @@ class _NavButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
-    final scheme = Theme.of(context).colorScheme;
-    final color = active ? palette.accent : scheme.onSurfaceVariant;
+    final color = active ? palette.accentText : palette.textDim;
     return Semantics(
       button: true,
       selected: active,

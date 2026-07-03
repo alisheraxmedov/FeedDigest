@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/neon_widgets.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../shell/view/widgets/home_drawer.dart';
 import '../../subscriptions/viewmodel/subscriptions_viewmodel.dart';
+import '../../voice_search/view/voice_search_fab.dart';
 import '../viewmodel/feed_viewmodel.dart';
 import '../viewmodel/streak_viewmodel.dart';
 import 'widgets/feed_pager.dart';
@@ -26,15 +28,41 @@ class FeedScreen extends ConsumerWidget {
     final navClear = 64 + MediaQuery.viewPaddingOf(context).bottom;
     return Scaffold(
       drawer: const HomeDrawer(),
+      floatingActionButton: const VoiceSearchFab(),
       appBar: AppBar(
-        title: Text(l.appTitle),
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        titleSpacing: 16,
+        // Brand logo + wordmark replace the hamburger. Tapping it still opens
+        // the drawer, so every destination stays reachable (no nav change).
+        title: Builder(
+          builder: (barContext) => GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: Scaffold.of(barContext).openDrawer,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(9),
+                  child: Image.asset(
+                    'assets/icons/feeddigest-1b-monogram-f.png',
+                    width: 32,
+                    height: 32,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Wordmark(fontSize: 21),
+              ],
+            ),
+          ),
+        ),
         actions: [
           if (streak.current > 0)
             Center(
               child: Tooltip(
                 message: l.streakDays(streak.current),
                 child: Container(
-                  margin: const EdgeInsets.only(right: 4),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 6,
@@ -65,6 +93,7 @@ class FeedScreen extends ConsumerWidget {
                 ),
               ),
             ),
+          const SizedBox(width: 12),
         ],
       ),
       body: Column(
