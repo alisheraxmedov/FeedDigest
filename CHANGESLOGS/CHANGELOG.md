@@ -4,6 +4,29 @@ All notable changes to this project, newest first. Dates are ISO (UTC).
 
 ---
 
+## 2026-07-03 (interests)
+
+### First-run interests picker
+
+- **New interests screen** after onboarding: a grouped cloud of tappable chips
+  (Development, DevOps/Infra, Data & AI, Quality & Security, IT-Business) from a
+  curated `InterestCatalog`. The picks become topic subscriptions that fill the
+  feed and appear in the Home topic bar. Continue is disabled until at least one
+  is chosen; Skip seeds the default topics.
+- **First-run flow** is now onboarding → interests → home, gated by the existing
+  `onboarding_seen` + `seeded` meta flags (no new flag). Seeding moved out of
+  `main.dart` into the picker's commit/skip; returning users (already seeded) skip
+  straight to home, and a run interrupted mid-flow resumes at the picker.
+- Selection state + commit live in `InterestsSelectionController`; the widget only
+  renders and forwards taps. Chrome strings localized (en/ru/uz); chip labels are
+  tech terms shared across locales.
+- Debug-only Settings tile "Reset & preview onboarding" replays the full first-run
+  flow (onboarding → interests) without reinstalling.
+- Tests: catalog integrity, selection toggle, and a widget test (render +
+  chip-select). `flutter analyze` clean.
+
+---
+
 ## 2026-07-03 (sources)
 
 ### Feed sources — Lobsters, Habr, VC.ru
