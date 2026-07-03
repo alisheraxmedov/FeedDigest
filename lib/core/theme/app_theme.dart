@@ -22,6 +22,10 @@ class AppPalette extends ThemeExtension<AppPalette> {
     required this.inputFill,
     required this.iconCircle,
     required this.textDim,
+    required this.brandGradient,
+    required this.scrim,
+    required this.navBar,
+    required this.bgGlow,
   });
 
   final Color accent;
@@ -34,6 +38,20 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color inputFill;
   final Color iconCircle;
   final Color textDim;
+
+  /// The signature teal→cyan sweep from the app icon. Paint it behind primary
+  /// buttons / active pills / the "Digest" wordmark; `accent` is the solid
+  /// fallback.
+  final LinearGradient brandGradient;
+
+  /// Backdrop behind modal sheets.
+  final Color scrim;
+
+  /// Base fill for frosted nav / action bars (blur applied at the widget).
+  final Color navBar;
+
+  /// Top-of-screen ambient radial glow color.
+  final Color bgGlow;
 
   static AppPalette of(BuildContext context) =>
       Theme.of(context).extension<AppPalette>()!;
@@ -50,6 +68,10 @@ class AppPalette extends ThemeExtension<AppPalette> {
     Color? inputFill,
     Color? iconCircle,
     Color? textDim,
+    LinearGradient? brandGradient,
+    Color? scrim,
+    Color? navBar,
+    Color? bgGlow,
   }) {
     return AppPalette(
       accent: accent ?? this.accent,
@@ -62,6 +84,10 @@ class AppPalette extends ThemeExtension<AppPalette> {
       inputFill: inputFill ?? this.inputFill,
       iconCircle: iconCircle ?? this.iconCircle,
       textDim: textDim ?? this.textDim,
+      brandGradient: brandGradient ?? this.brandGradient,
+      scrim: scrim ?? this.scrim,
+      navBar: navBar ?? this.navBar,
+      bgGlow: bgGlow ?? this.bgGlow,
     );
   }
 
@@ -79,6 +105,12 @@ class AppPalette extends ThemeExtension<AppPalette> {
       inputFill: Color.lerp(inputFill, other.inputFill, t)!,
       iconCircle: Color.lerp(iconCircle, other.iconCircle, t)!,
       textDim: Color.lerp(textDim, other.textDim, t)!,
+      brandGradient:
+          LinearGradient.lerp(brandGradient, other.brandGradient, t) ??
+          brandGradient,
+      scrim: Color.lerp(scrim, other.scrim, t)!,
+      navBar: Color.lerp(navBar, other.navBar, t)!,
+      bgGlow: Color.lerp(bgGlow, other.bgGlow, t)!,
     );
   }
 }
@@ -86,17 +118,33 @@ class AppPalette extends ThemeExtension<AppPalette> {
 class AppTheme {
   AppTheme._();
 
+  static const LinearGradient _brandGradientDark = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [AppColors.brandStartDark, AppColors.brandEndDark],
+  );
+
+  static const LinearGradient _brandGradientLight = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [AppColors.brandStartLight, AppColors.brandEndLight],
+  );
+
   static const AppPalette _darkPalette = AppPalette(
     accent: AppColors.electricCyan,
     accentHover: AppColors.cyanHover,
     onAccent: AppColors.onCyan,
-    accentSoft: Color(0x1A00F0FF),
-    accentText: AppColors.electricCyan,
+    accentSoft: AppColors.darkAccentSoft,
+    accentText: AppColors.darkAccentText,
     mutedBorder: AppColors.darkMutedBorder,
     cardColor: AppColors.darkCard,
     inputFill: AppColors.darkInputFill,
-    iconCircle: AppColors.darkContainerHighest,
+    iconCircle: AppColors.darkContainer,
     textDim: AppColors.darkTextDim,
+    brandGradient: _brandGradientDark,
+    scrim: AppColors.scrimDark,
+    navBar: AppColors.navBarDark,
+    bgGlow: AppColors.bgGlowDark,
   );
 
   static const AppPalette _lightPalette = AppPalette(
@@ -108,8 +156,12 @@ class AppTheme {
     mutedBorder: AppColors.lightBorder,
     cardColor: AppColors.lightCard,
     inputFill: AppColors.lightInputFill,
-    iconCircle: AppColors.lightContainerHighest,
+    iconCircle: AppColors.lightContainer,
     textDim: AppColors.lightTextDim,
+    brandGradient: _brandGradientLight,
+    scrim: AppColors.scrimLight,
+    navBar: AppColors.navBarLight,
+    bgGlow: AppColors.bgGlowLight,
   );
 
   static ThemeData dark() {
