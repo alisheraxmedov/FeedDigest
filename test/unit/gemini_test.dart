@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:feeddigest/data/gemini_repository.dart';
+import 'package:feeddigest/core/ai/ai_client.dart';
+import 'package:feeddigest/core/ai/clients/gemini_client.dart';
 
 void main() {
   test('extractText pulls the candidate text', () {
@@ -14,13 +15,13 @@ void main() {
         },
       ],
     };
-    expect(GeminiRepository.extractText(data), 'Bu xulosa.');
+    expect(GeminiClient.extractText(data), 'Bu xulosa.');
   });
 
   test('extractText throws on bad shape', () {
     expect(
-      () => GeminiRepository.extractText(const {}),
-      throwsA(isA<GeminiException>()),
+      () => GeminiClient.extractText(const {}),
+      throwsA(isA<AiException>()),
     );
   });
 
@@ -34,8 +35,8 @@ void main() {
       ],
     };
     expect(
-      () => GeminiRepository.extractText(data),
-      throwsA(isA<GeminiException>().having((e) => e.code, 'code', 'blocked')),
+      () => GeminiClient.extractText(data),
+      throwsA(isA<AiException>().having((e) => e.code, 'code', 'blocked')),
     );
   });
 
@@ -46,8 +47,8 @@ void main() {
       ],
     };
     expect(
-      () => GeminiRepository.extractText(data),
-      throwsA(isA<GeminiException>().having((e) => e.code, 'code', 'blocked')),
+      () => GeminiClient.extractText(data),
+      throwsA(isA<AiException>().having((e) => e.code, 'code', 'blocked')),
     );
   });
 
@@ -64,6 +65,6 @@ void main() {
         },
       ],
     };
-    expect(GeminiRepository.extractText(data), 'ok');
+    expect(GeminiClient.extractText(data), 'ok');
   });
 }
