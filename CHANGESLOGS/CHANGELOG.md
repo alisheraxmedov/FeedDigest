@@ -4,6 +4,27 @@ All notable changes to this project, newest first. Dates are ISO (UTC).
 
 ---
 
+## 2026-07-03 (interests fix)
+
+### Fix — Riverpod crash on committing the picker
+
+- Committing (or skipping) the interests picker invalidated the subscriptions
+  provider while the home feed was paused under the modal route, tripping a
+  Riverpod paused-subscription assertion (`Expected pausedActiveSubscriptionCount
+  …`). The picker now writes to the repository only and the screen refreshes the
+  subscriptions notifier in a post-frame callback after the route pops, so the
+  home feed is notified while active.
+
+### Interest catalog expanded
+
+- Grew the catalog from ~23 to ~68 interests across nine groups: Languages
+  (Python, TypeScript, Rust, Go, …), AI & LLMs (Claude, ChatGPT, Gemini,
+  LangChain, LLMs, Generative AI, …), Web & Frontend, Mobile, Backend & Data,
+  DevOps & Cloud, Security & Web3, Companies (GitHub, Google, Amazon, Microsoft,
+  Nvidia, OpenAI, …) and Business & Career.
+
+---
+
 ## 2026-07-03 (interests)
 
 ### First-run interests picker
