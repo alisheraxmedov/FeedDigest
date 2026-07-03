@@ -36,6 +36,7 @@ dependencies:
   flutter_tts: ^4.2.2
   connectivity_plus: ^7.2.0
   record: ^7.1.1
+  xml: ^6.6.1
 
 dev_dependencies:
   flutter_test:

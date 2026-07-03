@@ -9,7 +9,10 @@ import '../../models/article.dart';
 
 enum FeedSource {
   hackerNews('hacker_news', 'Hacker News'),
-  devto('dev_to', 'dev.to');
+  devto('dev_to', 'dev.to'),
+  lobsters('lobsters', 'Lobsters'),
+  habr('habr', 'Habr'),
+  vcru('vc_ru', 'VC.ru');
 
   const FeedSource(this.id, this.label);
 

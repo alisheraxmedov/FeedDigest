@@ -7,6 +7,14 @@ class AppConfig {
   static const String devtoHost = 'dev.to';
   static const int devtoTopDays = 7;
 
+  static const String lobstersHost = 'lobste.rs';
+  static const String habrHost = 'habr.com';
+  // RSS 2.0 feeds consumed by the generic RssSource. `?fl=ru` keeps Habr to
+  // Russian-language posts; VC.ru's root feed carries its latest IT/business posts.
+  // A selected topic switches Habr to its search RSS (see habrSourceProvider).
+  static const String habrFeedUrl = 'https://habr.com/ru/rss/articles/?fl=ru';
+  static const String vcruFeedUrl = 'https://vc.ru/rss';
+
   // A desktop browser UA so sites don't refuse the default dio agent when we
   // fetch a Hacker News link post's page to extract its readable text.
   static const String readerUserAgent =

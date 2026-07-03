@@ -25,6 +25,9 @@ final activeSourceProvider = Provider<ArticleSource>((ref) {
   return switch (ref.watch(feedSourceProvider)) {
     FeedSource.hackerNews => ref.watch(hackerNewsSourceProvider),
     FeedSource.devto => ref.watch(devtoSourceProvider),
+    FeedSource.lobsters => ref.watch(lobstersSourceProvider),
+    FeedSource.habr => ref.watch(habrSourceProvider),
+    FeedSource.vcru => ref.watch(vcruSourceProvider),
   };
 });
 

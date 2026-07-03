@@ -13,6 +13,9 @@ import '../../viewmodel/feed_source_viewmodel.dart';
 IconData sourceIcon(FeedSource source) => switch (source) {
   FeedSource.hackerNews => Icons.local_fire_department,
   FeedSource.devto => Icons.code,
+  FeedSource.lobsters => Icons.forum_outlined,
+  FeedSource.habr => Icons.article_outlined,
+  FeedSource.vcru => Icons.business_center_outlined,
 };
 
 void openSourcePicker(BuildContext context, WidgetRef ref) {

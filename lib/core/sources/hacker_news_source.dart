@@ -7,7 +7,7 @@ When a story has no url (e.g. Ask HN), its discussion (item) page is used as the
 */
 import 'package:dio/dio.dart';
 import '../config/app_config.dart';
-import '../utils/html_readable.dart';
+import '../utils/readable_page.dart';
 import '../../models/article.dart';
 import 'article_source.dart';
 
@@ -40,25 +40,8 @@ class HackerNewsSource implements ArticleSource {
   @override
   Future<String> fullBody(Article article) async {
     if (article.body.trim().isNotEmpty) return article.body;
-    final url = article.url;
-    if (!url.startsWith('http') || url.contains('news.ycombinator.com')) {
-      return '';
-    }
-    try {
-      final resp = await _dio.getUri<String>(
-        Uri.parse(url),
-        options: Options(
-          responseType: ResponseType.plain,
-          receiveTimeout: const Duration(seconds: 20),
-          followRedirects: true,
-          headers: {'User-Agent': AppConfig.readerUserAgent},
-          validateStatus: (s) => s != null && s >= 200 && s < 400,
-        ),
-      );
-      return HtmlReadable.extract(resp.data ?? '');
-    } catch (_) {
-      return '';
-    }
+    if (article.url.contains('news.ycombinator.com')) return '';
+    return fetchReadablePage(_dio, article.url);
   }
 
   Future<List<Article>> _fetch(

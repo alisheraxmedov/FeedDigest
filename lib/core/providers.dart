@@ -9,10 +9,13 @@ import '../data/read_state_repository.dart';
 import '../data/settings_repository.dart';
 import '../data/subscription_repository.dart';
 import '../data/summary_cache_repository.dart';
+import 'config/app_config.dart';
 import 'services/export_service.dart';
 import 'sources/article_source.dart';
 import 'sources/devto_source.dart';
 import 'sources/hacker_news_source.dart';
+import 'sources/lobsters_source.dart';
+import 'sources/rss_source.dart';
 import 'storage/hive_boxes.dart';
 import 'storage/secure_store.dart';
 
@@ -36,6 +39,40 @@ final hackerNewsSourceProvider = Provider<ArticleSource>(
 
 final devtoSourceProvider = Provider<ArticleSource>(
   (ref) => DevtoSource(ref.watch(dioProvider)),
+);
+
+final lobstersSourceProvider = Provider<ArticleSource>(
+  (ref) => LobstersSource(ref.watch(dioProvider)),
+);
+
+// Habr filters server-side: an empty topic uses the latest-articles feed; a topic
+// uses Habr's full-text search RSS (order=date for newest, relevance for popular).
+final habrSourceProvider = Provider<ArticleSource>(
+  (ref) => RssSource(
+    ref.watch(dioProvider),
+    kind: FeedSource.habr,
+    serverFiltersTopic: true,
+    urlBuilder: (topic, sort) {
+      final query = topic.trim();
+      if (query.isEmpty) return AppConfig.habrFeedUrl;
+      return Uri.https(AppConfig.habrHost, '/ru/rss/search/', {
+        'q': query,
+        'target_type': 'posts',
+        'order': sort == FeedSort.popular ? 'relevance' : 'date',
+        'fl': 'ru',
+      }).toString();
+    },
+  ),
+);
+
+// VC.ru exposes only its general feed (no per-topic RSS), so a selected topic is
+// applied by RssSource's client-side keyword filter.
+final vcruSourceProvider = Provider<ArticleSource>(
+  (ref) => RssSource(
+    ref.watch(dioProvider),
+    kind: FeedSource.vcru,
+    urlBuilder: (topic, sort) => AppConfig.vcruFeedUrl,
+  ),
 );
 
 final secureStoreProvider = Provider<SecureStore>((ref) => SecureStore());
