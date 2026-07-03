@@ -4,6 +4,57 @@ All notable changes to this project, newest first. Dates are ISO (UTC).
 
 ---
 
+## 2026-07-03
+
+A full visual redesign to match the app icon, plus three new capabilities —
+onboarding, connectivity awareness, and voice search. `flutter analyze` clean.
+
+### UI redesign ("Neon Professional" dark / "Lumina Tech" light)
+
+- **Icon-matched theme.** Rebuilt the dark and light `AppColors` / `AppPalette`
+  tokens around the app icon's deep navy-teal surfaces and added a teal→cyan
+  `brandGradient` (with `copyWith` / `lerp` support), plus `scrim`, `navBar`, and
+  `bgGlow` tokens.
+- **Shared widgets.** `NeonButton` now paints the brand gradient with a cyan glow
+  and takes optional `height` / `radius`; added `Wordmark`, `GradientSparkTile`,
+  `AiPill`, and `BrandSegmented`; `IconCircle` gained an optional rounded-square
+  form.
+- **Screens.** Restyled the feed (brand-logo header, redesigned post card with a
+  source avatar and an AI pill), bottom nav, article reader (3-item app bar,
+  inline reader toolbar, frosted action bar), AI summary sheet, search, saved,
+  and the skeleton + empty states. No provider, view-model, or navigation logic
+  was changed — presentation only.
+
+### Settings
+
+- The settings app bar shows the app icon as a tab and a **back button when the
+  screen is pushed** — previously a fixed hub icon overrode the back button and
+  stranded users who opened settings from the chat "add key" shortcut.
+- Compacted the Gemini API-key card to match the design handoff.
+
+### Onboarding
+
+- Added a first-run intro screen (app icon, wordmark, tagline, three feature
+  rows). Shown once via an `onboarding_seen` flag in the Hive `meta` box, with a
+  gradient "Get started" action and a text shortcut into Settings for the API key.
+
+### Connectivity
+
+- Added an app-wide offline/online banner. `connectivity_plus` watches interface
+  changes and a lightweight `generate_204` probe confirms real reachability, so a
+  Wi-Fi with no uplink still reads as offline. Going offline shows a persistent
+  banner; reconnecting shows a brief "back online" one.
+
+### Voice search
+
+- Added a hold-to-talk microphone button on the feed and search screens. It
+  records a short WAV, sends the audio to Gemini, which returns a concise search
+  query; the query then fills the search field and switches to the Search tab.
+  The recorder and its temp file are always disposed and deleted, and the pulse
+  animation controller is disposed with the widget.
+
+---
+
 ## 2026-07-02
 
 Feature work from the FEATURES.md roadmap: Sprint 1 (BYO-key hardening + summary
