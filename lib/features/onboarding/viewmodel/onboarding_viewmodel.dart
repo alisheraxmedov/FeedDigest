@@ -23,4 +23,13 @@ class OnboardingController extends Notifier<bool> {
     await box.put(_key, true);
     await box.flush();
   }
+
+  /// Clears the seen flag so the first-run flow shows again. Used by the debug
+  /// "reset & preview onboarding" action in Settings.
+  Future<void> reset() async {
+    state = false;
+    final box = ref.read(metaBoxProvider);
+    await box.delete(_key);
+    await box.flush();
+  }
 }

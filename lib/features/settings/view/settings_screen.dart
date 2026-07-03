@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/prefs/preferences.dart';
@@ -8,6 +9,8 @@ import '../../../l10n/app_localizations.dart';
 import '../../favorites/viewmodel/favorites_viewmodel.dart';
 import '../../feed/view/widgets/source_switcher.dart';
 import '../../feed/viewmodel/feed_source_viewmodel.dart';
+import '../../onboarding/view/onboarding_screen.dart';
+import '../../onboarding/viewmodel/onboarding_viewmodel.dart';
 import '../../subscriptions/viewmodel/subscriptions_viewmodel.dart';
 import '../viewmodel/settings_viewmodel.dart';
 import 'widgets/notification_settings_sheet.dart';
@@ -226,7 +229,38 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ],
           ),
+          if (kDebugMode) ...[
+            const SizedBox(height: 24),
+            const _SectionLabel('Debug'),
+            _GroupCard(
+              children: [
+                _GroupTile(
+                  icon: Icons.restart_alt,
+                  title: 'Reset & preview onboarding',
+                  value: 'Debug only',
+                  accentIcon: true,
+                  onTap: _previewOnboarding,
+                ),
+              ],
+            ),
+          ],
         ],
+      ),
+    );
+  }
+
+  /// Debug helper: clears the first-run flag and opens the onboarding screen so
+  /// it can be reviewed without reinstalling the app.
+  Future<void> _previewOnboarding() async {
+    await ref.read(onboardingSeenProvider.notifier).reset();
+    await ref.read(subscriptionRepositoryProvider).clearSeeded();
+    if (!mounted) return;
+    // Reopen the full first-run flow: onboarding "Get started" then chains into
+    // the interests picker (seeded was just cleared).
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const OnboardingScreen(),
+        fullscreenDialog: true,
       ),
     );
   }
